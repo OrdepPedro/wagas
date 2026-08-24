@@ -111,7 +111,7 @@ Para refazer do zero em outro ambiente:
 
 A chave secreta ignora RLS: só em secret do Actions e em `.env` local, nunca no frontend. Serve tanto a nova `sb_secret_…` quanto a legacy `service_role`.
 
-> **O cron ainda não roda.** Este diretório não é um repositório git, então o workflow do Actions nunca é acionado. Publicar em repo e cadastrar os três secrets é o que falta para a coleta ficar automática.
+**O cron está no ar.** Repo privado em [OrdepPedro/wagas](https://github.com/OrdepPedro/wagas), rodando 1x/dia às 09:00 UTC (06h de Brasília). Os três secrets estão cadastrados e uma execução real foi validada: 4 consultas, 16 resultados já conhecidos deduplicados e 10 novos gravados.
 
 **Cadência e duração do saldo.** O workflow roda 1x/dia. Com 7 alvos, 3 blocos, 2 recortes e 2 páginas são **84 créditos por rodada**, e os 2.500 gratuitos duram **~27 dias**. Rodar mais vezes por dia rende pouco — a janela é de 7 dias e o mesmo resultado voltaria quase inteiro, gasto em dobro. Subir `SERPER_PAGINAS` aumenta a cobertura e encurta a duração na mesma proporção.
 
