@@ -121,6 +121,8 @@ Aceita também `-f dry_run=true`, `-f alvo=<id>` e `-f limite=N`.
 
 **Custo por rodada.** Com 7 alvos, 3 blocos, 2 recortes e 2 páginas são **84 créditos**. O saldo gratuito é de 2.500 e não renova, então cada disparo conta. Enquanto não houver front-end lendo o banco, coletar em cron seria gastar para ninguém — por isso o `schedule` está comentado no workflow, pronto para religar.
 
+> Sem coleta periódica o projeto do Supabase fica ocioso, e o plano free **pausa projeto ocioso**. Se voltar depois de algumas semanas e a coleta falhar na conexão, é isso: despause pelo dashboard e rode de novo.
+
 ## Decisões que estão no código por um motivo
 
 **Canonicalização agressiva por fonte.** A mesma vaga chega como `br.linkedin.com/jobs/view/product-manager-at-acme-4012345678?refId=…` e como `www.linkedin.com/jobs/view/4012345678`. As duas viram a mesma URL. O subdomínio da Gupy é preservado — ele identifica a empresa.

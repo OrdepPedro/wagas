@@ -67,7 +67,7 @@ Cinco alertas ativos na conta `pedroafontoura3@gmail.com`, com os dorks validado
 
 | Camada | Escolha |
 |---|---|
-| Coleta | GitHub Actions em cron chamando a **Serper.dev** |
+| Coleta | GitHub Actions chamando a **Serper.dev** — hoje sob demanda, cron previsto para quando houver front-end |
 | Complemento | Feeds RSS do Google Alerts para segmentos fixos |
 | Classificação | pré-filtro regex barato → Gemini Flash-Lite, Groq como fallback, saída JSON estrito |
 | Banco | Supabase (Postgres, Auth, pgvector para dedup semântica) |
@@ -75,7 +75,9 @@ Cinco alertas ativos na conta `pedroafontoura3@gmail.com`, com os dorks validado
 | Frontend | Next.js na Vercel |
 | Ingestão de e-mail | Cloudflare Email Routing + Worker |
 
-**Regra crítica:** busca **nunca** é disparada por request de usuário. O cron popula o cache; o usuário lê o cache. Filtros são aplicados **no Postgres sobre o cache**.
+**Regra crítica:** busca **nunca** é disparada por request de usuário. A coleta popula o cache; o usuário lê o cache. Filtros de cargo, modelo, local e período são aplicados **no Postgres sobre o cache** — traduzir filtro de usuário em consulta à API multiplicaria o custo pela combinatória.
+
+Isso vale independentemente de a coleta rodar em cron ou sob demanda: o que a regra proíbe é o caminho request-do-usuário → API paga.
 
 **Consequência econômica que importa:** o custo escala com **pares cargo×cidade distintos**, não com número de usuários. Dez usuários pedindo "Product Manager em São Paulo" custam uma varredura, não dez.
 
@@ -187,6 +189,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 - **Fonte única de ATS** (Gupy). Risco registrado, não resolvido.
 - **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de **6 meses** (vence por volta de 22/02/2027). Consumidos até 24/08: 244. Uma rodada completa custa ~84.
 - **A coleta não roda em cron, por decisão do Pedro (24/08).** Coletar todo dia sem front-end lendo o banco seria gastar saldo para ninguém. O `schedule` está comentado no workflow. Religar quando o Passo 4 existir — ou antes disso, se for medir fluxo semanal.
+- **Sem cron, o Supabase pausa por ociosidade.** O plano free suspende projeto sem atividade. Depois de algumas semanas parado, a primeira coleta vai falhar na conexão até despausar pelo dashboard. Não é bug do coletor.
 
 ---
 
