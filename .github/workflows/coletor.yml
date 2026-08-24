@@ -49,11 +49,11 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # O projeto não tem dependência de runtime: sem npm ci, sem cache.
       # Node 24 executa TypeScript direto (type stripping).
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
 
