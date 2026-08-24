@@ -1,0 +1,1506 @@
+{
+  "medidoEm": "2026-08-24T19:02:36.688Z",
+  "cidade": "São Paulo",
+  "janela": "qdr:w",
+  "creditosConsumidos": 20,
+  "provedor": "gemini/gemini-3.5-flash-lite",
+  "porCargo": [
+    {
+      "cargo": "Product Designer",
+      "coletados": 27,
+      "jaNoBanco": 4,
+      "aprovados": 8,
+      "ganhoLiquido": 4,
+      "cortePrefiltro": 0,
+      "corteLlm": 19,
+      "erros": 0
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "coletados": 17,
+      "jaNoBanco": 2,
+      "aprovados": 7,
+      "ganhoLiquido": 5,
+      "cortePrefiltro": 0,
+      "corteLlm": 10,
+      "erros": 0
+    },
+    {
+      "cargo": "Analista de Dados",
+      "coletados": 37,
+      "jaNoBanco": 2,
+      "aprovados": 11,
+      "ganhoLiquido": 9,
+      "cortePrefiltro": 0,
+      "corteLlm": 26,
+      "erros": 0
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "coletados": 28,
+      "jaNoBanco": 1,
+      "aprovados": 11,
+      "ganhoLiquido": 10,
+      "cortePrefiltro": 0,
+      "corteLlm": 17,
+      "erros": 0
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "coletados": 28,
+      "jaNoBanco": 3,
+      "aprovados": 10,
+      "ganhoLiquido": 7,
+      "cortePrefiltro": 0,
+      "corteLlm": 18,
+      "erros": 0
+    }
+  ],
+  "ganhos": [
+    {
+      "cargo": "Product Designer",
+      "titulo": "Publicação de Diogo Cabral",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495495188824350720",
+      "confianca": 0.8
+    },
+    {
+      "cargo": "Product Designer",
+      "titulo": "Almir Oliveira - product designer pleno",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496551719640879104",
+      "confianca": 0.95
+    },
+    {
+      "cargo": "Product Designer",
+      "titulo": "Portal Vagas - sanguelaranja",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7497636643772948481",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Product Designer",
+      "titulo": "Publicação de Zima-Blue Consulting",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496140506452910080",
+      "confianca": 0.8
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "titulo": "Publicação de Stack Vagas",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496205900265832448",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "titulo": "Publicação de Emeli Pereira",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496543005663952897",
+      "confianca": 1
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "titulo": "vagati #frontend #desenvolvedor #aracaju #sergipe | SM ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495825409138343936",
+      "confianca": 1
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "titulo": "Publicação de Maria Clara Do Monte",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495475508483203072",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "titulo": "Publicação de Bianca Vieira",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496274402783920128",
+      "confianca": 0.6
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "Vagas - DataLakers",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496195282473287680",
+      "confianca": 0.95
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "Publicação de Grupo Easy - Consultoria e Serviços",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496622395190005761",
+      "confianca": 0.95
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "Mais uma vaga aberta em nosso time de dados 😉",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495495936727478272",
+      "confianca": 0.85
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "#kapitaloinvestimentos #oportunidade #processoseletivo",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495539324722102272",
+      "confianca": 0.95
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "Publicação de Marcus Vinicius Velleca Bernardi",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495887636721672192",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "VAGA HOME OFFICE: Analista de Business Intelligence ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496642993169465344",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "Publicação de Leonardo Miralles",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495555116603908097",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "Publicação de Gabriel Vaz",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496236102391971840",
+      "confianca": 0.8
+    },
+    {
+      "cargo": "Analista de Dados",
+      "titulo": "Publicação de ENOQ Pay",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495475135013896192",
+      "confianca": 0.6
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Publicação de Ana Clara de Andrade - Marketing Médico",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496182813441015809",
+      "confianca": 1
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Badauê | Plataforma de Inovaçāo Cultural | 36 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495874239837884416",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Publicação de Maria Carolina Lima Verssuri",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495566687925182464",
+      "confianca": 1
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Alô SP | Vaga Social Media Pleno",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495449534404272128",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "🚀 Venha trabalhar na Amend! | Adriana Queiroga",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496543156960661504",
+      "confianca": 1
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Publicação de Karinny Gréggio",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496659224765321216",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Publicação de João Ricardo Ribeiro Reis - Vaga aberta",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496602125377032192",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Vaga Social Media | Agência Tittanium Modelo: PJ ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495965214086193152",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Publicação de kria Marketing - VAGA ABERTA",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495527462559416320",
+      "confianca": 0.8
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "titulo": "Publicação de Autoritas Assessoria",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495485342712573952",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "titulo": "#inspirali #vagaspcd #diversidade #inclusão ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496649828899364864",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "titulo": "Publicação de Hospital Santa Virgínia",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495952332241682432",
+      "confianca": 0.8
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "titulo": "Publicação de R3 Transportes",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495845928046866432",
+      "confianca": 0.7
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "titulo": "Vaga de Assistente de Atendimento remoto / Home Office ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495597164128116736",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "titulo": "Publicação de Vivian Sobral",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495887334832357377",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "titulo": "Publicação de Hora do Emprego Brasília-DF",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495244184467980288",
+      "confianca": 0.9
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "titulo": "Publicação de Casa da Esperança de Santo André",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495196155413463040",
+      "confianca": 0.9
+    }
+  ],
+  "coletados": [
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Technical Lead Product Designer - Crypto | Vagas Tech",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495623073509941248",
+      "snippet": "Vaga em Design no Nubank: Technical Lead Product Designer — Crypto O Nubank ... São Paulo, Brasil Modelo: Híbrido — 2 a 3 dias por semana no ...",
+      "urlHash": "1bc2b2cf15a46ad7cfa846c7cd36bbdcccebb37aef291ac74ea3d3010baa56ac",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Publicação de Ana Carolina Schirmer",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495916937085034496",
+      "snippet": "Meu time está contratando um novo Gerente de Produto ✨ A vaga é no modelo híbrido, podendo ser tanto em BH quanto em São Paulo. ... Bruna T. Product Designer ...",
+      "urlHash": "a5fdc15ddbe8939e6563d861d84294d017125e1ce70208e6ee543fa2f73fef1a",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Publicação de Exxer",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495807785402724352",
+      "snippet": "Vaga aberta: Artista Técnico Jr (remota) Vem fazer parte do time da Exxer ... Beatriz Rafael. UX/UI Designer | Product Designer | Graphic Designer | UX ...",
+      "urlHash": "6ddbf92a63d2aba6e00a9465b3f01a57ad0b2363dd02b0727014b3fcff71514c",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Publicação de Roberto Passani",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496290779607298048",
+      "snippet": "... São Paulo/SP - Granja Julieta Início: Imediato Se você se identifica com ... Product Designer UI/UX, Ux Process, Design Estratégico, Figma, Ui Designer ...",
+      "urlHash": "685bc45da758f6eb26a369b46d6af74864e6747b601c3cc4d0b67f46ceb59bc0",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "UK Global Talent Visa: Own Your Career Move",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495509679184343040",
+      "snippet": "... hiring freeze. You apply independently. You get endorsed in around 5-8 weeks ... Cities like São Paulo are becoming major technology hubs in Latin America.",
+      "urlHash": "0d47bd36887e77b9361707df806e5ec85e2d45461a3721a26cbf8bdda498ec0f",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Publicação de Diogo Cabral",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495495188824350720",
+      "snippet": "... contratando a pessoa Lead Product Designer que vai definir essa experiência ... Alice, São Paulo, SP. 156 20 comentários · Gostei Comentar. Compartilhe.",
+      "urlHash": "d2973ad3985096f9cec137ab9a706392352edcb397ab529d85e30811d921d2e7",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Sistema M-Tech | Jussara Souza",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496575827405623296",
+      "snippet": "VAGA | GERENTE DE PRODUTO | REMOTO | PJ SOB DEMANDA Estamos em busca de um ... São Paulo, capital ou região metropolitana, devido à participação em ...",
+      "urlHash": "d9ac33e2486d51bec4e02aa08bc1def7af279fb3719b1eefee7a3742c7aa91dc",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Jennifer Speciale's Post",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496544197324193792",
+      "snippet": "... hiring leaders. She questioned how to present her consulting background. She ... Product Designer | Design SaaS & B2B Products End-to-End | Frontend ...",
+      "urlHash": "473917e06b48393122250bb18bb427ad0f5efa8a304a00b62465af184df47d48",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Publicação de Juliana Leonel Braga Carvalho",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495817024678490112",
+      "snippet": "Product Manager | AI Product Designer | Designer Conversacional ... A descrição da vaga bate muito com a minha trajetória. Te mandei uma DM com ...",
+      "urlHash": "b53447da48895248263d9985e3815ffc2a438f892381dc395040cae09ff6b439",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "cidade",
+      "titulo": "Publicação de Mauricio Fernandes",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495877631024885760",
+      "snippet": "Product Designer | UX/UI | Estratégia de produto e design com IA aplicada. 1 ... São Paulo 18 e 19 de Agosto de 2026 Não perca a chance de se conectar ...",
+      "urlHash": "9a39bbed13107c92b7852a6255ddc557c5abb6cf8d45a1403f2f08b1aaa8e6b5",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Vagas Home Office - Product Designer I (Erp Omie)",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495578227172880384",
+      "snippet": "Nova Vaga Home Office: Product Designer I (ERP Omie) na empresa Omie! A Omie abriu vaga home office para Product Designer I (ERP Omie).",
+      "urlHash": "ed5f965629f0d8acc1eb94c2937f414026fbe95489d6af1f5976f9ebcd4e2cd7",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Pessoa Product Designer Pl (Remoto) - 9740 | Mariana Polix",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496159123135172608",
+      "snippet": "Vaga Home Office - apenas compartilhando Pessoa Product Designer Pl Inscreva-se pelo site: https ... Pessoa ...",
+      "urlHash": "e53c6d47385c0c94f8d4dbef3bca931f28aca20d10ed56fc80d4ebab7d4c111c",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Posição: Product Designer Tipo de Contratação: PJ ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495796434517233664",
+      "snippet": "Posição: Product Designer Tipo de Contratação: PJ Localização: Remoto Sobre a Vaga: Estamos em busca de um(a) Product Designer Pleno para integrar nosso ...",
+      "urlHash": "2e2346e2313ebb8af8cdb21bb3621d2063501e3b153623660a47e19bffb01661",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Almir Oliveira - product designer pleno",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496551719640879104",
+      "snippet": "Estamos contratando Product Designer Pleno na Localiza! Buscamos uma pessoa ... PRODUCT DESIGNER PLENO | REMOTO. Localiza&Co, Brasil. 171 32 comentários.",
+      "urlHash": "1c7bad7513e506f1bb1e0be0432616f0cf991d520efa8365308ca7cfbe4fe750",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Portal Vagas - sanguelaranja",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7497636643772948481",
+      "snippet": "Vaga Home Office: Pessoa Product Designer Pl (Remoto) – 9740 – Starian* https://lnkd.in/e943qSck *10. Vaga Home Office: Especialista I Engenharia de IA ...",
+      "urlHash": "3bbaf5916e2d6a06a359e74b84656d3572692277f3144b9056a6bf9e7cb2be83",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Publicação de Gabriela Dias",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496670829573951488",
+      "snippet": "Oportunidade para Designer Pleno (DA PL) Home Office Remuneração ... Tenho interesse na vaga. Não consigo te enviar mensagem, entao deixarei aqui ...",
+      "urlHash": "2b56879663b32facabcac4d80b11c1451e6f6003c588d7c5489f1e3e28b07c3c",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "🚨 VAGA HOME OFFICE: Project Manager (Caylent/AWS) 💰 ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495920654144307200",
+      "snippet": "VAGA HOME OFFICE: Project Manager (Caylent/AWS) Remuneração: R$ 12.000 – R$ 22.000 (CLT) Benefícios -> 100% remoto ... Staff / Senior Product Designer ...",
+      "urlHash": "2261150060148ddb6e824edd6155f168029bfb60ab0a60065d9658bad1cf58ce",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Ana Luiza Chernhak | 69 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495559980868325376",
+      "snippet": "... vaga #designer #design #marketing #agencia| 69 comentários no LinkedIn. ... Product Designer | UI Specialist | IT Specialist | WebFlow | WordPress. 2 d.",
+      "urlHash": "897ed1cb25c333ec60a29e981cf957422b5d0206c4bb236e22484f21fbece3a2",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Publicação de DMA Gestão e Marketing",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495482040507760640",
+      "snippet": "... vaga ... MARIA HELENA BENTINI. REDAÇÃO E REVISÃO DE TEXTOS HOME OFFICE = COPIDESQUE - SEMPRE DISPONÍVEL PARA TRABALHO FIXO REMOTO / PARCERIAS FIXAS REMOTAS.",
+      "urlHash": "e0809981a3608666adf048c7dedb5ec98340b873a573505f3b09c300bbef2be3",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Theo Costa de Medeiros | 34 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495650664002506752",
+      "snippet": "... vaga de Designer, que é 100% home office, com salário de R$ 2.000,00 (PJ) ... Sênior Product Designer | UX/UI | SaaS & B2B | Design Systems | Discovery ...",
+      "urlHash": "7772df7ea2df23423de0916083798900c313f3fe65084cdbfa47cbf32d66f001",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Publicação de Isabelle Fernanda da Silva",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495454085802971136",
+      "snippet": "... 100% remoto e em ambientes distribuídos. Desejáveis: • Familiaridade com ... Eduardo Hespanholetto. Senior Product Designer | End-to-End UX · Visual ...",
+      "urlHash": "6cad88a244ac1c5af9533a7248d635a1e1f60601accc57f438bc25ee9d957adc",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Publicação de Carolina Silveira",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495524455914573824",
+      "snippet": "Lead Product Designer | Senior Product Designer | Design Systems & Ops ... 100% remoto e em ambientes distribuídos. Desejáveis: • Familiaridade com ...",
+      "urlHash": "41b273ac1c775b3ad2f22ccf182958801a91b740615c580c825cd6d3bd31cf65",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Portfolio Cami Dominguez | Camila Dominguez",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495447702437167104",
+      "snippet": "... contratando Content Designer, UX Writer ou Content Ops, por favor ... Remoto #VagasUX| 20 comentários no LinkedIn.",
+      "urlHash": "99d6a6a5f469a72e9910f7fca48322fedceb9bf96955d0679f7e4756b8f6108b",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Publicação de Gabe Bo",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495814212557041664",
+      "snippet": "Romulo Sutil. Senior Product Designer & AI Design Engineer | Design Systems, DesignOps & UX de IA (RAG/LLM) | 10 anos entre Produto, Design e Engenharia ...",
+      "urlHash": "6bdbd459c85b342002ba19973eaad0469cde343987ac5e2d88e8d7926e002a93",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Especialista de Processos | Felipe Paiva | 29 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496244930894381056",
+      "snippet": "Estamos contratando! 100% Remoto! Vaga: Especialista de Processos Olá, pessoal! Estou contratando uma pessoa para liderar tecnicamente a frente de ...",
+      "urlHash": "3d6c3607e8b544f59890352f663064374a279015a446592a81b82e15f14a5823",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Ultimamente, navegando pelo Instagram, me deparei com ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495503291993399296",
+      "snippet": "remoto ou Assis-SP Aluno de BCC na FEMA 4 ano. 3 d. Denunciar esta ... Product Designer | UI/UX | Design System | SaaS & E-commerce | Figma ...",
+      "urlHash": "f510c129515bc45c41e4c968cdd26f1f06154356f3cbc02cab34c0ce729932cf",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Product Designer",
+      "recorte": "remoto",
+      "titulo": "Publicação de Zima-Blue Consulting",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496140506452910080",
+      "snippet": "... 100% remoto Colaboração em regime freelancer Projetos nacionais e ... Hiring #UXDesigner #UXDesign #UIDesign #Figma #WebDesign #DesignSystem ...",
+      "urlHash": "5e9ed64184bb3dc52a12130b5888a978c22789ad000e01e6732e75a2284fb17e",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "cidade",
+      "titulo": "Publicação de Stack Vagas",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496205900265832448",
+      "snippet": "Repassando lista de vagas recebidas Desenvolvedor Junior Vaga Desenvolvedor Web Junior https://lnkd.in/diC7P_hb Vaga Desenvolvedor Front-end ... São Paulo ...",
+      "urlHash": "7b21fe6956eca3a5dfcadcc841c743897e85c40edf296eb05ac9fe402d63dbcd",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "cidade",
+      "titulo": "Publicação de Mayara T.",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496266223677173760",
+      "snippet": "... Hiring · Accenture Brasil. Desenvolvedor(a) Mobile - Pleno, Sênior e Especialista. Accenture Brasil, São Paulo, SP · 17 4 comentários · Gostei Comentar.",
+      "urlHash": "679363c49652a08d83e52b0c697f62e313c6a91926c6c4ef0882c3dfbf7acf86",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "cidade",
+      "titulo": "pjotizadoras #desenvolvedor #frontend #pejotização ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495579062279618560",
+      "snippet": "DESENVOLVEDOR FRONT-END PJ COM JORNADA DE 40 HORAS, FÉRIAS REMUNERADAS E FOLGA NO ANIVERSÁRIO? RED FLAG TOTAL! A vaga exige 40 horas semanais ... São Paulo ...",
+      "urlHash": "76d6d6f6a675ae660cb71cd9199bc65b9d0e4f8c37c72f1229bbda53ef6c513e",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "cidade",
+      "titulo": "Consultor(a) Mobile | React Native | Giovanna Pecci",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495545868318621697",
+      "snippet": "... São Paulo - Capital. Oferecemos um ambiente dinâmico, colaborativo e ... vaga no link: https://lnkd.in/dQi8nfs4 #ReactNative #Azure #MobileConsultant ...",
+      "urlHash": "1c954260b7d1dae08d8271b47c62162ef74fce57061e5530fdc625d9b976944f",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Vagas Home Office - Desenvolvedor Front-End (Angular)",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495196856801714176",
+      "snippet": "Nova Vaga Home Office: Desenvolvedor Front-End (Angular) na empresa Hitss Brasil! A Hitss Brasil abriu vaga home office para Desenvolvedor Front-End ...",
+      "urlHash": "3dbfe6b0d1e4b7faec1c379a287740c0f15d32e3e19247d354a1607dc0a25116",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "💼 VAGAS: Desenvolvedor Front End Angular 💰 R$ 6.000,00",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496649231953469440",
+      "snippet": "VAGAS: Desenvolvedor Front End Angular R$ 6.000,00 - 100% Remoto Confira: nerdin.com.br/vaga/98120 Vagas de TI? Nerdin!",
+      "urlHash": "c8cf1c1c272f8d4fe6dbfce3b1dc8da845fb976cbf9c8e77d0310efac94654be",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Publicação de Emeli Pereira",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496543005663952897",
+      "snippet": "VAGA | DESENVOLVEDOR(A) DE SISTEMAS Estamos em busca de Desenvolvedor(a) de ... Desenvolvedor Front-End Jr. | HTML5, CSS3, JavaScript | React Native ...",
+      "urlHash": "1b53287225c0d42fe451aab59296f750f65f0ae7459077781b4f0fb9851391c9",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "vagati #frontend #desenvolvedor #aracaju #sergipe | SM ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495825409138343936",
+      "snippet": "VAGA ABERTA | DESENVOLVEDOR(A) FRONT-END A SM Soluções para Gestão da Informação está contratando ... home office. Envie seu currículo para: ludmilla ...",
+      "urlHash": "de39ec84808063cbe5d0217c360f30f45afd407ed3dcf2ce3ff54b9fbda3a88f",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Software Engineer | Full Stack | Remote Work | Isabel Reis",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495473228388188160",
+      "snippet": "... vaga é pra você. Remoto Loft Quer saber mais ou já se candidatar ... Close menu. Pessoas desenvolvedoras da minha rede Estou contratando Pessoa ...",
+      "urlHash": "631aad679f313a67974ef66c8a631739a32a3490ca515847496146d86af5443c",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Yasmin Nascimento - Net Back-End Developer",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496213329892442112",
+      "snippet": "... 100% Remoto Quer saber mais? Confira a vaga: https://lnkd.in/dXbx29ee ... Desenvolvedor Front-End | Angular | React | Next | JavaScript | TypeScript ...",
+      "urlHash": "1d81a65bb6884077dbcde97fe5fae09e982022e701205fa24f3608a0c740e234",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Publicação de Silvana Damasceno",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495457118691663872",
+      "snippet": "Estamos contratando | Desenvolvedor(a) Full Stack Java + Angular | Pleno 100% REMOTO ... Hiring hashtag #OpenToWork hashtag #Mazzatech.",
+      "urlHash": "acbcc45a5803e060e5623d39dcce04a5ce4e52d6cb92f2fc54202da972638ffc",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Publicação de Maria Clara Do Monte",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495475508483203072",
+      "snippet": "... Remoto #HomeOffice #TechJobs #Java #VueJS #Qualidade #Suporte #Carreira #NEXDOM #Healthtech #Hiring ... Desenvolvedor Front-end Pleno @SGBr® Sistemas ...",
+      "urlHash": "224dfac3b62ffab3db65d7ee2469020d5d81c356717f7fcd43b7f388fa63337b",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Publicação de R2C Consulting",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495445634041401345",
+      "snippet": "Trabalho Remoto? enviapages.com/cases · Gostei · Responder. 1 Reação. Eusébio Jimbi, gráfico. Eusébio Jimbi. Desenvolvedor Front-End | React | Tailwind CSS ...",
+      "urlHash": "c81b52852e4002ee13d454f08419eaa67c44b856f765727a20f8c672bd88c2e5",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Publicação de Daniel Santos Oliveira",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496253066585968640",
+      "snippet": "Use termos como “vaga”, “contratando”, “hiring” ou “open role”. 4. Procure primeiro nos posts e depois na aba de vagas. Exemplo: Você busca uma vaga de Back ...",
+      "urlHash": "fc0f7372ec4c6b813bc7e585dc0f76258e20d6bdec499aaf93501622c889f67f",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Almir Oliveira - product designer pleno",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496551719640879104",
+      "snippet": "Estamos contratando Product Designer Pleno na Localiza! Buscamos uma pessoa ... vaga em: https://lnkd.in/d7SRRvG5 #ProductDesign #UXDesign ...",
+      "urlHash": "1c7bad7513e506f1bb1e0be0432616f0cf991d520efa8365308ca7cfbe4fe750",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "Publicação de Bianca Vieira",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496274402783920128",
+      "snippet": "... 100% remoto. O match precisa ter: ⚡ Node.js + TypeScript 🏗️ ... Home Office PJ Se você é aquele perfil que não só codifica, mas pensa em ...",
+      "urlHash": "cec39ef92949b90fc5f8a4f500345e4b5cee7aa2d3bac840bdfab25fcd24e320",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Desenvolvedor Front-end",
+      "recorte": "remoto",
+      "titulo": "#lovable #lovabledev #vendasb2b #salestech #nocode ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495858216095035392",
+      "snippet": "Você não constrói maturidade de vendas comprando mais ferramenta, contratando mais vendedor ou aumentando meta. ... remoto. Custo mais alto, ciclo mais ...",
+      "urlHash": "bd039c75e1c3d120dc56718523a0201424c3584be0fcb790b4f43aaa0cd5d6bf",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Vagas - DataLakers",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496195282473287680",
+      "snippet": "Analista de Dados: Modelo Híbrido - Disponibilidade de atuação em São Paulo/SP | A vaga exige inglês intermediário para comunicação escrita.",
+      "urlHash": "a8525b2743a631fe46b1501c15440c1f4034a4c44eda14013f2211f1642cc33f",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Grupo Easy - Consultoria e Serviços",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496622395190005761",
+      "snippet": "TEMOS VAGA PARA ANALISTA DE DADOS I | GRUPO EASY Local de atuação: Morumbi/ São Paulo Modelo de Trabalho: Presencial Modalidade: PJ Tempo de projeto: ...",
+      "urlHash": "f44b22e587af33f87a05ef49441ba626b9544c3e1062731b91abd77eb2cc04fc",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Anjun",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495518251427192832",
+      "snippet": "... vaga compatível com o seu perfil e candidate-se. Conhece alguém com ... (São Paulo) São posições em diferentes áreas e, quem sabe, uma delas pode fazer ...",
+      "urlHash": "7396acb3b741fb63447461985340e58fe3a428098b46f43b7ae9fa950fe20f02",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Mais uma vaga aberta em nosso time de dados 😉",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495495936727478272",
+      "snippet": "Zurich Insurance Company Ltd, São Paulo, SP · 109 5 comentários · Gostei ... Sabrina Sá. Analista de Dados | Business Intelligence | Power BI | SQL | DAX ...",
+      "urlHash": "7f091a87e1bb5e6bd7661734f432efaacecc324ef7facfce0609013d7cb63d40",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Maira Masumoto Cardoso - 99: Vagas",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495962839527038976",
+      "snippet": "... São Paulo Service Governance Sr Analyst (vaga afirmativa) – São Paulo ... João Gabriel Nóbrega. Analista de Dados | SQL • Power BI • Python ...",
+      "urlHash": "7bbc95e283875bca673e0485aa2c22b6441018d77988f390f2fd841798013a39",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "#kapitaloinvestimentos #oportunidade #processoseletivo",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495539324722102272",
+      "snippet": "... Vaga presencial em São Paulo Enviar currículo para o e-mail recrutamento ... Analista de Dados | Python, SQL e AWS | Vivência em backoffice do ...",
+      "urlHash": "55caf77b06ca334d0c5fff1fdaa9847bf446234442104d2552c72657e1748e31",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Marcus Vinicius Velleca Bernardi",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495887636721672192",
+      "snippet": "Estamos contratando uma pessoa AI Data Context Engineer para o time de Dados da Daki. É uma vaga para quem acredita que o futuro de Dados vai ... Hiring #Daki.",
+      "urlHash": "74336ab4d22b88a275aeeab7cefbd52568727636a4ad0f3197ec67817e551b2d",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Luccas Soares",
+      "url": "https://www.linkedin.com/posts/luccassoares_vagassp-analistaadministrativo-pcp-share-7495192599058796544-Oksm",
+      "snippet": "ESTAMOS CONTRATANDO | Analista Administrativo (Júnior, Pleno ou Sênior) ... São Paulo - SP Horário: Comercial Principais Desafios Acompanhamento de ...",
+      "urlHash": "3f479c5056e9682a4d982685ae56e7fc1faf87fe243e538d5788d433fcb55a39",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Matheus Brum - Mestre e Engenheiro de Produção",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495940159230599168",
+      "snippet": "Analista de Dados e Projetos | Doutorando em Engenharia de Produção | Apps ... Em um mercado competitivo, a vaga da sua empresa disputa atenção com dezenas ou até ...",
+      "urlHash": "d3be9aeec79006d4c4069b5ffa06bc7113ed7cc819b4ce431737866eb2374159",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Stage Consulting - contratando",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496531011388743680",
+      "snippet": "Estamos #contratando para um novo cargo de Consultor(a) de Estratégia Pleno em São Paulo, São Paulo ... Analista de Dados Sênior | Engenheiro de Dados ...",
+      "urlHash": "e08aa465ead9469063a1aaf5ee859b8e1b1275482b8257d7030bb04ef06234e2",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Maria Gabriela Brito - Enterprise Agile Coach (Híbrido SP)",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495933193208881152",
+      "snippet": "OPORTUNIDADE | ENTERPRISE AGILE COACH | SÃO PAULO Você é Agile Coach e está buscando um novo desafio com atuação estratégica ... Vaga Insi: Enterprise Agile ...",
+      "urlHash": "f36f5f0f432c1e0c41b31a414c23a6aebf31d66ae529aff89885bfd68dbc6342",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "A pesquisa de preços é uma das etapas mais sensíveis ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496179892875890688",
+      "snippet": "... São Paulo/SP | Híbrido (presencial + online) Garanta sua vaga: https://lnkd.in/gBAgXpBi. ... Igor Bertulino. Analista de Dados & Business Intelligence ...",
+      "urlHash": "ca6c2fe2f55c698aa45c9a696ba0a42dbd1fab5269ce29ab4cf210429ab56551",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "salários chegam a R$ 40 mil | G1 | Alex Mauricio da Silva",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495838801521647616",
+      "snippet": "... São Paulo ainda concentre uma parcela significativa dessas oportunidades, o ... contratando e quais competências podem fazer diferença na construção de uma ...",
+      "urlHash": "9bbc5c000ae8844187f67b8b72c03351d5fd6e6a9f6353ccbffccdc06caca3d2",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de 💎 Danielle Souto",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495819403536535553",
+      "snippet": "... São Paulo | Exclusiva PcD | Vivo https://lnkd.in/dRTiVTYT ⚠️ Antes de se candidatar, revise seu currículo e destaque experiências aderentes à vaga ...",
+      "urlHash": "3ca9b9d4810f304928711975e384f988dde16aa2cc94a1f06bf577ec5838ae66",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "O Neymar pôs a mão na Puma, e a Puma mudou. Se você ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496491322732716032",
+      "snippet": "... São Paulo, para você voltar para sua empresa liderando diferente já na segunda. Clique no link abaixo para garantir a sua vaga. https://lnkd.in/dQTVcHXD.",
+      "urlHash": "c4c13a5f3a92fb3f964c1d6b3d7b843f523639d5f73df73b81d9cf98bb2761e5",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "No próximo sábado, às 9 horas da manhã, teremos um ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496166857666691072",
+      "snippet": "... São Paulo. Estarei lá ministrando a palestra Platform Engineering na Prática ... vaga gratuita pelo link: https://lnkd.in/dtvBvTq6 Nos vemos lá ...",
+      "urlHash": "f1a44c991eaf7fc887b787eb60bf14c58da0ff449931825978513889aa9e16bb",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Marlene Aguiar",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495509886135386112",
+      "snippet": "... São Paulo Híbrido em São Paulo Remoto… para quem mora em São Paulo Ai, dá ... E meu principal objetivo é poder conseguir uma vaga remota, para que eu ...",
+      "urlHash": "f546aeceee210f0aa42e0ce3bd56a8b2396d598b2b5ea2e3930da4a51b6645c6",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Monica Barreto",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496225002443194370",
+      "snippet": "... São Paulo melhore seu processo, e pare de deixar tantas pessoas a mercê ... vaga, imagina como será quando for contratado. Não é pq vc esta buscando um ...",
+      "urlHash": "531b0ad2ff3ead662a60a5c6fc17843b6fdfb57db6a8863984fa11c4acd1b0d0",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "cidade",
+      "titulo": "Publicação de Webtexto",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495757110945816576",
+      "snippet": "Como Web Designer & Analista de Dados de Marketing, penso o perfil dentro de um ... São Paulo #marketingdigital #marketingdigitalemsuzano #website ...",
+      "urlHash": "6d5f93b6987bddd0cd8732350432319f5853efa7ff10a460c1edf36cbdcafe14",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Analista de Dados - Domínio da — Vaga Home Office",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495412085196226560",
+      "snippet": "Nova Vaga Home Office: Analista de Dados - Domínio da ferramenta MS Power BI na empresa Stefanini Group! A Stefanini Group abriu vaga home office para ...",
+      "urlHash": "81c2a7a6164bbc960f45012a0f7c1527f3288a2fb8a08a59575043e323af225e",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "VAGA HOME OFFICE: Analista de Business Intelligence ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496642993169465344",
+      "snippet": "VAGA HOME OFFICE: Analista de Business Intelligence PLENO Remuneração: R$ 6.000 – R$ 11.000 (CLT) Benefícios -> 100% remoto ... Analista De Dados ...",
+      "urlHash": "795240c2f2ee7895b42cfbfb0bb201d08a5c5cadc6485f0cee5fa0310c306f23",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "VAGA: Desenvolvedor de Software R$ 12.000,00",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495523687102853120",
+      "snippet": "VAGA: Desenvolvedor de Software R$ 12.000,00 - 100% Home Office - Dia a Dia ... Samanta dos Santos. Analista TOTVS RM | Analista de Sistemas | Analista de Dados ...",
+      "urlHash": "61b43899754e79c34b7c4a7bdc2a60c0a3d2108fdab7d60390d27999553b46e0",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Akin Reis",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495479652774461440",
+      "snippet": "... vaga Exigências genéricas e mal definidas Falta de clareza sobre o que ... 100% REMOTO | Analista de Dados e Cibersegurança | Co-Fundador da Desenvolve ...",
+      "urlHash": "84f21cf5f13e794214a4e6f6c70d0ab310596b20cd52bcb43cdff53f83440016",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "VAGA - Analista de Dados / Informações Gerenciais Jr",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496209414463385601",
+      "snippet": "VAGA - Analista de Dados / Informações Gerenciais Jr – Barueri – SP. Success ... home office) Contato: Mônica Gonçalves E-mail: recrutamento ...",
+      "urlHash": "d65eb39f57908e51df15d1de8d9cabb515eea7ee0c12945396605ecc74cec70f",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Home Office - Vagas Remotas",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496247307596734464",
+      "snippet": "Trabalho remoto: Oportunidade de emprego home office no Gran ✓ Assistente ... https://lnkd.in/did4_haB Acesse a vaga em nosso portal no link acima e boa sorte!",
+      "urlHash": "69190b3d55cbfae3e33d9085b2f695ebfa2fe976ed106509e2343a053d8862f4",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "🚀 VAMOS NOS CONECTAR? Comenta aqui embaixo: 👉 ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495910431912448000",
+      "snippet": "Publicação de Verônica Freire. Ver perfil de Verônica Freire · Verônica Freire. RAINHA DO HOME OFFICE ... Uma vaga remota seria perfeita para eu conseguir ...",
+      "urlHash": "fe19ef448f14fff74c855ec4d974cdf65bfa082f530fdb87e519f16eb2629e12",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Leonardo Miralles",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495555116603908097",
+      "snippet": "Vaga: Profissional Analista de Dados Júnior Local: Remoto Sobre a ... Home Office e Day Off de aniversário ✓ Wellhub (Gympass) e apoio em saúde ...",
+      "urlHash": "8d78dfac2714eebe7c34f8011c43a9a691280517659552585a777e9cda7ef9f1",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Márcia Agostinho",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495466535432404992",
+      "snippet": "... Analista de Dados” “contratando” Muita vaga aparece primeiro no feed ... contratando” Muita vaga aparece primeiro no feed, antes de virar anúncio formal.",
+      "urlHash": "70e13f718b4d8a2528de8aba2300dae75dfc9d310cf3e97fb1f24e51d59caea9",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Gabriel Vaz",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496236102391971840",
+      "snippet": "VAGA 100% HOME OFFICE: SENIOR Data Scientist Recomendação na STONE Remuneração: R$ 15.750/mês (CLT) Benefícios -> 100% Remoto ... Analista de Dados ...",
+      "urlHash": "6b2e722c805ad4d7672dda83c4d3a6cee2f4ae01e50a17f6faa20c2158628e50",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de ENOQ Pay",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495475135013896192",
+      "snippet": "Analista de Dados | Python | SQL Server | Power BI | Excel | ETL | DAX ... Essa vaga é remoto? Gostei · Responder. 1 Reação. Ver mais comentários · Entre ...",
+      "urlHash": "b31866fd4c754dbe1020c254449c4c1a09b670122d6b47645079ba23f2ff4e8c",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Atalho Profissional",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495471456655613953",
+      "snippet": "... vaga: Cargo: Analista de Suporte Empresa: Gaudium Modelo de Trabalho: Remote / Home Office ... AI Specialist | Analista de Dados & BI | Dev RPA ...",
+      "urlHash": "31b757ea45b359baec3d9f730583323fab4f38be1fbd93fc4fd525f55975838b",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Título Analista de BI e Inteligência de Mercado | Victor Varoli",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495852350176239616",
+      "snippet": "Guilherme Martini. Analista de Dados Júnior | SQL | Power BI | Python | Excel ... 19 h. Denunciar este comentário; Close menu. Remoto? Diz que sim kkkk ...",
+      "urlHash": "155f7c38df365ad8ebcd8df3fcc7e5ade6cd17b43eba5c39d83fee45eaa75756",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Micaela L. Rossetti",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496219508026605568",
+      "snippet": "... 100% Remoto. Contratação: PJ. Interessou? Me envia uma mensagem aqui no Linkedin com informações sobre teu perfil #vaga #gestordetrafegopago #trafegopago ...",
+      "urlHash": "da85bb2eaec6ecc154559dde53e00cc09603bb699d7305645aa563092533765d",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de William Carlos",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495527247034892288",
+      "snippet": "Experimente: \"estamos contratando\" AND \"Analista de Negócios\" Ou: \"vaga aberta\" AND \"Business Analyst\" E aqui está o ponto que muita gente ignora: Você ...",
+      "urlHash": "7372a6aa21eac372660bf87465e2cbcb897cfefb64f804a1f4706c077bfe6bf1",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Cláudia Siqueira - Analista de Suporte ao Cliente Júnior",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496208078812626945",
+      "snippet": "Analista de Suporte ao Cliente - REMOTO Vamos ajudar compartilhando, para ... Kétellyn Cristina. Analista de Dados | Relatórios Gerenciais | Excel | Power BI | ...",
+      "urlHash": "506a19d5788ac02fc67feecd9d89f4870562d36455e9b219543f68536454a82a",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "Publicação de Alvaro Rodrigo Benega",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496174589560070144",
+      "snippet": "... vaga recebe hoje. Do lado de quem recruta, deve ser realmente difícil dar ... Home Office - Vagas Remotas Seguros SURA CNP Seguradora Now Seguros ...",
+      "urlHash": "678a6c81fdec8d7d74e0cb3ba558d8d4404632dd2dc29dcf47ec81b3375f2200",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Dados",
+      "recorte": "remoto",
+      "titulo": "#tamojunto | Luccas Lisboa",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495482241737736192",
+      "snippet": "[VAGA] Analista de Negócios I Estamos buscando uma pessoa para atuar como ... William Fernandes. Analista de Dados | Analista de BI | Analista de ...",
+      "urlHash": "b493b597a5a35ba149cb8eb9e854b188601f11603d59acc5cf6e8386f36b1947",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Ana Clara de Andrade - Marketing Médico",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496182813441015809",
+      "snippet": "Estou com uma oportunidade aberta na minha equipe de Marketing Médico, na Dasa, para Analista de Marketing Pleno ... A vaga é para São Paulo. Quem tiver interesse ...",
+      "urlHash": "eaee93f4dc3bfea8350ac1bc8279906795e5c23a3d3d0d4340a5afe727a60bfb",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Farejando Novos Talentos - Petlove",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495942487442804736",
+      "snippet": "Tem vaga nova pra quem estava esperando o próximo passo na carreira ... São Paulo - https://lnkd.in/d_5wgr-k Por aqui, cada função tem um papel ...",
+      "urlHash": "d0b054465f2ea77066a0e3df183752e7bd98c47c2dafa6cbae459cdb84784391",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Badauê | Plataforma de Inovaçāo Cultural | 36 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495874239837884416",
+      "snippet": "... vaga pode ser sua. Todas as informações e formulário de inscrição no link ... Analista de Marketing | Conteúdo e Comunicação de Marca | CRM ...",
+      "urlHash": "a66ce8ba7ecdd460ed829f2271cc2a067c94d912744188468d3f04cccdb4df01",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Maria Carolina Lima Verssuri",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495566687925182464",
+      "snippet": "Estamos contratando | Analista de Marketing (Automação e Experiência do ... São Paulo/SP O que você fará: Planejar e executar campanhas de comunicação ...",
+      "urlHash": "5740857769682151c6ec97a324862d860fbd80dd6eaa2f925d4016244fe39e27",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Erika Nascimento",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496647209753640961",
+      "snippet": "VAGA | FILMMAKER / EDITOR DE FOTO E VÍDEO Estamos em busca de um ... São Paulo, especialmente em: • Itaquera • Carrão • Penha • Região e bairros ...",
+      "urlHash": "05fb7e73b4ff576684b78b50cefd5f903a0c5e115370128221acac422edacecc",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Isabella Garcia Morais",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495597376993124352",
+      "snippet": "Certa vez, em um processo seletivo que participei, a candidata selecionada tinha 20 anos de carreira. Não querendo diminuir o mérito, mas a vaga era nível ...",
+      "urlHash": "e2b8d59686c2e07d2ae5a444238ca7783ed4679fec1a4e366e185a54d6b2d119",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Alô SP | Vaga Social Media Pleno",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495449534404272128",
+      "snippet": "... São Paulo/SP, com disponibilidade para atuação híbrida na Zona Sul ... Analista de marketing | Marketing B2B | Redes Sociais | Endomarketing | E-mail ...",
+      "urlHash": "66a1d29b74729c898603c3222b666f1b744d3031ed0bac83edcd3c8823b3fbba",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Pedro Rosa - VAGA ABERTA",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495570355588259840",
+      "snippet": "VAGA ABERTA · Videomaker e ... Claudio Nicoletti de Oliveira. Produtor Audiovisual Corporativo | Da criação do Roteiro até a Exibição final | São Paulo.",
+      "urlHash": "45cdf5a36762045d33ae36606bef10cc0954642a3d58790309cc4e9dd8221538",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "🚀 Venha trabalhar na Amend! | Adriana Queiroga",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496543156960661504",
+      "snippet": "Vaga aberta no meu time! Estamos buscando Analista de Marketing Júnior para fazer parte do marketing da Amend. ... Amend Cosméticos, São Paulo, SP · 6 · Gostei ...",
+      "urlHash": "cfc7fcb3f3b16740d1f0d83b1072480f455c47c38750a63e110f77889a9e86ed",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Juliana Rodrigues",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495508884032491520",
+      "snippet": "... vaga | Pessoa Coordenadora de Mídia - Experiência com mídia programática ... São Paulo – Capital Se você tem experiência em Mídia e está buscando um ...",
+      "urlHash": "4e5c4961f1f4203e0338579cc9b4160eee215737119d2d2fbc73e049069f1f30",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Waldirene Fioravanti (PCD)",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495216978777927681",
+      "snippet": "... vaga PCD no papel e, ainda assim, não oferecer inclusão na prática ... Quero fazer uma reflexão a partir do caso de uma colega PCD de São Paulo que ...",
+      "urlHash": "03da5de55bc43a799f782e0014e8072b17f447f69335fcb1b9588f44879db6c6",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "cidade",
+      "titulo": "Publicação de Karinny Gréggio",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496659224765321216",
+      "snippet": "Oportunidade - Analista de Marketing. Karinny Gréggio 10 a. Vaga para Executivo de Loja- Shopping Jardim Norte. Karinny Gréggio 10 a. LinkedIn © 2026; Sobre ...",
+      "urlHash": "500b0abc6a4370c51373f0f54e80658c98afbc2cf892e44b571f0372cdb8d650",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de Aqui tem Freela e Vaga | Marketing e ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496255453354475520",
+      "snippet": "Vaga de Designer para campanha eleitoral | Contratação imediata. 100% Home office ... Ingrid Schaberle. Analista de Marketing | Pós-Graduada | Localize ...",
+      "urlHash": "9f2f18f918c3696449e4e23ad007166b02ee087e63d175a65b9b5dab115c914b",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Vaga Especialista de CRM | Agência Tittanium Modelo: PJ ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495965444793663488",
+      "snippet": "Vaga Especialista de CRM | Agência Tittanium Modelo: PJ Formato: Remoto Área ... Helerrandro Pereira Dias. Analista de Marketing Sênior | Growth ...",
+      "urlHash": "5874ef3388f55fdeb70813b981e237e463b32c997499ddeea8886fb6dfa28e10",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de João Ricardo Ribeiro Reis - Vaga aberta",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496602125377032192",
+      "snippet": "Close menu. Galera, time crescendo e estamos fazendo mais uma adição no time! :) Analista de Comunicação/ Social Media/ Analista de Marketing - Vaga ... remoto, ...",
+      "urlHash": "1e618910f74351680943411c3f58af01ea36b06593d9dd623a4312c14791be2e",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de DMA Gestão e Marketing",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495482040507760640",
+      "snippet": "... vaga ... MARIA HELENA BENTINI. REDAÇÃO E REVISÃO DE TEXTOS HOME OFFICE = COPIDESQUE - SEMPRE DISPONÍVEL PARA TRABALHO FIXO REMOTO / PARCERIAS FIXAS REMOTAS.",
+      "urlHash": "e0809981a3608666adf048c7dedb5ec98340b873a573505f3b09c300bbef2be3",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Vaga Social Media | Agência Tittanium Modelo: PJ ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495965214086193152",
+      "snippet": "Vaga Social Media | Agência Tittanium Modelo: PJ Formato: Remoto Área ... Analista de Marketing | Social Media | Estratégia de Conteúdo, Branding I CRM ...",
+      "urlHash": "e1427e0d636d3032f528123b34be55efd35488d5e07754bc33b3f4fb946853d4",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de kria Marketing - VAGA ABERTA",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495527462559416320",
+      "snippet": "Belle Álexandre. Analista de Marketing Digital ... Gestor de Google Meu Negócio. 1 d. Denunciar este comentário; Close menu. Oi! A vaga é remoto?",
+      "urlHash": "22d140e8b9b1cbfca50d50349beea809b34320e17048a80b6c6ae441dea3675e",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Neliane Nunes - Amrô Fardamentos * 💰 Salário",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495256696077090817",
+      "snippet": "Vaga de Analista de Marketing Estamos em busca de um profissional criativo ... (home office). Candidate-se agora Envie seu currículo para ...",
+      "urlHash": "a84f998bfd9563917da2660744ce805adb69218cc0edca7d7d31c35297ad161a",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de Yuri Demartini",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495467788778766336",
+      "snippet": "... vaga de atendimento ao cliente, por exemplo, tem experiência, possui todas ... Analista de Marketing | CRM | MKT Digital | Especialista em Televendas ...",
+      "urlHash": "055173b15d5567c8b8d6908adc71e76b5fad3efe97b44b7606284569ce4bebd0",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de Uriel Lammel Canfield",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495535373578842112",
+      "snippet": "Customer Success Manager (CSM) — Presencial ou Remoto; Pra quem já tem repertório em CS, preferencialmente em SaaS B2B e ... Vaga.",
+      "urlHash": "ffa3a56832b9247b565067dd1e56ad6d917648c9a7b92deb197f52b726bbf940",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Ana Maria Lima | 21 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495231922466471936",
+      "snippet": "Ricardo Cruz. Analista de Marketing ... No momento, estou buscando oportunidades no modelo 100% remoto (home office) e tenho interesse em conhecer melhor a vaga e ...",
+      "urlHash": "713db53914d0bc36f8753daa1b0d5415628ccb3ef7f9895fe11dfa80fd80db5f",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Pinout ContextFlow",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495469162597617665",
+      "snippet": "... vaga não significa intenção de comprar alguma coisa. Ela significa ... \"Estamos contratando BDR 100% Home Office.\" Você provavelmente já leu esse ...",
+      "urlHash": "50c29319ec3a3b69e665e28f1d63dcc4329a4eff3103ef64b1852de960622453",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "NASA VEM AQUI! 🤡 | Verônica Freire | 48 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496549057381937152",
+      "snippet": "Mãe da Ayla | Analista de Marketing | Criação de Conteúdo. 23 h. Denunciar este comentário; Close menu. Se a vaga fosse remota seria ruim o bastante, mas algo ...",
+      "urlHash": "3269957c7f9ce1d8ae3eaf3d04d184e4fadee4a39876baf7c9aa220afa94cf8c",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "O que muda uma decisão de marketing digital? | Filipe ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495906191554998272",
+      "snippet": "Estrategista de Marketing | Analista de Marketing Pleno | Estratégia Digital | Copywriting | Planejamento de Mídia & Social Media | Remoto. 1 sem Editado.",
+      "urlHash": "3b70bfae83f6e0e51fb493a6226d5d308253aca3f6a7adb8646aba410c94fd3d",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de Autoritas Assessoria",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495485342712573952",
+      "snippet": "Vaga | Assistente / Analista de Marketing Digital — Agência de marketing A ... home office Centro do Rio de Janeiro Para se candidatar Envie seu ...",
+      "urlHash": "c6b95af2ff902d38fb2c3b3740eab2bf782ba05d023fd941c301ef736b3c8aa0",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Priscila Emygdio - VAGA ABERTA",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495528824814804992",
+      "snippet": "VAGA ABERTA | SOCIAL MEDIA A Kria está em busca de um(a) profissional de ... remoto? Gostei · Responder. 1 Reação. Danna Branco Luchetta, gráfico · Danna ...",
+      "urlHash": "f219f218c9e8497465965560156c3fced023ec3876af14dafb88024e6e3e4c45",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Analista de Marketing",
+      "recorte": "remoto",
+      "titulo": "Publicação de Alvaro Toussaint",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495927616953229312",
+      "snippet": "Gestão de Times de HRBP e Hiring | Cultura, Performance & Liderança ... remoto), mas de respeitar o processo criativo com a mesma seriedade que ...",
+      "urlHash": "8316fc44ea582d584e5d28bab6802fbcec0fa675d7928629802e595dea67a407",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "VAGA ADMINISTRATIVA VIA LINKEDIN CIDADE",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495813351709511680",
+      "snippet": "VAGA ADMINISTRATIVA VIA LINKEDIN CIDADE: SAO PAULO - SP Auxiliar Administrativo Informações da oportunidade: • Salário: compatível com mercado • Regime de ...",
+      "urlHash": "adcecf8ff6e23afcddfee3c329c19efdd4107ef33074ebfc2d6f4fc425bcdece",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "Vaga de Auxiliar Administrativo, São Paulo / SP",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7497242835478298624",
+      "snippet": "Vaga de Auxiliar Administrativo, São Paulo / SP cadernonacional.com.br · Gostei Comentar. Compartilhe. Copie",
+      "urlHash": "22c6ee4585388117d9132196516591aaabff4647080f5c8196d0d81620eac257",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "#inspirali #vagaspcd #diversidade #inclusão ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496649828899364864",
+      "snippet": "... Auxiliar Administrativo em diferentes unidades. Confira as oportunidades e acesse o link de cada vaga ... SARAMPO AVANÇA EM SÃO PAULO E REFORÇA ALERTA PARA ...",
+      "urlHash": "e7470407f859f3b0b4b7214f5c30a6047f148d8736ad2a822eddbbed57a0f8d9",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "Publicação de Hospital Santa Virgínia",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495952332241682432",
+      "snippet": "... vaga está se candidatando. Para mais informações sobre cada uma das vagas ... Jordana Lino dos Santos. Auxiliar administrativo / Assistente administrativo.",
+      "urlHash": "8231f0bfdffef2cbbb396b0517912e712b8d99d470242960bea3c0a4fe0f1e1c",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "Publicação de Grupo Ourho - Auxiliar Administrativo I (Sac)",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495206427016290304",
+      "snippet": "... contratando #estamoscontratando #recursoshumanos #oportunidade #trabalho #vagasrh #sãopaulo · Auxiliar Administrativo ...",
+      "urlHash": "ff41542eb91a2f97b00f9f18c4adfffec44104b06edcbb3441a1eff5b491cab0",
+      "jaNoBanco": true
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "Publicação de R3 Transportes",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495845928046866432",
+      "snippet": "... vaga através do QR code ... Tecnólogo em Logística/ Auxiliar de Produção/Auxiliar Administrativo/Auxiliar de Logística/ Vale do ...",
+      "urlHash": "19733e1e8efa2d916a4375fe775ef94950f7d67b4a5dcd58a399a59ff34b39d4",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "Publicação de Waldirene Fioravanti (PCD)",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495216978777927681",
+      "snippet": "... vaga PCD no papel e, ainda assim, não oferecer inclusão na prática ... Quero fazer uma reflexão a partir do caso de uma colega PCD de São Paulo que ...",
+      "urlHash": "03da5de55bc43a799f782e0014e8072b17f447f69335fcb1b9588f44879db6c6",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "Publicação de sarah julianna",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495259747479248896",
+      "snippet": "A Prefeitura de São Paulo promoveu mais uma edição do Contrata SP ... vaga. Muitas empresas enfrentam dificuldades para atrair e reter talentos ...",
+      "urlHash": "6f926f16b69517ce71a63dd1674240aa6c2613221f22b159f35258f1a220c5fc",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "cidade",
+      "titulo": "Publicação de Jeniffer Santos Araujo",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495942953266405376",
+      "snippet": "Contratar bem não significa apenas preencher uma vaga. Significa iniciar a ... São Paulo/SP Conteúdo meramente informativo. Cada caso exige análise ...",
+      "urlHash": "29c9db812ccc4b1c038e8529b451dba1704728d1bd5f4f146fd22947dc42918c",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Giovanna Ruiz",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495814587976577024",
+      "snippet": "OPORTUNIDADE HOME OFFICE | AUXILIAR DE SUPORTE OPERACIONAL (VAGA ... 100% remoto Segunda a sexta-feira ⏰ Horário comercial Salário fixo + ...",
+      "urlHash": "b75e715d587e4dafb36ccef21eb421c34809097743431b0fda6bef1ee15faa88",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Vaga de Assistente de Atendimento remoto / Home Office ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495597164128116736",
+      "snippet": "Vaga de Assistente de Atendimento remoto / Home Office Empresa: Brivia Responsabilidades: Dar suporte à operação Auxiliar na organização de ...",
+      "urlHash": "fc5a5c7555439ccd56c310bda7bb8a24f2571b64c434c767a2daa81518f46ffd",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Vivian Sobral",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495887334832357377",
+      "snippet": "ALERTA DE VAGA | Home Office Cargo: Secretária Executiva Bilíngue Local: 100% remoto ... - Secretária Executiva - Assistente Executiva - Auxiliar Administrativo ...",
+      "urlHash": "4fe428335eb03aab8a94a3242ee2660fdee2df9db2fbc9da2870144ec6c51846",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "🚀 VAMOS NOS CONECTAR? Comenta aqui embaixo: 👉 ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495910431912448000",
+      "snippet": "... Home Office no Brasil!. 22 h. Denunciar esta publicação; Close menu ... Após meses desempregada, resolvi aceitar uma vaga de auxiliar administrativo ...",
+      "urlHash": "fe19ef448f14fff74c855ec4d974cdf65bfa082f530fdb87e519f16eb2629e12",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Rayne Cardoso Santos",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495270626304315392",
+      "snippet": "ESTOU BUSCANDO UMA OPORTUNIDADE HOME OFFICE | 100% REMOTO Áreas de ... Eu não estou contratando, estou buscando uma vaga com os critérios descritos na ...",
+      "urlHash": "7ba841b1b6e267c3408a07ef24e946cd6c81f64cf17ec0bf7a97921e38a49329",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de MWM Motores e Geradores",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495495009173979136",
+      "snippet": "... Auxiliar Administrativo | Escrevente Extrajudicial | LGPD | Cotação e ... Quase cai no golpe de vaga de assistente administrativo Home Office, a minha ...",
+      "urlHash": "53df7ae45ad2d4ee8b6dd1037187ce0dd80edf2a1164ca77ffb14dfaf40f9141",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Mari Fernanda",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495836623583109120",
+      "snippet": "Procurar uma vaga home office, às vezes, parece uma prova de resistência. ... Uma vaga publicada significa que a empresa está realmente contratando? Ou é ...",
+      "urlHash": "6e314ab621b3018f43fd4fd8ff1aa0040ef7743ff0ace7e6353a8785a4314518",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Márcia Agostinho",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495466535432404992",
+      "snippet": "... contratando” Muita vaga aparece primeiro no feed, antes de virar anúncio formal. ... Andréa Costa RJ. Auxiliar Administrativo | Customer Success | Bilíngue ...",
+      "urlHash": "70e13f718b4d8a2528de8aba2300dae75dfc9d310cf3e97fb1f24e51d59caea9",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "#carreiraadministrativa | BrasilVagas | 12 comentários",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496125126686662656",
+      "snippet": "Assistente de Secretaria Home Office, Assistente Executivo Home Office e ... Ao contratar seu próximo Assistente Administrativo Remoto, descreva a vaga ...",
+      "urlHash": "7c110e99febff266237862993e6f9e0310d8dbe196293523c459791c4235114d",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Sandro Deiques Santana (PCD)🏳️‍",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495426507276763136",
+      "snippet": "... remoto ou home office, quando a função permitir. Dependendo da cidade e da ... remoto) e, principalmente, a localização da vaga são essenciais. Quando ...",
+      "urlHash": "14aeca2f954376de65edcbe7f6d4528c82e189b2a7b54a217656db3d44dd2ee8",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Hora do Emprego Brasília-DF",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495244184467980288",
+      "snippet": "OPORTUNIDADE DE EMPREGO! O Instituto Mãos Solidárias está com vaga aberta para Auxiliar Administrativo – Contratos! ... Queria tanto uma oportunidade remoto.",
+      "urlHash": "20631379da8f12204a231e27de65682144a6158fe1f996cacc7adac2351c7386",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Gabrielle Cardoso",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496593179182497792",
+      "snippet": "ketlin couto, gráfico · ketlin couto · 22 h · Olá ! A vaga seria para qual Estado ? ; Alicia Souza, gráfico. Alicia Souza · 2 d · É trabalho remoto ? ; SARA ALVES ...",
+      "urlHash": "17e490e2137f87ce139a4364d01f1a8e63fcf60196b5e9c505cf104f6ba122ef",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Yuran Bila",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495830409512095744",
+      "snippet": "... home office, bons benefícios, cargo compatível com a minha experiência, e ... remoto) e, principalmente, a localização da vaga são essenciais. Quando ...",
+      "urlHash": "8de6f71c7f6fd9af9f3f0fcae2f115a70c91b0897fd73e9b7d08652194f9fa35",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Marca empregadora | Zucchetti Brasil",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496211512513122304",
+      "snippet": "... vaga é publicada. Ele é construído todos os dias, na experiência de quem já ... remoto, quando possível; ✓ Apoio à saúde mental; ✓ Incentivos à ...",
+      "urlHash": "a9aeffa72672747868f8761f518b477b5206cca67fef11010ed6e3c294a8f9a7",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Leonardo Oliveira Da Cruz",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7496018810056085504",
+      "snippet": "... vaga. 3. O placar mostra o que falta antes de o recrutador ver. 4. Quando ... “Home office? Tô dentro.” 5. “Boa tarde, aceito até entrevista às 7h da ...",
+      "urlHash": "a638c6009273393945b7ca5f1956968bd46e3f928cea1d505b8821d42f87e558",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de EDUARDO BARBOSA",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495927559029923840",
+      "snippet": "... vaga. Perguntas pessoais ou repetitivas, que não tenham relação com a ... remoto ou home office, quando a função permitir. Dependendo da cidade e da ...",
+      "urlHash": "00392e76b6e6e8cb16bb503de4796330806b672de71c3338ad43fbff00f4bb6b",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Geraldo Luiz Mariotto",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495628879932329985",
+      "snippet": "... vaga para aumentar as chances de ... Auxiliar administrativo, Auxiliar financeiro e Vendedora. Estou disponível para cargos em: Brasília ou Home Office.",
+      "urlHash": "e0e1b96b17c7cd3f05c2e719d079ecd76af66ebb3b5c51276c1a74f006fd77fa",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "A tecnologia pode deixar o recrutamento mais ágil. Mas ...",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495563555228934144",
+      "snippet": "Num contexto de trabalho remoto e pressão para contratar rapidamente, podem ... Se você envia o seu currículo para uma vaga de auxiliar administrativo ...",
+      "urlHash": "c02828b3ef36f593ec9db80b7cc384d0adeaf622988c89a37870ad35261aac92",
+      "jaNoBanco": false
+    },
+    {
+      "cargo": "Auxiliar Administrativo",
+      "recorte": "remoto",
+      "titulo": "Publicação de Casa da Esperança de Santo André",
+      "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495196155413463040",
+      "snippet": "... identificou com a vaga? Encaminhe seu currículo e participe do nosso processo seletivo #VenhaFazerPartedoNossoTime. ... Auxiliar Administrativo ...",
+      "urlHash": "64e69339e25aef0c428bb539ceb4ceb7eb7908c94bc9611c471c02fedec8b537",
+      "jaNoBanco": false
+    }
+  ]
+}

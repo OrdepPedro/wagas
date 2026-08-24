@@ -125,7 +125,26 @@ As classes de falso positivo nomeadas no Passo 1 morreram em dado real, não só
 
 **Mas as 30 linhas eram todas Product Manager** — o cargo com 100% de recall também no harness. Nada nessa rodada diz o que acontece com Enfermeiro ou Auxiliar Administrativo em produção. Para saber: rodar o coletor nos outros alvos (~84 créditos) e classificar de novo; aí `classificacao_motivo` acumula distribuição por cargo, que é a conta que nem o golden set nem essas 30 linhas dão.
 
-**O pré-filtro cortou 3 de 30 (10%) em produção**, contra 7,5% no golden set. Dois números independentes apontando para o mesmo lugar: **a economia de cota que justifica o estágio não está acontecendo**. Ele continua valendo por ser grátis e por não perder vaga (recall 100%), mas não pelo motivo escrito no cabeçalho de `prefiltro.ts`.
+**Segunda rodada, 248 itens em 5 cargos novos (24/08).** `jobs` foi para 197 linhas. É a primeira medição com segmento variado — e ela CORRIGE a leitura da primeira:
+
+| cargo | total | aprovados | % | corte pré | corte LLM |
+|---|---|---|---|---|---|
+| Auxiliar Administrativo | 71 | 49 | 69% | 20 | 2 |
+| Analista de Marketing | 54 | 38 | 70% | 14 | 2 |
+| Product Designer | 45 | 31 | 69% | 11 | 3 |
+| Analista de Dados | 43 | 31 | 72% | 11 | 1 |
+| Desenvolvedor Front-end | 35 | 31 | 89% | 4 | 0 |
+| Product Manager | 30 | 21 | 70% | 3 | 6 |
+
+| fonte | total | aprovados | % |
+|---|---|---|---|
+| linkedin_job | 202 | 149 | 74% |
+| linkedin_post | 19 | 18 | 95% |
+| ats_gupy | 57 | 34 | 60% |
+
+**Product Manager concentra o corte do LLM** — 6 de 30, contra 0 a 3 em todos os outros. É o cargo de termo mais ambíguo em português ("produtos financeiros", "produtos e serviços"), e é ele que exige julgamento caro. Nos demais o pré-filtro resolve quase sozinho. **Front-end é o mais limpo**, 89%: título de vaga tech é literal.
+
+**CORREÇÃO — o pré-filtro corta 24%, não 10%.** Ficou escrito aqui, com base nos 30 primeiros itens, que "a economia de cota que justifica o estágio não está acontecendo". Estava errado, e o erro foi tirar conclusão de amostra enviesada: aqueles 30 eram 100% Product Manager e quase todos de `linkedin_job`, a combinação onde o pré-filtro tem menos o que fazer. Com 6 cargos e Gupy no meio, ele corta 60 de 248 — `cargo_fora_do_titulo` 43 e `pagina_de_listagem` 17. A justificativa no cabeçalho de `prefiltro.ts` está de pé.
 
 **O que este passo NÃO provou:**
 
@@ -202,6 +221,39 @@ As classes de falso positivo nomeadas no Passo 1 morreram em dado real, não só
 
 **13. Título de vaga do LinkedIn frequentemente não tem a empresa.** 6 das 20 vagas gravadas (30%) ficaram sem empresa identificada, e 5 delas são `linkedin_job` — a fonte onde o prompt diz que o título é confiável. Consequências: o feed mostraria `"não identificada"` como nome de empresa, e essas linhas caem na chave de dedup por id de fonte, então **nunca** deduplicam contra outra fonte. Extrair da página resolveria, ao custo de uma requisição por item.
 
+**14. A tabela "Generalização por cargo" não mede o dork de produção, no bloco de posts.** A medição de 23/08 (`testar-cargos.ts`) usou `"<cargo>"`; a produção (`alvos.ts`) usa `intitle:"<cargo>"`. São dorks diferentes. Os números de post daquela tabela (PM 49, Dados 39, Marketing 30) descrevem o dork SEM `intitle:`. Em produção o bloco de posts entrega cerca de uma ordem de grandeza menos.
+
+**15. O `intitle:` custa ~3x o volume do bloco de posts — medido, não estimado (24/08).** Mesmos 5 cargos, São Paulo, mesma semana, 2 páginas, 20 créditos em cada braço:
+
+| dork | coletados | aprovados pelo classificador |
+|---|---|---|
+| com `intitle:` (produção) | 19 | 18 |
+| sem `intitle:` | 137 | 47 |
+
+Os braços são quase disjuntos: só 12 dos 137 já estavam no banco. **Ganho líquido de 35 vagas aprovadas que o dork de produção não enxerga.** O classificador reprovou 66% do volume extra, ou seja, está segurando o ruído que o `intitle:` segurava antes — que era a pergunta.
+
+**Não decidido, e não dá para decidir com esse número:** aprovação do classificador não é precisão, e tomá-la como prova de acerto é circular. Faltam os 35 rotulados na mão. O bruto está em `posts-sem-intitle-2026-08-24.json` e `scripts/testar-posts-sem-intitle.ts --de=<arquivo>` reclassifica sem gastar crédito.
+
+**Achado colateral, e é um tipo novo de erro:** sem `intitle:` o dork afrouxa e **vaza localização** — entraram vagas de Aracaju/SE e Brasília/DF numa busca por São Paulo. Nem o classificador nem o harness reclamam, porque o rótulo só pergunta "é vaga e o cargo bate?".
+
+**16. A hipótese do `#vagas` foi testada e não se sustenta (24/08).** Observação do Pedro olhando posts na mão: todo post de vaga carrega `#vagas` e uma hashtag do cargo. Medido de dois jeitos independentes, os dois negativos.
+
+*Pela SERP* (`scripts/testar-posts-hashtag.ts`, 14 créditos): o Google **honra** o `#` — a sonda `"#vagas"` contra `"vagas"` devolveu 10 resultados cada com 0% de sobreposição, então a estratégia é expressável. Mas como filtro rende ~2,5 itens por consulta com 38% de aprovação: mais estreito que o dork sem `intitle:` e muito menos preciso que o com. A variante só-hashtags (`#vagas` + `#frontend`) rendeu 17% — sem o cargo por extenso a consulta perde a âncora.
+
+*Abrindo os 137 posts* (`scripts/medir-hashtag-nos-posts.ts`, zero crédito):
+
+| grupo | posts | com `#vagas` | com alguma hashtag |
+|---|---|---|---|
+| todos | 137 | 28 (20%) | 85 (62%) |
+| aprovados pelo LLM | 46 | 11 (24%) | 26 (57%) |
+| reprovados pelo LLM | 91 | 17 (19%) | 59 (65%) |
+
+**Três quartos dos posts de vaga não têm `#vagas`, e a hashtag não separa vaga de não-vaga** — 24% contra 19% é ruído. Ter hashtag qualquer é até levemente mais comum no que foi reprovado. Não existe tag dominante na cauda (`#homeoffice` 5, `#carreira` 5, `#oportunidade` 5, e lixo como `#sabdou`/`#sextou`), então um dork por hashtag precisaria de um `OR` longo e ainda perderia os 38% sem hashtag nenhuma.
+
+Isso também explica o resultado da SERP: o dork de hashtag veio estreito porque a hashtag não está lá, não porque o Google não a indexa.
+
+**Nota de método:** a página pública do post abre sem authwall em GET anônimo — os 137 baixaram. Isso NÃO é a exceção da restrição 2 do CLAUDE.md, que trata de scraping autenticado (DOM logado, sessão, endpoint interno) e continua valendo. É medição pontual, sem cookie e sem conta envolvida. Transformar isso em coleta de produção é decisão à parte, não tomada.
+
 ---
 
 ## Decisões de produto
@@ -233,7 +285,8 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 
 ## Pendências abertas
 
-- **Solução melhor para os posts.** O bloco funciona e generaliza, mas: 26% dos títulos são genéricos, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo (PM 49, Enfermeiro 8). Adiado por decisão do Pedro em 23/08.
+- **Solução melhor para os posts.** O bloco funciona e generaliza, mas: o título vem reescrito pelo Google, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo. Em produção, com `intitle:`, ele é a MENOR fonte — 19 itens em 248, ou 7,7% do acervo, sendo o bloco que sustenta o diferencial declarado do produto. Caminhos já descartados por medição: hashtag como filtro (achado 16). Caminho vivo: rotular à mão os 35 aprovados que o dork sem `intitle:` traz a mais (achado 15).
+- **O rótulo do harness ignora localização, e isso agora tem caso concreto.** O dork sem `intitle:` trouxe vaga de Aracaju e de Brasília numa busca por São Paulo, e nada no pipeline reclamou. Antes de afrouxar qualquer dork, o rótulo precisa passar a perguntar "é vaga, o cargo bate E o local serve?".
 - **`GROQ_KEY` não existe.** O `classificador.yml` já a referencia e o código trata ausência sem quebrar, mas sem ela não há reserva quando a cota diária do Gemini estourar: a rodada para em vez de continuar. O id de modelo padrão do Groq (`llama-3.3-70b-versatile`) nunca foi exercitado e pode estar morto como o do Gemini estava.
 - **Repetir o harness três vezes antes de citar 95% como número.** Duas rodadas idênticas deram conjuntos diferentes de falso negativo, com `temperature: 0`.
 - **Recoletar guardando o snippet no golden set.** Hoje ele só tem título e URL, e sem snippet o bloco de posts não é avaliável — 23 dos 49 casos de post estão `indeterminado`.
