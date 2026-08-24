@@ -38,6 +38,7 @@ export type Motivo =
   // decididos pelo LLM
   | 'nao_e_vaga'
   | 'cargo_de_outra_familia'
+  | 'local_nao_serve'
   | 'sem_empresa'
   | 'confianca_baixa'
   // falha de infraestrutura, não de conteúdo: o candidato volta na próxima rodada

@@ -9,7 +9,15 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { avaliarPrefiltro, falhas, medir, medirPor, type CasoRotulado } from '../src/classificar/harness.ts';
+import {
+  avaliarPrefiltro,
+  falhas,
+  medir,
+  medirLocal,
+  medirPor,
+  type Avaliado,
+  type CasoRotulado,
+} from '../src/classificar/harness.ts';
 
 const CAMINHO = 'harness/golden.jsonl';
 
@@ -19,6 +27,7 @@ const casos: CasoRotulado[] = readFileSync(CAMINHO, 'utf8')
   .map((l) => JSON.parse(l) as CasoRotulado);
 
 const ROTULOS = new Set(['relevante', 'irrelevante', 'indeterminado']);
+const ROTULOS_LOCAL = new Set(['sim', 'nao', 'indeterminado']);
 const FONTES = new Set(['linkedin_job', 'linkedin_post', 'ats_gupy']);
 const CLASSES = new Set([
   '',
@@ -39,6 +48,7 @@ describe('golden set', () => {
       assert.ok(ROTULOS.has(c.rotulo), `${c.id}: rótulo "${c.rotulo}"`);
       assert.ok(FONTES.has(c.fonte), `${c.id}: fonte "${c.fonte}"`);
       assert.ok(CLASSES.has(c.classe), `${c.id}: classe "${c.classe}"`);
+      assert.ok(ROTULOS_LOCAL.has(c.rotuloLocal), `${c.id}: rotuloLocal "${c.rotuloLocal}"`);
       assert.notEqual(c.titulo.trim(), '', `${c.id}: sem título`);
       assert.notEqual(c.cargoBusca.trim(), '', `${c.id}: sem cargo buscado`);
     }
@@ -63,9 +73,69 @@ describe('golden set', () => {
     assert.equal(new Set(casos.map((c) => c.fonte)).size, 3);
   });
 
+  it('todo rótulo de local decidido diz por quê', () => {
+    // "sim" e "nao" são julgamento; sem a justificativa escrita não dá para
+    // outra pessoa contestar o rótulo, e golden set que ninguém contesta apodrece.
+    for (const c of casos) {
+      if (c.rotuloLocal !== 'indeterminado') {
+        assert.notEqual(c.notaLocal.trim(), '', `${c.id}`);
+      }
+    }
+  });
+
   it('tem negativo suficiente para precisão não ser enfeite', () => {
     const irrelevantes = casos.filter((c) => c.rotulo === 'irrelevante').length;
     assert.ok(irrelevantes >= 15, `só ${irrelevantes} irrelevantes`);
+  });
+});
+
+describe('portão de local', () => {
+  const decidido = casos.filter((c) => c.rotuloLocal !== 'indeterminado');
+
+  it('o eixo de local não contamina o eixo de cargo', () => {
+    // Uma vaga do cargo certo em outra cidade continua `relevante` no eixo de
+    // cargo. Se alguém colapsar os dois rótulos, este teste quebra — e a
+    // métrica de cargo, que tem histórico, deixaria de ser comparável.
+    const localRuim = casos.filter((c) => c.rotuloLocal === 'nao');
+    assert.ok(localRuim.length > 0);
+    assert.ok(localRuim.some((c) => c.rotulo === 'relevante'));
+  });
+
+  it('conta só o que o LLM julgou: o pré-filtro não olha local', () => {
+    const doPrefiltro: Avaliado[] = decidido.map((caso) => ({
+      caso,
+      previsto: true,
+      motivo: 'passou',
+      detalhe: '',
+      estagio: 'prefiltro',
+    }));
+    assert.equal(medirLocal(doPrefiltro).avaliaveis, 0);
+  });
+
+  it('separa fechar errado de deixar passar', () => {
+    const bom = casos.find((c) => c.rotuloLocal === 'sim')!;
+    const ruim = casos.find((c) => c.rotuloLocal === 'nao')!;
+
+    const m = medirLocal([
+      // portão fechou numa vaga de local bom: some com a vaga
+      { caso: bom, previsto: false, motivo: 'local_nao_serve', detalhe: '', estagio: 'llm' },
+      // portão deixou passar vaga de outra cidade: lixo visível no feed
+      { caso: ruim, previsto: true, motivo: 'aprovado', detalhe: '', estagio: 'llm' },
+    ]);
+
+    assert.equal(m.avaliaveis, 2);
+    assert.equal(m.fechouErrado, 1);
+    assert.equal(m.deixouPassar, 1);
+    assert.equal(m.acertos, 0);
+  });
+
+  it('avisa quando há negativos de menos para concluir alguma coisa', () => {
+    // Hoje são 2. Enquanto for assim, "o portão não deixou passar nada" não é
+    // evidência de que ele funciona — é evidência de que não foi testado.
+    const m = medirLocal(
+      decidido.map((caso) => ({ caso, previsto: true, motivo: 'aprovado', detalhe: '', estagio: 'llm' })),
+    );
+    assert.ok(m.negativosDisponiveis < 5, 'se passou de 5, atualize o aviso do relatório');
   });
 });
 

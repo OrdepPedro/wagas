@@ -234,7 +234,22 @@ Os braços são quase disjuntos: só 12 dos 137 já estavam no banco. **Ganho l�
 
 **Não decidido, e não dá para decidir com esse número:** aprovação do classificador não é precisão, e tomá-la como prova de acerto é circular. Faltam os 35 rotulados na mão. O bruto está em `posts-sem-intitle-2026-08-24.json` e `scripts/testar-posts-sem-intitle.ts --de=<arquivo>` reclassifica sem gastar crédito.
 
-**Achado colateral, e é um tipo novo de erro:** sem `intitle:` o dork afrouxa e **vaza localização** — entraram vagas de Aracaju/SE e Brasília/DF numa busca por São Paulo. Nem o classificador nem o harness reclamam, porque o rótulo só pergunta "é vaga e o cargo bate?".
+**Achado colateral, com uma correção minha junto:** eu afirmei que sem `intitle:` entraram vagas de Aracaju/SE e Brasília/DF. Ao rotular os casos um a um, **estava errado**. O de Aracaju é home office — `#aracaju` e `#sergipe` são a localização da EMPRESA, e remoto vale o Brasil inteiro, então a vaga serve. Um terceiro caso que eu tinha citado é uma pessoa com `#opentowork`, nem vaga é. De 137 posts, sobrou **um** caso provável (um quadro de vagas de Brasília) e um ambíguo (Rio). O vazamento existe e é bem menor do que eu disse.
+
+O buraco de fundo continuava real — nada no pipeline olhava local — e foi fechado em 24/08 (achado 17).
+
+**17. O portão de local existe desde 24/08, e o eixo é medido separado do de cargo.** A promessa do produto é presencial/híbrido NA CIDADE + remoto de TODO O BRASIL, e nada no pipeline checava isso. Agora o LLM responde uma terceira pergunta (`localBate`) e há o motivo `local_nao_serve`.
+
+**O rótulo do harness ganhou um eixo, não uma condição a mais.** `rotuloLocal` (`sim` | `nao` | `indeterminado`) é campo separado de `rotulo`. Colapsar os dois jogaria quase todo o golden set em `indeterminado` — a maioria dos títulos não diz o local — e a métrica de cargo, que já tem histórico, deixaria de ser comparável. Hoje: 35 `sim`, 3 `nao`, 86 `indeterminado`.
+
+Resultado no golden set (124 casos): **36 avaliáveis, 35 acertos, 0 fechou errado, 1 deixou passar.** Pegou o quadro de vagas de Brasília e **não** caiu na armadilha de Aracaju — a vaga home office anunciada por empresa de outra cidade foi aprovada, que é o certo.
+
+**Duas armadilhas encontradas ao construir, ambas de medição e não de modelo:**
+
+1. **Reprovação por local contava como falso negativo de cargo.** O recall aparente despencou de 95% para 84% na primeira rodada com o portão ligado, sugerindo que o classificador tinha piorado. Não tinha: era o portão funcionando, contado no eixo errado. `medir()` e `falhas()` agora ignoram `local_nao_serve`; quem mede isso é `medirLocal()`.
+2. **A pergunta nova derrubou a confiança de tudo.** O modelo passou a devolver `0.50` com motivo "local não especificado no título" em vaga que ele mesmo dizia ser boa, e 7 vagas caíram por `confianca_baixa`. Foi preciso escrever no prompt que **`confianca` vale só para `ehVaga` e `cargoBate`**, e que silêncio sobre local é o caso normal. Depois disso o eixo de cargo voltou a 100% de precisão e 95% de recall — idêntico ao de antes do portão.
+
+**O que NÃO está medido:** só há 3 casos rotulados como local ruim. "Não deixou passar nada" ainda não é evidência de que o portão pega vaga de outra cidade — é evidência de que quase não foi testado desse lado. O relatório imprime esse aviso sozinho enquanto forem menos de 5.
 
 **16. A hipótese do `#vagas` foi testada e não se sustenta (24/08).** Observação do Pedro olhando posts na mão: todo post de vaga carrega `#vagas` e uma hashtag do cargo. Medido de dois jeitos independentes, os dois negativos.
 
@@ -286,7 +301,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 ## Pendências abertas
 
 - **Solução melhor para os posts.** O bloco funciona e generaliza, mas: o título vem reescrito pelo Google, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo. Em produção, com `intitle:`, ele é a MENOR fonte — 19 itens em 248, ou 7,7% do acervo, sendo o bloco que sustenta o diferencial declarado do produto. Caminhos já descartados por medição: hashtag como filtro (achado 16). Caminho vivo: rotular à mão os 35 aprovados que o dork sem `intitle:` traz a mais (achado 15).
-- **O rótulo do harness ignora localização, e isso agora tem caso concreto.** O dork sem `intitle:` trouxe vaga de Aracaju e de Brasília numa busca por São Paulo, e nada no pipeline reclamou. Antes de afrouxar qualquer dork, o rótulo precisa passar a perguntar "é vaga, o cargo bate E o local serve?".
+- **Faltam negativos de localização no golden set.** São 3. Enquanto for assim, o portão de local (achado 17) está medido só de um lado: dá para saber que ele não descarta vaga boa, não que ele pega vaga de outra cidade.
 - **`GROQ_KEY` não existe.** O `classificador.yml` já a referencia e o código trata ausência sem quebrar, mas sem ela não há reserva quando a cota diária do Gemini estourar: a rodada para em vez de continuar. O id de modelo padrão do Groq (`llama-3.3-70b-versatile`) nunca foi exercitado e pode estar morto como o do Gemini estava.
 - **Repetir o harness três vezes antes de citar 95% como número.** Duas rodadas idênticas deram conjuntos diferentes de falso negativo, com `temperature: 0`.
 - **Recoletar guardando o snippet no golden set.** Hoje ele só tem título e URL, e sem snippet o bloco de posts não é avaliável — 23 dos 49 casos de post estão `indeterminado`.

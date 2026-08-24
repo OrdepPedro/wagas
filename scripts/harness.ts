@@ -16,8 +16,10 @@
  *      `linkedin_post` o título vem reescrito pelo Google, então o modelo julga
  *      esses casos praticamente às cegas: o número do bloco de posts aqui é
  *      piso, não estimativa.
- *   2. LOCALIZAÇÃO NÃO É MEDIDA. O rótulo responde "é vaga e o cargo bate?".
- *      Se a vaga remota é do Brasil ou dos Estados Unidos continua sem medição.
+ *   2. LOCALIZAÇÃO É MEDIDA, MAS QUASE SÓ DE UM LADO. `rotuloLocal` é um eixo
+ *      separado de `rotulo`, e hoje tem 35 `sim` contra 2 `nao`. Dá para medir
+ *      se o portão FECHA numa vaga de local bom — o erro caro — mas não se ele
+ *      PEGA vaga de outra cidade. Para isso faltam negativos rotulados.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -27,11 +29,13 @@ import {
   avaliarPrefiltro,
   falhas,
   medir,
+  medirLocal,
   medirPor,
   paraCandidato,
   type Avaliado,
   type CasoRotulado,
   type Metricas,
+  type MetricasLocal,
 } from '../src/classificar/harness.ts';
 import { cadeiaDoAmbiente } from '../src/classificar/llm.ts';
 import { carregarConfigClassificador } from '../src/config/env.ts';
@@ -130,6 +134,36 @@ function imprimirFalhas(avaliados: Avaliado[]): void {
   }
 }
 
+/**
+ * O portão de local só existe no LLM, então só aparece quando há chave.
+ *
+ * Os dois erros são impressos separados de propósito: fechar numa vaga boa some
+ * com a vaga, deixar passar põe lixo visível. Somar os dois num acerto médio
+ * esconderia justamente a diferença que importa.
+ */
+function imprimirLocal(m: MetricasLocal, avaliados: Avaliado[]): void {
+  console.log('\nPORTÃO DE LOCAL');
+  console.log(`  casos avaliáveis: ${m.avaliaveis}   acertos: ${m.acertos}`);
+  console.log(`  fechou numa vaga de local bom (some com a vaga): ${m.fechouErrado}`);
+  console.log(`  deixou passar vaga de outra cidade (lixo no feed): ${m.deixouPassar}`);
+  const { cortadosPorLocal } = falhas(avaliados);
+  if (cortadosPorLocal.length > 0) {
+    console.log(`
+  cortados por local (${cortadosPorLocal.length}) — fora da métrica de cargo:`);
+    for (const a of cortadosPorLocal) {
+      console.log(`    [rótulo de local: ${a.caso.rotuloLocal}] ${a.caso.titulo}`);
+      console.log(`        ${a.detalhe}`);
+    }
+  }
+
+  if (m.negativosDisponiveis < 5) {
+    console.log(
+      `  [!] só ${m.negativosDisponiveis} casos rotulados como local ruim: "não deixou passar nada"` +
+        '\n      ainda NÃO é evidência de que o portão pega vaga de outra cidade.',
+    );
+  }
+}
+
 function imprimirCobertura(casos: CasoRotulado[]): void {
   const indeterminados = casos.filter((c) => c.rotulo === 'indeterminado');
   const semSnippet = casos.filter((c) => c.snippet === '').length;
@@ -145,6 +179,12 @@ function imprimirCobertura(casos: CasoRotulado[]): void {
       (porFonte.size > 0 ? ` — ${[...porFonte].map(([f, n]) => `${f}: ${n}`).join(', ')}` : ''),
   );
   console.log(`  sem snippet: ${semSnippet} de ${casos.length}`);
+
+  const local: Record<string, number> = {};
+  for (const c of casos) local[c.rotuloLocal] = (local[c.rotuloLocal] ?? 0) + 1;
+  console.log(
+    `  rótulo de local — sim: ${local['sim'] ?? 0}, não: ${local['nao'] ?? 0}, indeterminado: ${local['indeterminado'] ?? 0}`,
+  );
 }
 
 async function main(): Promise<number> {
@@ -193,6 +233,7 @@ async function main(): Promise<number> {
       ),
     ]);
     imprimirFalhas(doPipeline);
+    imprimirLocal(medirLocal(doPipeline), doPipeline);
   }
 
   if (args.json) {
@@ -205,7 +246,12 @@ async function main(): Promise<number> {
           casos: casos.length,
           prefiltro: { metricas: metricasPrefiltro, avaliados: doPrefiltro },
           pipeline: doPipeline
-            ? { provedor: provedor?.nome, metricas: medir(doPipeline), avaliados: doPipeline }
+            ? {
+                provedor: provedor?.nome,
+                metricas: medir(doPipeline),
+                local: medirLocal(doPipeline),
+                avaliados: doPipeline,
+              }
             : null,
         },
         null,

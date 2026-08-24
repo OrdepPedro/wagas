@@ -24,6 +24,16 @@ import type { Candidato, Decisao } from './tipos.ts';
 
 export type Rotulo = 'relevante' | 'irrelevante' | 'indeterminado';
 
+/**
+ * O local da vaga serve para quem buscou?
+ *
+ * Eixo SEPARADO de `rotulo`, de propósito. Colapsar os dois numa nota só
+ * jogaria quase todo o golden set em `indeterminado` — a maioria dos títulos
+ * não diz o local —, e a métrica de cargo, que já existe e já tem histórico,
+ * deixaria de ser comparável. Medir separado preserva as duas.
+ */
+export type RotuloLocal = 'sim' | 'nao' | 'indeterminado';
+
 export interface CasoRotulado {
   id: string;
   origem: string;
@@ -38,6 +48,26 @@ export interface CasoRotulado {
   /** vaga_da_familia | vaga_adjacente | pagina_de_listagem | nao_e_vaga | cargo_de_outra_familia */
   classe: string;
   nota: string;
+  rotuloLocal: RotuloLocal;
+  notaLocal: string;
+}
+
+/**
+ * Desempenho do portão de local, medido isolado.
+ *
+ * A assimetria é a mesma do resto, e por isso os dois lados são contados
+ * separadamente em vez de virarem um F1: fechar o portão numa vaga boa
+ * (`fechouErrado`) some com a vaga; deixar passar uma vaga de outra cidade
+ * (`deixouPassar`) põe lixo visível no feed.
+ */
+export interface MetricasLocal {
+  /** Casos com rótulo de local e decisão do LLM — os únicos que dizem algo. */
+  avaliaveis: number;
+  fechouErrado: number;
+  deixouPassar: number;
+  acertos: number;
+  /** Casos com rótulo `nao`. Com poucos, "não deixou passar nada" não é notícia. */
+  negativosDisponiveis: number;
 }
 
 export function paraCandidato(caso: CasoRotulado): Candidato {
@@ -94,6 +124,11 @@ export function medir(avaliados: Avaliado[]): Metricas {
     // Indeterminado não entra na conta: rotular no chute inventaria a métrica.
     // Quantos são fica no relatório, como cobertura que falta.
     if (a.caso.rotulo === 'indeterminado') continue;
+    // Reprovado por LOCAL não é erro do eixo de cargo. Contar aqui faria o
+    // portão de local, funcionando corretamente, aparecer como queda de recall
+    // do classificador — foi o que aconteceu na primeira rodada com o portão
+    // ligado. Quem mede local é `medirLocal`.
+    if (a.motivo === 'local_nao_serve') continue;
     if (a.previsto === null) {
       m.indefinidos++;
       continue;
@@ -148,6 +183,39 @@ export function avaliarDecisoes(casos: CasoRotulado[], decisoes: Decisao[]): Ava
   });
 }
 
+/**
+ * Mede o portão de local.
+ *
+ * Só conta caso que (a) tem rótulo de local diferente de `indeterminado` e
+ * (b) chegou ao LLM — o pré-filtro não julga local, então item cortado antes
+ * não diz nada sobre este portão.
+ */
+export function medirLocal(avaliados: Avaliado[]): MetricasLocal {
+  const m: MetricasLocal = {
+    avaliaveis: 0,
+    fechouErrado: 0,
+    deixouPassar: 0,
+    acertos: 0,
+    negativosDisponiveis: 0,
+  };
+
+  for (const a of avaliados) {
+    if (a.caso.rotuloLocal === 'indeterminado') continue;
+    if (a.caso.rotuloLocal === 'nao') m.negativosDisponiveis++;
+    if (a.estagio !== 'llm' || a.previsto === null) continue;
+
+    m.avaliaveis++;
+    const fechou = a.motivo === 'local_nao_serve';
+    const deveriaFechar = a.caso.rotuloLocal === 'nao';
+
+    if (fechou === deveriaFechar) m.acertos++;
+    else if (fechou) m.fechouErrado++;
+    else m.deixouPassar++;
+  }
+
+  return m;
+}
+
 /** Agrupa por uma chave do caso (fonte, cargo...) e mede cada grupo. */
 export function medirPor(
   avaliados: Avaliado[],
@@ -169,12 +237,20 @@ export function medirPor(
 }
 
 /** Os casos que o pipeline errou, do mais caro para o mais barato de errar. */
-export function falhas(avaliados: Avaliado[]): { falsosNegativos: Avaliado[]; falsosPositivos: Avaliado[] } {
+export function falhas(avaliados: Avaliado[]): {
+  falsosNegativos: Avaliado[];
+  falsosPositivos: Avaliado[];
+  cortadosPorLocal: Avaliado[];
+} {
   const relevantes = (a: Avaliado) => a.caso.rotulo === 'relevante';
   const irrelevantes = (a: Avaliado) => a.caso.rotulo === 'irrelevante';
+  const porLocal = (a: Avaliado) => a.motivo === 'local_nao_serve';
 
   return {
-    falsosNegativos: avaliados.filter((a) => relevantes(a) && a.previsto === false),
+    // Mesma exclusão de `medir`: senão a tabela conta 4 e a lista imprime 6,
+    // e o leitor não tem como saber qual dos dois números está certo.
+    falsosNegativos: avaliados.filter((a) => relevantes(a) && a.previsto === false && !porLocal(a)),
     falsosPositivos: avaliados.filter((a) => irrelevantes(a) && a.previsto === true),
+    cortadosPorLocal: avaliados.filter(porLocal),
   };
 }

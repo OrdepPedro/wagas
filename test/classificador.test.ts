@@ -319,6 +319,8 @@ describe('métricas do harness', () => {
     rotulo,
     classe: '',
     nota: '',
+    rotuloLocal: 'indeterminado',
+    notaLocal: '',
   });
 
   it('indeterminado fica fora da conta', () => {

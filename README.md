@@ -156,7 +156,9 @@ Dois estágios, e a ordem é o desenho de custo:
 | estágio | custo | o que decide |
 |---|---|---|
 | pré-filtro | zero | página de listagem da Gupy, vaga fora dos 7 dias, cargo de outra família pelo título |
-| LLM | cota de tier gratuito | é vaga mesmo? o cargo bate? empresa, cargo, senioridade, modelo |
+| LLM | cota de tier gratuito | é vaga mesmo? o cargo bate? **o local serve?** empresa, cargo, senioridade, modelo |
+
+**O local é a promessa do produto, não preferência:** presencial e híbrido só na cidade buscada; remoto vale o Brasil inteiro. Cidade que aparece no nome da empresa, no perfil de quem publicou ou em hashtag **não** é o local da vaga — uma vaga home office anunciada por empresa de Aracaju continua servindo para quem busca em São Paulo. O portão só fecha com evidência: local não mencionado passa, senão a maioria das vagas cairia por silêncio do título.
 
 **O pré-filtro nunca filtra post por título.** O `title` que a API devolve para `linkedin_post` não é o `<title>` da página — o Google reescreve para "Publicação de Fulano". Esse filtro já foi aplicado na origem, pelo `intitle:` do dork; aplicar de novo aqui descartaria vaga boa.
 
@@ -182,14 +184,24 @@ Rótulo = **é uma vaga aberta E o cargo é da família do cargo buscado**. Trê
 
 ### O que está medido hoje (24/08/2026)
 
-Sobre os 97 casos rotuláveis, com `gemini-3.5-flash-lite`:
+Golden set com **124 casos**. Eixo de cargo ("é vaga E o cargo bate?"), sobre os 99 rotuláveis, com `gemini-3.5-flash-lite`:
 
 | estágio | precisão | recall | F1 |
 |---|---|---|---|
-| pré-filtro isolado | 88% | 100% | 93% |
+| pré-filtro isolado | 87% | 100% | 93% |
 | **pipeline completo** | **100%** | **95%** | **97%** |
 
-Por fonte, no pipeline completo: `ats_gupy` 100/100, `linkedin_job` 100/95, `linkedin_post` 100/89.
+Por fonte, no pipeline completo: `ats_gupy` 100/100, `linkedin_job` 100/97, `linkedin_post` 100/84.
+
+Eixo de local, medido separado (`rotuloLocal`: 35 `sim`, 3 `nao`, 86 `indeterminado`):
+
+```
+casos avaliáveis: 36   acertos: 35
+fechou numa vaga de local bom (some com a vaga): 0
+deixou passar vaga de outra cidade (lixo no feed): 1
+```
+
+**Os dois eixos são separados de propósito.** Rejeição por `local_nao_serve` não conta como falso negativo de cargo — ao ligar o portão sem essa separação, o recall aparente caiu de 95% para 84% e parecia que o classificador tinha piorado; era o portão funcionando, contado no eixo errado.
 
 O LLM derrubou **todos os 11 falsos positivos** que o pré-filtro tinha deixado passar — inclusive "Global Product Line Manager — Screens" e "[TEAM PRODUCT] Flutter flow Lead PL", as classes que o Passo 1 tinha nomeado. Zero lixo chegaria ao feed nesta amostra.
 

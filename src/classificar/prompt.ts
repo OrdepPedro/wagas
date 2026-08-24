@@ -27,6 +27,7 @@ export interface Julgamento {
   id: number;
   ehVaga: boolean;
   cargoBate: boolean;
+  localBate: boolean;
   confianca: number;
   motivo: string;
   extracao: Extracao;
@@ -50,6 +51,7 @@ export const SCHEMA_RESPOSTA = {
           id: { type: 'integer' },
           ehVaga: { type: 'boolean' },
           cargoBate: { type: 'boolean' },
+          localBate: { type: 'boolean' },
           empresa: { type: 'string', nullable: true },
           cargo: { type: 'string', nullable: true },
           senioridade: { type: 'string', nullable: true, enum: [...SENIORIDADES_VALIDAS] },
@@ -58,7 +60,7 @@ export const SCHEMA_RESPOSTA = {
           confianca: { type: 'number' },
           motivo: { type: 'string' },
         },
-        required: ['id', 'ehVaga', 'cargoBate', 'confianca', 'motivo'],
+        required: ['id', 'ehVaga', 'cargoBate', 'localBate', 'confianca', 'motivo'],
       },
     },
   },
@@ -70,12 +72,19 @@ const INSTRUCOES = `Você classifica resultados de busca do Google para um agreg
 Para cada item, decida:
 - ehVaga: o resultado anuncia UMA vaga aberta específica? Página de listagem, artigo sobre carreira, post de opinião, divulgação de curso e post de networking NÃO são vaga.
 - cargoBate: o cargo anunciado pertence à mesma família do cargo buscado?
+- localBate: o local da vaga serve para quem buscou?
 
 REGRA DE FAMÍLIA (vale para qualquer cargo, não só os deste exemplo):
 - Mesma função e mesmo assunto = bate. Senioridade diferente não importa.
 - Cargo adjacente bate: Product Owner numa busca por Product Manager, Assistente numa busca por Auxiliar, Cientista de Dados numa busca por Analista de Dados.
 - Mesma palavra, outro assunto NÃO bate: "Project Manager" não é "Product Manager"; "Líder de Produtos Financeiros" em varejo não é gestão de produto de tecnologia; "Especialista II SAP EWM" não é Product Manager.
 - Mesmo assunto, outra função NÃO bate: Product Designer não é Product Manager; Desenvolvedor Front-end não é Analista de Dados.
+
+REGRA DE LOCAL (é a promessa do produto, não preferência):
+- Vaga REMOTA / home office serve, desde que seja no Brasil. Não importa em que cidade fica a empresa: remoto vale o país inteiro.
+- Vaga PRESENCIAL ou HÍBRIDA só serve se for na cidade buscada (ou na região metropolitana dela — bairro conta como a cidade).
+- Vaga remota de FORA do Brasil não serve.
+- Cidade que aparece só no nome da empresa, no perfil de quem publicou ou em hashtag NÃO é o local da vaga. Uma vaga home office anunciada por uma empresa de Aracaju continua sendo home office.
 
 COMO LER CADA FONTE:
 - linkedin_job: o título é confiável. O snippet NÃO é: a página traz a barra lateral de "vagas similares", e o snippet pode descrever outra vaga de outra empresa. Nunca tire a empresa do snippet sozinho; se ela não estiver no título, devolva empresa: null.
@@ -84,16 +93,18 @@ COMO LER CADA FONTE:
 
 AUSÊNCIA DE EVIDÊNCIA NÃO É EVIDÊNCIA DE AUSÊNCIA:
 - ehVaga: false só quando houver evidência POSITIVA de que não é vaga (é artigo, é post de opinião, é página de listagem, é divulgação de curso).
+- localBate: false só quando o texto disser que a vaga é presencial ou híbrida em OUTRA cidade, ou fora do Brasil. Local não mencionado = localBate: true. A maioria dos títulos não diz o local, e reprovar por silêncio descartaria quase tudo.
 - Se o texto disponível for curto ou genérico demais para decidir, mantenha ehVaga: true e cargoBate: true e ponha confianca abaixo de 0.5. Não confunda "não deu para saber" com "não é vaga" — o segundo descarta a vaga em silêncio, o primeiro fica registrado como decisão incerta.
 
-confianca: 0 a 1. Abaixo de 0.5 significa "o texto não permitiu decidir".
+confianca: 0 a 1, e vale SOMENTE para ehVaga e cargoBate. Abaixo de 0.5 significa "o texto não permitiu decidir se é vaga e se o cargo bate".
+NÃO baixe a confianca porque o local não foi informado. Local desconhecido é o caso normal — a maioria dos títulos não diz cidade — e já está tratado por localBate: true.
 motivo: no máximo 12 palavras, em português.
 empresa, cargo, localizacao: null quando não estiverem explícitos. Não deduza.
 senioridade: um de estagio, junior, pleno, senior, principal — ou null.
 modelo: um de remoto, hibrido, presencial — ou null.
 
 Responda SOMENTE com JSON no formato:
-{"julgamentos":[{"id":0,"ehVaga":true,"cargoBate":true,"empresa":null,"cargo":null,"senioridade":null,"modelo":null,"localizacao":null,"confianca":0.9,"motivo":"..."}]}
+{"julgamentos":[{"id":0,"ehVaga":true,"cargoBate":true,"localBate":true,"empresa":null,"cargo":null,"senioridade":null,"modelo":null,"localizacao":null,"confianca":0.9,"motivo":"..."}]}
 Um objeto por item recebido, com o mesmo id. Sem texto fora do JSON.`;
 
 /** Corta o snippet: além disso é barra lateral, e barra lateral é ruído pago em token. */
@@ -172,6 +183,9 @@ export function interpretarResposta(bruto: string, tamanhoDoLote: number): Julga
     const id = typeof obj['id'] === 'number' ? obj['id'] : Number(obj['id']);
     if (!Number.isInteger(id) || id < 0 || id >= tamanhoDoLote || vistos.has(id)) continue;
     if (typeof obj['ehVaga'] !== 'boolean' || typeof obj['cargoBate'] !== 'boolean') continue;
+    // `localBate` ausente vira `true`: o portão de local só reprova com
+    // evidência, e um modelo que esqueceu o campo não é evidência de nada.
+    const localBate = typeof obj['localBate'] === 'boolean' ? obj['localBate'] : true;
 
     const confiancaBruta = Number(obj['confianca']);
     const confianca = Number.isFinite(confiancaBruta)
@@ -183,6 +197,7 @@ export function interpretarResposta(bruto: string, tamanhoDoLote: number): Julga
       id,
       ehVaga: obj['ehVaga'],
       cargoBate: obj['cargoBate'],
+      localBate,
       confianca,
       motivo: texto(obj['motivo']) ?? '',
       extracao: {

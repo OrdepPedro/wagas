@@ -109,6 +109,12 @@ function decidirComJulgamento(
   if (!julgamento.cargoBate) {
     return { ...base, veredito: 'rejeitado', motivo: 'cargo_de_outra_familia', extracao: null };
   }
+  // Promessa do produto: presencial e híbrido só na cidade buscada, remoto vale
+  // o Brasil inteiro. O portão só fecha com evidência — local não mencionado
+  // passa, senão a maioria das vagas cairia por silêncio do título.
+  if (!julgamento.localBate) {
+    return { ...base, veredito: 'rejeitado', motivo: 'local_nao_serve', extracao: null };
+  }
   if (julgamento.confianca < confiancaMinima) {
     return {
       ...base,
