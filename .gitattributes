@@ -1,0 +1,7 @@
+# Normaliza tudo para LF no repositorio.
+# Critico para scripts/alertas.sh: shell script com CRLF nao executa em Linux,
+# e o workflow do Actions roda em ubuntu-latest.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary

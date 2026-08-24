@@ -1,0 +1,7 @@
+node_modules/
+.env
+.quota/
+*.log
+
+# Resultados de medicao ficam versionados de proposito: o --comparar do
+# medir-alertas.ts precisa da baseline anterior para calcular fluxo.

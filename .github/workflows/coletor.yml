@@ -1,0 +1,87 @@
+name: coletor
+
+# Uma rodada por dia, 06h de Brasília.
+#
+# A cadência mudou junto com a fonte. A PSE tinha cota diária que zerava, então
+# rodar 3x/dia era de graça. Os créditos da Serper são um SALDO ÚNICO que não
+# renova — cada rodada consome de um estoque finito.
+#
+# Conta com a configuração atual (7 alvos x 3 blocos x 2 recortes x 2 páginas):
+#   84 créditos por rodada -> os 2.500 gratuitos duram ~27 dias em 1x/dia.
+#
+# Rodar mais vezes por dia não traz muito: a janela é de 7 dias e o mesmo
+# resultado voltaria quase inteiro, gasto em dobro. Aumentar SERPER_PAGINAS
+# aumenta a cobertura por rodada e encurta a duração do saldo na mesma medida.
+on:
+  schedule:
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Só imprime as consultas planejadas, sem consumir crédito'
+        type: boolean
+        default: false
+      limite:
+        description: 'Máximo de consultas nesta execução (vazio = orçamento normal)'
+        type: string
+        default: ''
+      alvo:
+        description: 'Rodar um alvo só, pelo id (ex.: pm-bh)'
+        type: string
+        default: ''
+      paginas:
+        description: 'Páginas por consulta (1-10). Vazio = padrão do ambiente'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+# Duas rodadas simultâneas consumiriam o saldo em dobro. A reserva atômica no
+# Postgres já protege; isto evita o desperdício antes de começar.
+concurrency:
+  group: coletor-serper
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # O projeto não tem dependência de runtime: sem npm ci, sem cache.
+      # Node 24 executa TypeScript direto (type stripping).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      # Coletor quebrado gravando lixo é pior que rodada perdida — e aqui cada
+      # rodada perdida também custa crédito que não volta.
+      - name: Testes
+        run: npm test
+
+      - name: Coletar
+        env:
+          SERPER_KEY: ${{ secrets.SERPER_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SERPER_CREDITOS_TOTAIS: '2500'
+          SERPER_ORCAMENTO_POR_RUN: '150'
+          SERPER_PAGINAS: '2'
+          LOG_LEVEL: info
+          # Entradas do disparo manual entram por env, nunca interpoladas no
+          # corpo do script — ${{ }} dentro de `run` é injeção de comando.
+          DRY_RUN: ${{ inputs.dry_run }}
+          LIMITE: ${{ inputs.limite }}
+          ALVO: ${{ inputs.alvo }}
+          PAGINAS: ${{ inputs.paginas }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ "${DRY_RUN:-false}" = "true" ]; then args+=(--dry-run); fi
+          if [ -n "${LIMITE:-}" ]; then args+=("--limite=${LIMITE}"); fi
+          if [ -n "${ALVO:-}" ]; then args+=("--alvo=${ALVO}"); fi
+          if [ -n "${PAGINAS:-}" ]; then args+=("--paginas=${PAGINAS}"); fi
+          node src/collect.ts ${args[@]+"${args[@]}"}

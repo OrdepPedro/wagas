@@ -1,0 +1,23 @@
+{
+  "name": "wagas-coletor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Coletor de vagas via Google Programmable Search Engine",
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "collect": "node --env-file-if-exists=.env src/collect.ts",
+    "collect:dry": "node --env-file-if-exists=.env src/collect.ts --dry-run",
+    "test": "node --test \"test/*.test.ts\"",
+    "typecheck": "tsc --noEmit",
+    "paridade": "node --env-file-if-exists=.env scripts/paridade.ts",
+    "passo1": "node --env-file-if-exists=.env scripts/comparar-passo1.ts",
+    "alertas": "node --env-file-if-exists=.env scripts/medir-alertas.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
+  }
+}
