@@ -97,7 +97,7 @@ O filtro de 7 dias não é só uma restrição de produto: é ganho de recall.
 
 Node 24 + TypeScript, zero dependência de runtime (type stripping nativo, PostgREST em fetch puro). 114 testes, typecheck limpo.
 
-**Supabase provisionado em 24/08/2026:** projeto `wagas`, ref `dvaflqmvnrelpuzhhmrr`, região `sa-east-1`, org `OrdepPedro's Org`. As duas migrations foram aplicadas e verificadas — `raw_results`, `jobs`, `collection_runs`, `api_saldo` e as funções `reservar_saldo`/`devolver_saldo` existem.
+**Supabase provisionado em 24/08/2026:** projeto `wagas`, ref `dvaflqmvnrelpuzhhmrr`, região `sa-east-1`, org `OrdepPedro's Org`. As três migrations foram aplicadas e verificadas — `raw_results`, `jobs`, `collection_runs`, `api_saldo`, as funções `reservar_saldo`/`devolver_saldo` e as colunas de classificação da `0003` existem. `jobs` deixou de estar vazia em 24/08: 20 linhas gravadas pela primeira rodada do classificador.
 
 Autenticação pela **secret key nova** (`sb_secret_…`), não pela legacy `service_role`. As duas funcionam nos headers do PostgREST; a nova é o caminho que o Supabase está adotando.
 
@@ -118,6 +118,14 @@ Pré-filtro isolado, sobre os 97 rotuláveis: **recall 100%, precisão 88%**. Po
 **O modelo padrão que eu tinha escolhido estava morto.** `gemini-2.5-flash-lite` devolve `404 — no longer available to new users`, apontando para `gemini-3.5-flash-lite`. Um teste de fumaça com 16 casos custou 2 chamadas e pegou isso antes da rodada inteira — id de modelo velho é falha silenciosa até a primeira chamada real. O padrão do Groq (`llama-3.3-70b-versatile`) nunca foi exercitado e pode estar no mesmo estado.
 
 **O canal de confiança funciona.** Dos 17 reprovados por `confianca_baixa`, 14 são exatamente os casos que eu não consegui rotular à mão — o modelo chegou sozinho ao mesmo conjunto de "não dá para saber". Foi preciso instruir explicitamente que **ausência de evidência não é evidência de ausência**: na primeira rodada ele marcava `ehVaga: false` para post sem texto, o que descarta vaga em silêncio. Agora isso cai como `confianca_baixa`, que é visível e separável no relatório.
+
+**Primeira rodada em produção (24/08, pelo Actions).** Migration 0003 aplicada; 30 pendentes de `raw_results` classificados; `jobs` saiu de 0 para 20 linhas, com empresa/cargo/senioridade/modelo extraídos. Zero erro, 17s. 21 aprovadas, 1 colapsada pela dedup, 3 cortadas pelo pré-filtro, 6 pelo LLM.
+
+As classes de falso positivo nomeadas no Passo 1 morreram em dado real, não só no golden set: "Líder de Produtos Financeiros", "Líder de Produtos e Serviços Financeiros" e "products executive manager - shopping & loop mkp" foram todas rejeitadas pelo LLM com motivo correto. A adjacência também funcionou: 4 Product Owners entraram numa busca por Product Manager.
+
+**Mas as 30 linhas eram todas Product Manager** — o cargo com 100% de recall também no harness. Nada nessa rodada diz o que acontece com Enfermeiro ou Auxiliar Administrativo em produção. Para saber: rodar o coletor nos outros alvos (~84 créditos) e classificar de novo; aí `classificacao_motivo` acumula distribuição por cargo, que é a conta que nem o golden set nem essas 30 linhas dão.
+
+**O pré-filtro cortou 3 de 30 (10%) em produção**, contra 7,5% no golden set. Dois números independentes apontando para o mesmo lugar: **a economia de cota que justifica o estágio não está acontecendo**. Ele continua valendo por ser grátis e por não perder vaga (recall 100%), mas não pelo motivo escrito no cabeçalho de `prefiltro.ts`.
 
 **O que este passo NÃO provou:**
 
@@ -173,11 +181,26 @@ Pré-filtro isolado, sobre os 97 rotuláveis: **recall 100%, precisão 88%**. Po
 
 **7. Duplicação entre blocos confirmada com caso real.** A Omie aparece duas vezes na Gupy e uma como post do agregador "Quero Home", com **URLs diferentes** — a dedup por hash não pega. Dedup semântica é requisito de lançamento.
 
+**Verificado em produção (24/08).** A primeira rodada do classificador colapsou dois posts distintos da mesma vaga da Omie ("Portal Vagas - Product Manager (Cash Management)" e "Vagas Home Office - Product Manager (Cash Management)") na chave `omie|product manager`. A decisão de schema do dia 1 se pagou.
+
+**E falhou na linha seguinte, pelo mesmo motivo que a fez funcionar.** Dois posts da mesma vaga do Grupo Boticário viraram DUAS linhas em `jobs`, porque o LLM extraiu o cargo diferente em cada um:
+
+    Vaga Home Office: Product Manager - Especialista I (CEx...  ->  boticario|product manager
+    Vaga Home Office: Product Manager Especialista I ...         ->  boticario|product manager especialista i
+
+**A chave de dedup só é tão estável quanto a extração de cargo do modelo.** É exatamente o modo de falha que ela existia para evitar — feed mostrando a mesma vaga duas vezes. Duas saídas possíveis, nenhuma escolhida ainda: normalizar o cargo com mais violência na chave (arrancar sufixo de senioridade/nível), ou aceitar que só a dedup semântica resolve. A segunda já estava marcada como requisito de lançamento.
+
 **8. Entidades HTML vêm com dupla codificação.** Um `&` do texto chega como `&amp;amp;`; as tags de destaque chegam como `&lt;b&gt;`. Duas regras: decodificar `&lt;`/`&gt;` **antes** de remover tags, e passar em `&amp;` **duas vezes**. Já implementado em `normalize/texto.ts`.
 
 **9. Gupy é inversamente correlacionada com tech.** Front-end 1, PM 9, Dados 7 — contra Enfermeiro 36 e Auxiliar Administrativo 25. Não descartar por cargo tech; a fonte serve a outros segmentos.
 
 **10. Sobreposição cidade×remoto é real e varia por cargo.** Front-end teve 15 resultados repetidos entre os dois recortes; PM teve 5. Quanto mais remoto o cargo, mais se paga duas consultas para receber uma vaga.
+
+**11. O mesmo lote classificado duas vezes dá resultado diferente.** Com `temperature: 0`, o dry-run das mesmas 30 linhas aprovou 22 e a rodada real aprovou 21. No harness, duas execuções deram 4 falsos negativos cada — não os mesmos quatro. **Uma rodada não é uma medição.** Antes de citar qualquer número de precisão, rodar três vezes e olhar a variação. E, em produção, isso significa que uma vaga entra ou não no feed por sorteio.
+
+**12. A confiança do modelo não é calibrada.** Das 20 vagas gravadas, 14 vieram com exatamente `0.90`. O limiar de 0,6 quase não discrimina: na prática é binário. Serve para separar "consigo ver a vaga" de "estou chutando" (o balde `confianca_baixa` captura bem os casos sem texto), mas o número **não é probabilidade** e não deve virar ordenação de feed.
+
+**13. Título de vaga do LinkedIn frequentemente não tem a empresa.** 6 das 20 vagas gravadas (30%) ficaram sem empresa identificada, e 5 delas são `linkedin_job` — a fonte onde o prompt diz que o título é confiável. Consequências: o feed mostraria `"não identificada"` como nome de empresa, e essas linhas caem na chave de dedup por id de fonte, então **nunca** deduplicam contra outra fonte. Extrair da página resolveria, ao custo de uma requisição por item.
 
 ---
 
@@ -211,10 +234,12 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 ## Pendências abertas
 
 - **Solução melhor para os posts.** O bloco funciona e generaliza, mas: 26% dos títulos são genéricos, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo (PM 49, Enfermeiro 8). Adiado por decisão do Pedro em 23/08.
-- **O workflow `classificador.yml` ainda não existe no remoto.** O secret `GEMINI_KEY` está cadastrado (24/08), mas o arquivo do workflow está só na árvore local: `gh workflow run` só funciona depois do commit. `GROQ_KEY` segue sem cadastrar — sem ela não há reserva quando a cota diária do Gemini estourar.
+- **`GROQ_KEY` não existe.** O `classificador.yml` já a referencia e o código trata ausência sem quebrar, mas sem ela não há reserva quando a cota diária do Gemini estourar: a rodada para em vez de continuar. O id de modelo padrão do Groq (`llama-3.3-70b-versatile`) nunca foi exercitado e pode estar morto como o do Gemini estava.
 - **Repetir o harness três vezes antes de citar 95% como número.** Duas rodadas idênticas deram conjuntos diferentes de falso negativo, com `temperature: 0`.
 - **Recoletar guardando o snippet no golden set.** Hoje ele só tem título e URL, e sem snippet o bloco de posts não é avaliável — 23 dos 49 casos de post estão `indeterminado`.
-- **Medir a taxa de corte do pré-filtro sobre `raw_results`.** No golden set ele corta 7,5%, mas o golden set não é amostra aleatória. A migration 0003 já grava `classificacao_motivo` para essa conta.
+- **Decidir o que fazer com a dedup de cargo.** Dois posts da mesma vaga do Boticário viraram duas linhas em `jobs` porque o LLM extraiu o cargo diferente em cada um. Ou a chave normaliza o cargo com mais violência, ou só a dedup semântica resolve — que já é requisito de lançamento. É decisão de schema, não foi tomada.
+- **30% das vagas gravadas ficaram sem empresa** e aparecem como `"não identificada"`. Ruim de mostrar no feed e impede dedup entre fontes. Extrair da página resolveria, ao custo de uma requisição por item — a mesma conta que trava a solução dos posts.
+- **Classificar cargo que não seja Product Manager.** A única rodada de produção foi 100% PM. Roda o coletor nos outros alvos (~84 créditos) e classifica de novo.
 - **Desenho dos tiers** (precisão × quantidade × preço). Base de custo: ~16 créditos por par cargo×cidade.
 - **Fonte única de ATS** (Gupy). Risco registrado, não resolvido.
 - **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de **6 meses** (vence por volta de 22/02/2027). Consumidos até 24/08: 244. Uma rodada completa custa ~84.
