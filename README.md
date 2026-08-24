@@ -56,11 +56,9 @@ Todas com janela de 7 dias (`tbs=qdr:w`). Isso **não é só** uma restrição d
 
 ## Controle de créditos
 
-Os 2.500 créditos gratuitos são **saldo único** com validade de 6 meses, não cota que zera por dia. O contador é acumulado em `.quota/serper.json`, e cada execução reserva antes de chamar e devolve o que não usou — inclusive quando quebra no meio.
+Os 2.500 créditos gratuitos são **saldo único** com validade de 6 meses, não cota que zera por dia. Cada execução reserva antes de chamar e devolve o que não usou — inclusive quando quebra no meio.
 
-```bash
-cat .quota/serper.json
-```
+Em produção o contador vive na tabela `api_saldo` (chave `serper`), com reserva atômica via `SELECT … FOR UPDATE`. Rodando com `--no-db`, ele cai em `.quota/serper.json` local — os dois são independentes e não se sincronizam sozinhos.
 
 Retry consome crédito; falha de rede não. `402` (sem crédito) e `401` (chave errada) não fazem retry, porque não melhoram com insistência.
 
@@ -131,7 +129,6 @@ A chave secreta ignora RLS: só em secret do Actions e em `.env` local, nunca no
 
 ## O que este passo não resolve
 
-- **Migrations não aplicadas.** Enquanto isso, rode com `--no-db`; os resultados de medição ficam em JSON solto na raiz.
 - **Posts precisam de solução melhor.** Funcionam e generalizam, mas 26% dos títulos são genéricos e a extração de empresa/cargo exige buscar o corpo da página.
 - **Dedup semântica.** A mesma vaga anunciada na Gupy e repostada como post tem URLs diferentes; o hash não pega. Precisa de pgvector sobre o texto extraído — Passo 3.
 - **Gupy é fonte única de ATS.** Risco registrado, não resolvido.
