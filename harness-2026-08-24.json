@@ -1,0 +1,4834 @@
+{
+  "medidoEm": "2026-08-24T16:56:16.313Z",
+  "golden": "harness/golden.jsonl",
+  "casos": 120,
+  "prefiltro": {
+    "metricas": {
+      "positivosVerdadeiros": 77,
+      "falsosPositivos": 11,
+      "falsosNegativos": 0,
+      "negativosVerdadeiros": 9,
+      "indefinidos": 0,
+      "precisao": 0.875,
+      "recall": 1,
+      "f1": 0.9333333333333333
+    },
+    "avaliados": [
+      {
+        "caso": {
+          "id": "cargos-000",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Product Manager | Senior (Hybrid São Paulo/SP)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-001",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Product Manager na empresa Enter — São Paulo, SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-002",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Product Manager Sênior - Legitimuz",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-003",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "ServiceNow Product Manager - Remote Work | REF#301590",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-004",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "[TEAM PRODUCT] Flutter flow Lead PL - REMOTO",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "vaga de dev Flutter; \"PRODUCT\" vem do nome do time"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-005",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Locaweb | Especialista de Produto (Product Manager)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "Especialista de Produto com \"Product Manager\" entre parênteses"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-006",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Ana Carolina Schirmer",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-007",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Legitimuz - contratando",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-008",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Wagner Sousa - ANALISTA DE PRODUTOS MARKETS SR",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "analista de produtos de mercado financeiro, não PM de tecnologia"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-009",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Product Manager Jr — Vaga Home Office | V360",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-010",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas Home Office - Product Manager (Cash Management)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-011",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vaga Home Office: Product Manager Especialista I ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-012",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Associate Product Manager Júnior",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-013",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Product Manager SR - Confidential",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-014",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Product Owner Sênior | Crédito e Financiamento - Porto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "Product Owner conta numa busca por Product Manager (decisão de produto)"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-015",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Product Manager Especialista I (Soluções Corporativas)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-016",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Product Manager - Especialista I (CEx Tech Franqueados)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-017",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Especialista II SAP EWM - Grupo Boticário",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "consultoria SAP; classe de falso positivo registrada no CLAUDE.md"
+        },
+        "previsto": false,
+        "motivo": "cargo_fora_do_titulo",
+        "detalhe": "título não menciona product",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-018",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Orizon hiring Desenvolvedor Front-end I in Brazil",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-019",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Fluke Corporation hiring Front End Web Developer in São ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "título só em inglês: Front End Web Developer"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-020",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Desenvolvedor Front-end React - SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-021",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Orizon hiring Desenvolvedor Front-end I in Brazil",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-022",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Desenvolvedor Front-End (Angular) - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-023",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Desenvolvedor de Software Frontend - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-024",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Stack Vagas",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-025",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Pacaembu Autopeças",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-026",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "pjotizadoras #desenvolvedor #frontend #pejotização ...",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "post sobre pejotização; o título não permite afirmar que é vaga"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-027",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas Home Office - Desenvolvedor Front-End (Angular)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-028",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas Home Office - Desenvolvedor Front-End SR",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-029",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "💼 VAGAS: Desenvolvedor Front End Angular 💰 R$ 6.000,00",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-030",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "DESENVOLVEDOR FRONT END SR - Stefanini",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-031",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Dados na empresa Gradus — São Paulo, SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-032",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Dados SR",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-033",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de dados de performance Jr - Wepink",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-034",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Digital Insights Analyst Pleno | Analista de Dados",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-035",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Engenharia de Dados - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "engenharia de dados dentro da família de análise de dados — julgamento"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-036",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Cientista de Dados - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "cientista de dados é adjacente a analista de dados — julgamento"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-037",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas - DataLakers",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-038",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Grupo Easy - Consultoria e Serviços",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-039",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Anjun",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-040",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Analista de Dados - Domínio da — Vaga Home Office",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-041",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "VAGA HOME OFFICE: Analista de Business Intelligence ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "business intelligence é adjacente a análise de dados — julgamento"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-042",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas - DataLakers",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-043",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de dados Sr | Qualidade (Gestão de dados) - Rede D'Or",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-044",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "ATENTO ESCALADA - Analista de Dados Pl - Híbrido",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-045",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Analista de Dados (Inteligência de Negócios)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-046",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de Dados - Domínio da ferramenta MS Power BI",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-047",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de marketing - Light Produções",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-048",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing Digital Sr - Prime",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-049",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing Sênior - Barra Funda/SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-050",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing Sênior (Remoto) – Rio de Janeiro – RJ",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-051",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing · Remoto · PJ · GG Studio",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-052",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing de Performance Sr. (Remoto) - nowle",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-053",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Ana Clara de Andrade - Marketing Médico",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-054",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Patrick Cassaneli",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-055",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Farejando Novos Talentos - Petlove",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-056",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Aqui tem Freela e Vaga | Marketing e ...",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-057",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Portüs Digital | Jéssica Siqueira | 27 comentários",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-058",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vaga Social Media | Agência Tittanium Modelo: PJ ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "social media dentro da família de marketing — julgamento"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-059",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de marketing | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-060",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de Marketing - Comunicação e Branding",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-061",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de Marketing Júnior - Banco Sofisa",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-062",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de marketing | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-063",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Analista de Marketing Júnior | Conteúdo SEO",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-064",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "SUPERMED hiring Auxiliar Administrativo Jr in São Paulo ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-065",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar administrativo - Environmental Impact Solutions",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-066",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar administrativo na empresa Nobre Advogados",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-067",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar Administrativo Comercial - Home Office",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-068",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar administrativo - Frelaa",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-069",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "AUXILIAR ADMINISTRATIVO (ENGAJAMENTO DIGITAL)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-070",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "VAGA ADMINISTRATIVA VIA LINKEDIN CIDADE",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "vaga administrativa, família do cargo buscado"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-071",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Natieli Andrade - VAGA: Auxiliar Administrativo 📍 Pinheiros",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-072",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vaga de Auxiliar Administrativo, São Paulo / SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-073",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Giovanna Ruiz",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-074",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Rayne Cardoso Santos",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-075",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "🚀 VAMOS NOS CONECTAR? Comenta aqui embaixo: 👉 ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "nao_e_vaga",
+          "nota": "post de networking"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-076",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "AUXILIAR ADMINISTRATIVO - SPDM/PAIS",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-077",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de Assistente | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-078",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | AUXILIAR ADMINISTRATIVO - UPA",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-079",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro - São Paulo/SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-080",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro - Clínica Mac Weber",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-081",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro III - Internação - 12x36 diurno.",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-082",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "enfermeiro de regulação",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-083",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro |UNI Adulto | Glória D'or",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-084",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro(a) Auditor(a) (Concorrente e Recorrente)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-085",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "TemosVagas_segurosUnimed | Seguros Unimed",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-086",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Jennifer Pacheco",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-087",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Doutores da Alegria | Afeto e cuidado dentro do hospital",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-088",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Popoliski Corretora de Seguros",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-089",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de enfermagem | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-090",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Aplique para Vagas de enfermeiro em Minas Gerais",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-091",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | ENFERMEIRO - UPA - SPDM/PAIS",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-092",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Enfermeiro(a) Especialista - Cuidados Paliativos",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-093",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Enfermeiro Administrativo Pleno- Gestão de Saúde - Acrisure",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-094",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de home office Home Office | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-000",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://banqi.gupy.io/jobs/12075384",
+          "titulo": "Página da Vaga | Product Manager - banQi",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-001",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://grupoboticario.gupy.io/jobs/11862049",
+          "titulo": "Especialista I (Social Commerce) - Grupo Boticário",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "social commerce, não gestão de produto"
+        },
+        "previsto": false,
+        "motivo": "cargo_fora_do_titulo",
+        "detalhe": "título não menciona product",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-002",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://localiza.gupy.io/job/eyJqb2JJZCI6MTE1NjkyNDUsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=",
+          "titulo": "Página da Vaga | PRODUCT MANAGER III - (localiza.gupy.io).",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "URL no formato /job/<base64>: não rende id numérico na canonicalização"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-003",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://extractta.gupy.io/jobs/11616974",
+          "titulo": "Página da Vaga | Data Product Manager - #77 - Extractta",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-004",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://pulsus.gupy.io/jobs/11673525",
+          "titulo": "Product Manager Sênior | Remoto | Brasil - Pulsus",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-005",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7375838641245425664",
+          "titulo": "The best sites to find your next Product Manager role",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "nao_e_vaga",
+          "nota": "conteúdo sobre carreira"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-006",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7333469940986867712",
+          "titulo": "Quanto ganha um Product Manager ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "nao_e_vaga",
+          "nota": "conteúdo sobre salário"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-007",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7477715105368092673",
+          "titulo": "VAGA: Product Designer 100% Remoto Remuneração: R ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "mesmo domínio, função de design"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-008",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495920654144307200",
+          "titulo": "🚨 VAGA HOME OFFICE: Project Manager (Caylent/AWS) 💰 ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "Project Manager não é Product Manager"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-009",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7449513198170390528",
+          "titulo": "VAGA: Gerente de Growth - Home Office Salário CLT",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "growth, não produto"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-010",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7477803309869981696",
+          "titulo": "Vagas Home Office - Financial na empresa ContaAzul",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "vaga da área financeira"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-011",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7490714538351271936",
+          "titulo": "Product Manager — Vaga Home Office | Omie | Quero Home",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "a mesma vaga aparece na Gupy da Omie: caso real de dedup entre fontes"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-012",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7465755130827767810",
+          "titulo": "🚀 Estamos contratando: Product Manager | AI",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-013",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7485416638448652288",
+          "titulo": "Product Manager Sênior (100% Remoto) na Atlas! ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-014",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7285321277869801477",
+          "titulo": "Veja os detalhes da vaga Product Manager Sênior",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-015",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7494020082944266240",
+          "titulo": "Vagas Home Office - Associate Product Manager Pleno",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-016",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7333218552960724992",
+          "titulo": "Product Manager Júnior | Remoto Salário R$ 8.700,00 ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-017",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7454867228224626689",
+          "titulo": "Publicação de Bruno Bertozzo",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-018",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7406419592165761024",
+          "titulo": "Nate Mudd posted this",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-019",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7468041850675744768",
+          "titulo": "Charlie Liao's Post",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-020",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "https://www.linkedin.com/jobs/view/4365109913",
+          "titulo": "Product Manager - SYDLE",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-021",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "https://www.linkedin.com/jobs/view/4441866417",
+          "titulo": "Product Data Manager (PO)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "Product Owner de dados"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-022",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Líder de Produtos Financeiros",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "varejo/serviços financeiros; classe nomeada no CLAUDE.md"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-023",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Global Product Line Manager — Screens",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "mineração; casou pela barra lateral da página"
+        },
+        "previsto": true,
+        "motivo": "passou",
+        "detalhe": "",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-024",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Líder de projetos e pessoas",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "gestão de projetos, não de produto"
+        },
+        "previsto": false,
+        "motivo": "cargo_fora_do_titulo",
+        "detalhe": "título não menciona product",
+        "estagio": "prefiltro"
+      }
+    ]
+  },
+  "pipeline": {
+    "provedor": "gemini/gemini-3.5-flash-lite",
+    "metricas": {
+      "positivosVerdadeiros": 73,
+      "falsosPositivos": 0,
+      "falsosNegativos": 4,
+      "negativosVerdadeiros": 20,
+      "indefinidos": 0,
+      "precisao": 1,
+      "recall": 0.948051948051948,
+      "f1": 0.9733333333333333
+    },
+    "avaliados": [
+      {
+        "caso": {
+          "id": "cargos-000",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Product Manager | Senior (Hybrid São Paulo/SP)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Titulo indica vaga de Product Manager Senior em Sao Paulo.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-001",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Product Manager na empresa Enter — São Paulo, SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Titulo indica vaga de Product Manager na empresa Enter.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-002",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Product Manager Sênior - Legitimuz",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Titulo indica vaga de Product Manager Senior na Legitimuz.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-003",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "ServiceNow Product Manager - Remote Work | REF#301590",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Titulo indica vaga de ServiceNow Product Manager remota.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-004",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "[TEAM PRODUCT] Flutter flow Lead PL - REMOTO",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "vaga de dev Flutter; \"PRODUCT\" vem do nome do time"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Titulo indica vaga de Flutter flow Lead, que nao e Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-005",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Locaweb | Especialista de Produto (Product Manager)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "Especialista de Produto com \"Product Manager\" entre parênteses"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Especialista de Produto equivale a Product Manager na Locaweb.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-006",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Ana Carolina Schirmer",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Post generico sem texto no snippet, mantido por cautela. (confiança 0.30)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-007",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Legitimuz - contratando",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Divulgacao generica de contratacao da Legitimuz sem detalhar o cargo. (confiança 0.40)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-008",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Wagner Sousa - ANALISTA DE PRODUTOS MARKETS SR",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "analista de produtos de mercado financeiro, não PM de tecnologia"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Perfil profissional ou post sem anuncio de vaga.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-009",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Product Manager Jr — Vaga Home Office | V360",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga aberta para Product Manager Junior.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-010",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas Home Office - Product Manager (Cash Management)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anuncio de vaga para Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-011",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vaga Home Office: Product Manager Especialista I ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anuncio de vaga para Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-012",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Associate Product Manager Júnior",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Associate Product Manager Junior.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-013",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Product Manager SR - Confidential",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Product Manager Senior.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-014",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Product Owner Sênior | Crédito e Financiamento - Porto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "Product Owner conta numa busca por Product Manager (decisão de produto)"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Product Owner e cargo adjacente compativel.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-015",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Product Manager Especialista I (Soluções Corporativas)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga para Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-016",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Product Manager - Especialista I (CEx Tech Franqueados)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Cargo de Product Manager anunciado na Gupy.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-017",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Especialista II SAP EWM - Grupo Boticário",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "consultoria SAP; classe de falso positivo registrada no CLAUDE.md"
+        },
+        "previsto": false,
+        "motivo": "cargo_fora_do_titulo",
+        "detalhe": "título não menciona product",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-018",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Orizon hiring Desenvolvedor Front-end I in Brazil",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Desenvolvedor Front-end no LinkedIn.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-019",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Fluke Corporation hiring Front End Web Developer in São ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "título só em inglês: Front End Web Developer"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Front End Web Developer no LinkedIn.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-020",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Desenvolvedor Front-end React - SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Desenvolvedor Front-end React no LinkedIn.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-021",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Orizon hiring Desenvolvedor Front-end I in Brazil",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Desenvolvedor Front-end no LinkedIn.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-022",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Desenvolvedor Front-End (Angular) - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga remota de Desenvolvedor Front-End.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-023",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Desenvolvedor de Software Frontend - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga remota de Desenvolvedor de Software Frontend.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-024",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Stack Vagas",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Post sem texto suficiente para confirmar vaga.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-025",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Pacaembu Autopeças",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Texto vazio demais para determinar com precisao. (confiança 0.30)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-026",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "pjotizadoras #desenvolvedor #frontend #pejotização ...",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "post sobre pejotização; o título não permite afirmar que é vaga"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Post de opiniao ou discussao sobre pejotizacao.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-027",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas Home Office - Desenvolvedor Front-End (Angular)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anuncia vaga de Desenvolvedor Front-End home office.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-028",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas Home Office - Desenvolvedor Front-End SR",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anuncia vaga senior de Desenvolvedor Front-End.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-029",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "💼 VAGAS: Desenvolvedor Front End Angular 💰 R$ 6.000,00",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anuncia vaga de Desenvolvedor Front End Angular.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-030",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Desenvolvedor Front-end",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "DESENVOLVEDOR FRONT END SR - Stefanini",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga senior de Desenvolvedor Front End na Stefanini.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-031",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Dados na empresa Gradus — São Paulo, SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Analista de Dados na empresa Gradus.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-032",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Dados SR",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga senior de Analista de Dados.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-033",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de dados de performance Jr - Wepink",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de analista de dados júnior na Wepink.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-034",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Digital Insights Analyst Pleno | Analista de Dados",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Cargo compatível de analista de dados pleno.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-035",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Engenharia de Dados - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "engenharia de dados dentro da família de análise de dados — julgamento"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Engenharia de dados é outra função.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-036",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Cientista de Dados - Trabalho Remoto",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "cientista de dados é adjacente a analista de dados — julgamento"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Cientista de dados é cargo adjacente.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-037",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas - DataLakers",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Texto muito curto, mantido por cautela. (confiança 0.30)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-038",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Grupo Easy - Consultoria e Serviços",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Falta de evidência no snippet, mantido por cautela. (confiança 0.30)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-039",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Anjun",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Falta de evidência no snippet, mantido por cautela. (confiança 0.30)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-040",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Analista de Dados - Domínio da — Vaga Home Office",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de analista de dados home office.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-041",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "VAGA HOME OFFICE: Analista de Business Intelligence ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "business intelligence é adjacente a análise de dados — julgamento"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Texto curto demais mas indica vaga de analista. (confiança 0.40)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-042",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vagas - DataLakers",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Página de listagem de vagas da empresa.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-043",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de dados Sr | Qualidade (Gestão de dados) - Rede D'Or",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga específica de analista de dados senior na Rede D'Or.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-044",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "ATENTO ESCALADA - Analista de Dados Pl - Híbrido",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga específica de analista de dados pleno na Atento.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-045",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Analista de Dados (Inteligência de Negócios)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anúncio de vaga de analista de dados.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-046",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Dados",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de Dados - Domínio da ferramenta MS Power BI",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anúncio de vaga focada em Power BI.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-047",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de marketing - Light Produções",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de analista de marketing na Light Produções.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-048",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing Digital Sr - Prime",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga senior de analista de marketing digital na Prime.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-049",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing Sênior - Barra Funda/SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de analista de marketing sênior em São Paulo.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-050",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing Sênior (Remoto) – Rio de Janeiro – RJ",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga remota de analista de marketing sênior.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-051",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing · Remoto · PJ · GG Studio",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga remota de analista de marketing na GG Studio.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-052",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Analista de Marketing de Performance Sr. (Remoto) - nowle",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga remota de analista de marketing na nowle.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-053",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Ana Clara de Andrade - Marketing Médico",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Trata-se de post sobre marketing médico, não vaga.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-054",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Patrick Cassaneli",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Snippet vazio, sem evidência de vaga.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-055",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Farejando Novos Talentos - Petlove",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Divulgação genérica de talentos na Petlove. (confiança 0.40)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-056",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Aqui tem Freela e Vaga | Marketing e ...",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Página de listagem ou grupo de vagas.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-057",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Portüs Digital | Jéssica Siqueira | 27 comentários",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Texto vazio impossibilita confirmacao. (confiança 0.10)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-058",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vaga Social Media | Agência Tittanium Modelo: PJ ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "social media dentro da família de marketing — julgamento"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anuncia vaga de social media, cargo da mesma familia.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-059",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de marketing | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-060",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de Marketing - Comunicação e Branding",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga exata de Analista de Marketing na Gupy.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-061",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Analista de Marketing Júnior - Banco Sofisa",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Analista de Marketing no Banco Sofisa.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-062",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de marketing | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-063",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Analista de Marketing",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | Analista de Marketing Júnior | Conteúdo SEO",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Analista de Marketing com foco em SEO.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-064",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "SUPERMED hiring Auxiliar Administrativo Jr in São Paulo ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Auxiliar Administrativo na Supermed.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-065",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar administrativo - Environmental Impact Solutions",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Auxiliar Administrativo.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-066",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar administrativo na empresa Nobre Advogados",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Auxiliar Administrativo na Nobre Advogados.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-067",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar Administrativo Comercial - Home Office",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anúncio claro de vaga para Auxiliar Administrativo Comercial.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-068",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Auxiliar administrativo - Frelaa",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de auxiliar administrativo anunciada.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-069",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "AUXILIAR ADMINISTRATIVO (ENGAJAMENTO DIGITAL)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de auxiliar administrativo encontrada no título.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-070",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "VAGA ADMINISTRATIVA VIA LINKEDIN CIDADE",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "vaga administrativa, família do cargo buscado"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Título genérico, mas indica vaga administrativa. (confiança 0.40)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-071",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Natieli Andrade - VAGA: Auxiliar Administrativo 📍 Pinheiros",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Post indicando vaga com localização específica.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-072",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Vaga de Auxiliar Administrativo, São Paulo / SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Post anunciando vaga para a função buscada.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-073",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Giovanna Ruiz",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Post genérico sem evidência de vaga no título.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-074",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Rayne Cardoso Santos",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Publicação sem detalhes suficientes sobre vaga.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-075",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "🚀 VAMOS NOS CONECTAR? Comenta aqui embaixo: 👉 ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "nao_e_vaga",
+          "nota": "post de networking"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Post de networking pedindo comentários, sem vaga anunciada.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-076",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "AUXILIAR ADMINISTRATIVO - SPDM/PAIS",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga aberta de Auxiliar Administrativo na SPDM/PAIS.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-077",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de Assistente | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-078",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Auxiliar Administrativo",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | AUXILIAR ADMINISTRATIVO - UPA",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Página de vaga para Auxiliar Administrativo.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-079",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro - São Paulo/SP",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Enfermeiro em São Paulo.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-080",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro - Clínica Mac Weber",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Enfermeiro na Clínica Mac Weber.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-081",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro III - Internação - 12x36 diurno.",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga para Enfermeiro III.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-082",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "enfermeiro de regulação",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga para enfermeiro de regulação.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-083",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro |UNI Adulto | Glória D'or",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Enfermeiro no hospital Glória D'or.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-084",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Enfermeiro(a) Auditor(a) (Concorrente e Recorrente)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Texto curto demais para decidir com certeza. (confiança 0.40)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-085",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "TemosVagas_segurosUnimed | Seguros Unimed",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Falta informação suficiente no texto. (confiança 0.30)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-086",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Jennifer Pacheco",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Snippet vazio, sem evidências claras. (confiança 0.20)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-087",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Doutores da Alegria | Afeto e cuidado dentro do hospital",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Trata-se de uma instituição cultural, não de vaga.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-088",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "linkedin_post",
+          "url": "",
+          "titulo": "Publicação de Popoliski Corretora de Seguros",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Poucos detalhes fornecidos no item. (confiança 0.30)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-089",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de enfermagem | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-090",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Aplique para Vagas de enfermeiro em Minas Gerais",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "cargos-091",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "cidade",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Página da Vaga | ENFERMEIRO - UPA - SPDM/PAIS",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anúncio explícito de vaga para Enfermeiro.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-092",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Enfermeiro(a) Especialista - Cuidados Paliativos",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga específica de enfermagem.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-093",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Enfermeiro Administrativo Pleno- Gestão de Saúde - Acrisure",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga clara para enfermeiro administrativo.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "cargos-094",
+          "origem": "cargos-2026-08-23",
+          "cargoBusca": "Enfermeiro",
+          "cidadeBusca": "São Paulo",
+          "recorte": "remoto",
+          "fonte": "ats_gupy",
+          "url": "",
+          "titulo": "Vagas de home office Home Office | Encontre oportunidades",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "pagina_de_listagem",
+          "nota": "busca da própria Gupy indexada"
+        },
+        "previsto": false,
+        "motivo": "pagina_de_listagem",
+        "detalhe": "título de página de busca da Gupy",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-000",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://banqi.gupy.io/jobs/12075384",
+          "titulo": "Página da Vaga | Product Manager - banQi",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Product Manager na banQi.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-001",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://grupoboticario.gupy.io/jobs/11862049",
+          "titulo": "Especialista I (Social Commerce) - Grupo Boticário",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "social commerce, não gestão de produto"
+        },
+        "previsto": false,
+        "motivo": "cargo_fora_do_titulo",
+        "detalhe": "título não menciona product",
+        "estagio": "prefiltro"
+      },
+      {
+        "caso": {
+          "id": "passo1-002",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://localiza.gupy.io/job/eyJqb2JJZCI6MTE1NjkyNDUsInNvdXJjZSI6Imd1cHlfcG9ydGFsIn0=",
+          "titulo": "Página da Vaga | PRODUCT MANAGER III - (localiza.gupy.io).",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "URL no formato /job/<base64>: não rende id numérico na canonicalização"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Product Manager na Localiza.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-003",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://extractta.gupy.io/jobs/11616974",
+          "titulo": "Página da Vaga | Data Product Manager - #77 - Extractta",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Data Product Manager na Extractta.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-004",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "ats_gupy",
+          "url": "https://pulsus.gupy.io/jobs/11673525",
+          "titulo": "Product Manager Sênior | Remoto | Brasil - Pulsus",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga remota de Product Manager Sênior na Pulsus.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-005",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7375838641245425664",
+          "titulo": "The best sites to find your next Product Manager role",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "nao_e_vaga",
+          "nota": "conteúdo sobre carreira"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Artigo sobre sites para encontrar vagas.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-006",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7333469940986867712",
+          "titulo": "Quanto ganha um Product Manager ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "nao_e_vaga",
+          "nota": "conteúdo sobre salário"
+        },
+        "previsto": false,
+        "motivo": "nao_e_vaga",
+        "detalhe": "Post discutindo salário de Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-007",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7477715105368092673",
+          "titulo": "VAGA: Product Designer 100% Remoto Remuneração: R ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "mesmo domínio, função de design"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Vaga de Product Designer, não Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-008",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7495920654144307200",
+          "titulo": "🚨 VAGA HOME OFFICE: Project Manager (Caylent/AWS) 💰 ...",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "Project Manager não é Product Manager"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Vaga de Project Manager, não Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-009",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7449513198170390528",
+          "titulo": "VAGA: Gerente de Growth - Home Office Salário CLT",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "growth, não produto"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Gerente de Growth não é Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-010",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7477803309869981696",
+          "titulo": "Vagas Home Office - Financial na empresa ContaAzul",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "vaga da área financeira"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Área financeira não é Product Manager.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-011",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7490714538351271936",
+          "titulo": "Product Manager — Vaga Home Office | Omie | Quero Home",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": "a mesma vaga aparece na Gupy da Omie: caso real de dedup entre fontes"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Anuncia vaga de Product Manager na Omie.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-012",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7465755130827767810",
+          "titulo": "🚀 Estamos contratando: Product Manager | AI",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga aberta para Product Manager | AI.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-013",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7485416638448652288",
+          "titulo": "Product Manager Sênior (100% Remoto) na Atlas! ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Product Manager Sênior remota.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-014",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7285321277869801477",
+          "titulo": "Veja os detalhes da vaga Product Manager Sênior",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Product Manager Sênior.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-015",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7494020082944266240",
+          "titulo": "Vagas Home Office - Associate Product Manager Pleno",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Associate Product Manager Pleno.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-016",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7333218552960724992",
+          "titulo": "Product Manager Júnior | Remoto Salário R$ 8.700,00 ...",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Product Manager Júnior remota.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-017",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7454867228224626689",
+          "titulo": "Publicação de Bruno Bertozzo",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Snippet vazio impede qualquer confirmacao. (confiança 0.10)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-018",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7406419592165761024",
+          "titulo": "Nate Mudd posted this",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Snippet vazio impede qualquer confirmacao. (confiança 0.10)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-019",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_post",
+          "url": "https://www.linkedin.com/feed/update/urn:li:activity:7468041850675744768",
+          "titulo": "Charlie Liao's Post",
+          "snippet": "",
+          "rotulo": "indeterminado",
+          "classe": "",
+          "nota": "título de post reescrito pelo Google; não dá para rotular sem o corpo"
+        },
+        "previsto": false,
+        "motivo": "confianca_baixa",
+        "detalhe": "Snippet vazio impede qualquer confirmacao. (confiança 0.10)",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-020",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "https://www.linkedin.com/jobs/view/4365109913",
+          "titulo": "Product Manager - SYDLE",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_da_familia",
+          "nota": ""
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Vaga de Product Manager na SYDLE.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-021",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "https://www.linkedin.com/jobs/view/4441866417",
+          "titulo": "Product Data Manager (PO)",
+          "snippet": "",
+          "rotulo": "relevante",
+          "classe": "vaga_adjacente",
+          "nota": "Product Owner de dados"
+        },
+        "previsto": true,
+        "motivo": "aprovado",
+        "detalhe": "Cargo adjacente Product Data Manager e PO.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-022",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Líder de Produtos Financeiros",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "varejo/serviços financeiros; classe nomeada no CLAUDE.md"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Outro assunto, foco em produtos financeiros.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-023",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Global Product Line Manager — Screens",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "mineração; casou pela barra lateral da página"
+        },
+        "previsto": false,
+        "motivo": "cargo_de_outra_familia",
+        "detalhe": "Gerenciamento de linha de produtos fisicos.",
+        "estagio": "llm"
+      },
+      {
+        "caso": {
+          "id": "passo1-024",
+          "origem": "passo1-serper-2026-08-22",
+          "cargoBusca": "Product Manager",
+          "cidadeBusca": "Belo Horizonte",
+          "recorte": "",
+          "fonte": "linkedin_job",
+          "url": "",
+          "titulo": "Líder de projetos e pessoas",
+          "snippet": "",
+          "rotulo": "irrelevante",
+          "classe": "cargo_de_outra_familia",
+          "nota": "gestão de projetos, não de produto"
+        },
+        "previsto": false,
+        "motivo": "cargo_fora_do_titulo",
+        "detalhe": "título não menciona product",
+        "estagio": "prefiltro"
+      }
+    ]
+  }
+}

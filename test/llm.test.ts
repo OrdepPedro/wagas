@@ -1,0 +1,114 @@
+import assert from 'node:assert/strict';
+import { describe, it } from 'node:test';
+
+import {
+  cadeiaDoAmbiente,
+  LlmErro,
+  LlmIndisponivel,
+  ProvedorGemini,
+  ProvedorGroq,
+} from '../src/classificar/llm.ts';
+
+function resposta(corpo: unknown, status = 200): Response {
+  return new Response(JSON.stringify(corpo), {
+    status,
+    headers: { 'content-type': 'application/json' },
+  });
+}
+
+function fetchFalso(sequencia: Array<() => Response>): { fn: typeof fetch; chamadas: Request[] } {
+  const chamadas: Request[] = [];
+  let i = 0;
+  const fn = (async (url: string | URL | Request, init?: RequestInit) => {
+    chamadas.push(new Request(typeof url === 'string' ? url : String(url), init));
+    const proximo = sequencia[Math.min(i, sequencia.length - 1)];
+    i++;
+    return proximo!();
+  }) as unknown as typeof fetch;
+  return { fn, chamadas };
+}
+
+const textoGemini = (t: string) => ({ candidates: [{ content: { parts: [{ text: t }] } }] });
+const textoGroq = (t: string) => ({ choices: [{ message: { content: t } }] });
+
+describe('ProvedorGemini', () => {
+  it('manda o schema e devolve o texto', async () => {
+    const { fn, chamadas } = fetchFalso([() => resposta(textoGemini('{"julgamentos":[]}'))]);
+    const provedor = new ProvedorGemini({ chave: 'k', modelo: 'gemini-2.5-flash-lite', fetchImpl: fn });
+
+    assert.equal(await provedor.julgar('prompt', { type: 'object' }), '{"julgamentos":[]}');
+    assert.equal(provedor.nome, 'gemini/gemini-2.5-flash-lite');
+
+    const enviado = JSON.parse(await chamadas[0]!.text());
+    assert.equal(enviado.generationConfig.responseMimeType, 'application/json');
+    assert.deepEqual(enviado.generationConfig.responseSchema, { type: 'object' });
+    // Classificação não quer criatividade: mesma entrada, mesma saída.
+    assert.equal(enviado.generationConfig.temperature, 0);
+  });
+
+  it('429 vira indisponível sem retry: no tier gratuito é cota do dia', async () => {
+    const { fn, chamadas } = fetchFalso([() => resposta({ error: { message: 'quota' } }, 429)]);
+    const provedor = new ProvedorGemini({ chave: 'k', modelo: 'm', fetchImpl: fn });
+
+    await assert.rejects(() => provedor.julgar('p', null), LlmIndisponivel);
+    assert.equal(chamadas.length, 1);
+  });
+
+  it('repete em 503 e devolve o resultado bom', async () => {
+    let n = 0;
+    const { fn } = fetchFalso([
+      () => (n++ === 0 ? resposta({}, 503) : resposta(textoGemini('{"julgamentos":[]}'))),
+    ]);
+    const provedor = new ProvedorGemini({
+      chave: 'k',
+      modelo: 'm',
+      fetchImpl: fn,
+      sleepImpl: async () => {},
+    });
+
+    assert.equal(await provedor.julgar('p', null), '{"julgamentos":[]}');
+  });
+
+  it('resposta sem texto não é retentada: é defeito do lote, não da rede', async () => {
+    const { fn, chamadas } = fetchFalso([() => resposta({ candidates: [] })]);
+    const provedor = new ProvedorGemini({
+      chave: 'k',
+      modelo: 'm',
+      fetchImpl: fn,
+      sleepImpl: async () => {},
+    });
+
+    await assert.rejects(() => provedor.julgar('p', null), LlmErro);
+    assert.equal(chamadas.length, 1);
+  });
+});
+
+describe('ProvedorGroq', () => {
+  it('pede json_object e devolve o conteúdo da mensagem', async () => {
+    const { fn, chamadas } = fetchFalso([() => resposta(textoGroq('{"julgamentos":[]}'))]);
+    const provedor = new ProvedorGroq({ chave: 'k', modelo: 'llama-3.3-70b-versatile', fetchImpl: fn });
+
+    assert.equal(await provedor.julgar('p', null), '{"julgamentos":[]}');
+
+    const enviado = JSON.parse(await chamadas[0]!.text());
+    assert.deepEqual(enviado.response_format, { type: 'json_object' });
+    assert.equal(chamadas[0]!.headers.get('authorization'), 'Bearer k');
+  });
+});
+
+describe('cadeiaDoAmbiente', () => {
+  const base = { geminiModelo: 'g', groqModelo: 'q' };
+
+  it('sem chave nenhuma, devolve null', () => {
+    assert.equal(cadeiaDoAmbiente({ ...base, geminiKey: '', groqKey: '' }), null);
+  });
+
+  it('o Gemini vem primeiro quando as duas chaves existem', () => {
+    const cadeia = cadeiaDoAmbiente({ ...base, geminiKey: 'a', groqKey: 'b' });
+    assert.equal(cadeia?.nome, 'gemini/g');
+  });
+
+  it('só o Groq configurado, a cadeia é só ele', () => {
+    assert.equal(cadeiaDoAmbiente({ ...base, geminiKey: '', groqKey: 'b' })?.nome, 'groq/q');
+  });
+});

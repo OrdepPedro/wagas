@@ -103,6 +103,31 @@ Autenticação pela **secret key nova** (`sb_secret_…`), não pela legacy `ser
 
 Teste ponta a ponta: 20 vagas coletadas e gravadas; segunda rodada devolveu `jaNoBanco: 20, gravados: 0`, provando a dedup contra o banco.
 
+### Passo 3 — classificador medido ponta a ponta (24/08/2026)
+
+Pipeline de dois estágios em `src/classificar/`: pré-filtro determinístico (custo zero) → Gemini Flash-Lite com Groq de reserva, saída JSON estrito em lote. Migration `0003` grava o motivo da decisão em `raw_results`, para o harness poder medir cada regra sobre dado de produção. 181 testes, typecheck limpo.
+
+**Família de cargo virou regra genérica**, como o CLAUDE.md exigia: `familia.ts` decompõe qualquer título em senioridade + função + domínio, e duas vagas são da mesma família quando compartilham o domínio e a *classe* da função. Product Owner ≈ Product Manager, Assistente ≈ Auxiliar, Cientista de Dados ≈ Analista de Dados — sem nenhuma linha citando esses cargos. Product Designer não bate com Product Manager (mesmo domínio, outra classe).
+
+**Harness com 120 casos rotulados** de SERP real (`harness/golden.jsonl`): 6 cargos, 3 fontes. 77 relevantes, 20 irrelevantes, 23 indeterminados. `indeterminado` fica fora da métrica de propósito — rotular no chute inventaria o número.
+
+Pré-filtro isolado, sobre os 97 rotuláveis: **recall 100%, precisão 88%**. Por fonte: Gupy 100/100, LinkedIn Jobs 93/100, posts 69/100. Um teste trava o recall em 100% — regra nova que corte vaga boa quebra a suíte.
+
+**Pipeline completo, com `gemini-3.5-flash-lite`: precisão 100%, recall 95%, F1 97%** (97 casos). O LLM derrubou os 11 falsos positivos que o pré-filtro deixara passar, inclusive as classes nomeadas no Passo 1. 14 chamadas para 111 candidatos; tier gratuito, custo zero. Relatório em `harness-2026-08-24.json`.
+
+**O modelo padrão que eu tinha escolhido estava morto.** `gemini-2.5-flash-lite` devolve `404 — no longer available to new users`, apontando para `gemini-3.5-flash-lite`. Um teste de fumaça com 16 casos custou 2 chamadas e pegou isso antes da rodada inteira — id de modelo velho é falha silenciosa até a primeira chamada real. O padrão do Groq (`llama-3.3-70b-versatile`) nunca foi exercitado e pode estar no mesmo estado.
+
+**O canal de confiança funciona.** Dos 17 reprovados por `confianca_baixa`, 14 são exatamente os casos que eu não consegui rotular à mão — o modelo chegou sozinho ao mesmo conjunto de "não dá para saber". Foi preciso instruir explicitamente que **ausência de evidência não é evidência de ausência**: na primeira rodada ele marcava `ehVaga: false` para post sem texto, o que descarta vaga em silêncio. Agora isso cai como `confianca_baixa`, que é visível e separável no relatório.
+
+**O que este passo NÃO provou:**
+
+1. **Uma rodada não é medição.** Duas execuções do mesmo golden set deram 4 falsos negativos cada, mas **não os mesmos quatro**, com `temperature: 0`. Rodar três vezes antes de tratar 95% como número.
+2. **Precisão de 100% saiu de 20 negativos.** Intervalo de confiança largo. Compatível com precisão verdadeira bem abaixo disso.
+3. **O golden set não tem snippet** — explica 3 dos 4 falsos negativos e 14 dos 17 `confianca_baixa`. O recall de `linkedin_post` (89%) é **piso**, não estimativa: em produção o snippet existe.
+4. **O pré-filtro corta pouco: 9 de 120 (7,5%).** A economia de cota que justifica o estágio não está demonstrada, e o golden set não é amostra aleatória — medir sobre `raw_results` via `classificacao_motivo`.
+5. **Localização não é medida.** Remoto dos EUA vs. remoto do Brasil segue sem número, e o produto promete remoto do Brasil.
+6. **O Groq nunca rodou.**
+
 ---
 
 ## Medições feitas
@@ -159,6 +184,7 @@ Teste ponta a ponta: 20 vagas coletadas e gravadas; segunda rodada devolveu `jaN
 ## Decisões de produto
 
 - **Cargo adjacente conta como vaga relevante.** Product Owner entra numa busca por Product Manager. Como a ferramenta é multi-cargo, isso precisa virar regra de **família de cargo**, genérica — nunca uma lista de exceções por segmento, que viraria manutenção manual a cada cargo novo.
+  **Implementado em `src/classificar/familia.ts` (24/08):** título decomposto em senioridade + função + domínio; mesma família = mesmo domínio + mesma classe de função. O léxico é de gramática de título de vaga (`manager` é gestão para qualquer cargo), não de segmento. Se acrescentar um cargo ao produto exigir editar o léxico, a regra está errada.
 
 ---
 
@@ -185,6 +211,10 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 ## Pendências abertas
 
 - **Solução melhor para os posts.** O bloco funciona e generaliza, mas: 26% dos títulos são genéricos, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo (PM 49, Enfermeiro 8). Adiado por decisão do Pedro em 23/08.
+- **O workflow `classificador.yml` ainda não existe no remoto.** O secret `GEMINI_KEY` está cadastrado (24/08), mas o arquivo do workflow está só na árvore local: `gh workflow run` só funciona depois do commit. `GROQ_KEY` segue sem cadastrar — sem ela não há reserva quando a cota diária do Gemini estourar.
+- **Repetir o harness três vezes antes de citar 95% como número.** Duas rodadas idênticas deram conjuntos diferentes de falso negativo, com `temperature: 0`.
+- **Recoletar guardando o snippet no golden set.** Hoje ele só tem título e URL, e sem snippet o bloco de posts não é avaliável — 23 dos 49 casos de post estão `indeterminado`.
+- **Medir a taxa de corte do pré-filtro sobre `raw_results`.** No golden set ele corta 7,5%, mas o golden set não é amostra aleatória. A migration 0003 já grava `classificacao_motivo` para essa conta.
 - **Desenho dos tiers** (precisão × quantidade × preço). Base de custo: ~16 créditos por par cargo×cidade.
 - **Fonte única de ATS** (Gupy). Risco registrado, não resolvido.
 - **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de **6 meses** (vence por volta de 22/02/2027). Consumidos até 24/08: 244. Uma rodada completa custa ~84.
@@ -199,7 +229,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 |---|---|
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
-| 3 — Classificador com harness de avaliação | pendente |
+| 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
 | 4 — Feed mínimo (Next.js + Supabase Auth) | pendente |
 | 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente |
 

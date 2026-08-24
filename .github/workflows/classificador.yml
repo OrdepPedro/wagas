@@ -1,0 +1,75 @@
+name: classificador
+
+# SOB DEMANDA, pelo mesmo motivo do coletor: sem front-end lendo o banco, não há
+# para quem classificar. Diferença importante — classificar NÃO gasta crédito da
+# Serper, só cota de LLM em tier gratuito, que renova por dia. Reprocessar é
+# barato; recoletar não é.
+#
+# Religar em cron junto com o coletor, quando o Passo 4 existir. A ordem que faz
+# sentido é coletar e classificar em seguida, na mesma janela.
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Decide mas não grava nada'
+        type: boolean
+        default: false
+      so_prefiltro:
+        description: 'Roda só o pré-filtro, sem gastar cota de LLM'
+        type: boolean
+        default: false
+      limite:
+        description: 'Máximo de pendentes nesta execução (vazio = padrão)'
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+# Duas execuções simultâneas classificariam o mesmo lote duas vezes: o segundo
+# insert em `jobs` colidiria em dedup_key, mas a cota de LLM já teria ido embora.
+concurrency:
+  group: classificador
+  cancel-in-progress: false
+
+jobs:
+  classificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      # Classificador quebrado é pior que rodada perdida: ele MARCA a linha como
+      # processada, e o que for reprovado por engano não volta sozinho.
+      - name: Testes
+        run: npm test
+
+      # Roda sempre, não custa nada e não precisa de chave. É o número que diz
+      # se alguma regra passou a cortar vaga boa.
+      - name: Harness (pré-filtro)
+        run: node scripts/harness.ts --so-prefiltro
+
+      - name: Classificar
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GEMINI_KEY: ${{ secrets.GEMINI_KEY }}
+          GROQ_KEY: ${{ secrets.GROQ_KEY }}
+          LOG_LEVEL: info
+          # Entradas do disparo manual entram por env, nunca interpoladas no
+          # corpo do script — ${{ }} dentro de `run` é injeção de comando.
+          DRY_RUN: ${{ inputs.dry_run }}
+          SO_PREFILTRO: ${{ inputs.so_prefiltro }}
+          LIMITE: ${{ inputs.limite }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ "${DRY_RUN:-false}" = "true" ]; then args+=(--dry-run); fi
+          if [ "${SO_PREFILTRO:-false}" = "true" ]; then args+=(--so-prefiltro); fi
+          if [ -n "${LIMITE:-}" ]; then args+=("--limite=${LIMITE}"); fi
+          node src/classify.ts ${args[@]+"${args[@]}"}

@@ -3,13 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Coletor de vagas via Google Programmable Search Engine",
+  "description": "Agregador de vagas: coletor (Serper) e classificador (pre-filtro + LLM)",
   "engines": {
     "node": ">=22.18"
   },
   "scripts": {
     "collect": "node --env-file-if-exists=.env src/collect.ts",
     "collect:dry": "node --env-file-if-exists=.env src/collect.ts --dry-run",
+    "classify": "node --env-file-if-exists=.env src/classify.ts",
+    "classify:dry": "node --env-file-if-exists=.env src/classify.ts --dry-run",
+    "harness": "node --env-file-if-exists=.env scripts/harness.ts",
+    "harness:prefiltro": "node scripts/harness.ts --so-prefiltro",
     "test": "node --test \"test/*.test.ts\"",
     "typecheck": "tsc --noEmit",
     "paridade": "node --env-file-if-exists=.env scripts/paridade.ts",

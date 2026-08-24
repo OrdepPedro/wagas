@@ -101,6 +101,20 @@ export class SupabaseRest {
     return Array.isArray(dados) ? (dados as T[]) : [];
   }
 
+  /**
+   * PATCH com filtro em `query`. O filtro é obrigatório de propósito: PostgREST
+   * sem `where` atualiza a tabela inteira, e um bug aqui reescreveria todo o
+   * acervo coletado.
+   */
+  async update(tabela: string, query: string, campos: Record<string, unknown>): Promise<void> {
+    if (query.trim() === '') throw new Error(`update em ${tabela} sem filtro`);
+    await this.#requisicao(`/rest/v1/${tabela}?${query}`, {
+      method: 'PATCH',
+      headers: this.#cabecalhos({ prefer: 'return=minimal' }),
+      body: JSON.stringify(campos),
+    });
+  }
+
   async rpc<T>(funcao: string, args: Record<string, unknown>): Promise<T> {
     const dados = await this.#requisicao(`/rest/v1/rpc/${funcao}`, {
       method: 'POST',

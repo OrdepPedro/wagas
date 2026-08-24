@@ -32,6 +32,54 @@ function numero(nome: string, padrao: number): number {
   return Math.floor(n);
 }
 
+/** Configuração do Passo 3. Separada porque o coletor não precisa de LLM. */
+export interface ConfigClassificador {
+  supabaseUrl: string;
+  supabaseServiceKey: string;
+  geminiKey: string;
+  geminiModelo: string;
+  groqKey: string;
+  groqModelo: string;
+  /** Candidatos por chamada de LLM. */
+  tamanhoDoLote: number;
+  /** Máximo de pendentes por execução — teto contra a cota diária do tier gratuito. */
+  limite: number;
+  confiancaMinima: number;
+  /** Espera entre chamadas de LLM: o tier gratuito limita requisições por minuto. */
+  intervaloMs: number;
+}
+
+function opcional(nome: string): string {
+  return process.env[nome]?.trim() ?? '';
+}
+
+function fracao(nome: string, padrao: number): number {
+  const bruto = process.env[nome]?.trim();
+  if (!bruto) return padrao;
+  const n = Number(bruto);
+  if (!Number.isFinite(n) || n < 0 || n > 1) {
+    throw new Error(`${nome} precisa estar entre 0 e 1 (recebi "${bruto}")`);
+  }
+  return n;
+}
+
+export function carregarConfigClassificador(opts: { precisaDb: boolean }): ConfigClassificador {
+  return {
+    supabaseUrl: opts.precisaDb ? obrigatoria('SUPABASE_URL').replace(/\/+$/, '') : '',
+    supabaseServiceKey: opts.precisaDb ? obrigatoria('SUPABASE_SERVICE_KEY') : '',
+    // Nenhuma das duas é obrigatória: sem chave, a rodada faz só o pré-filtro e
+    // diz o que teria mandado para o LLM. É o modo de conferir custo antes de gastar.
+    geminiKey: opcional('GEMINI_KEY'),
+    geminiModelo: opcional('GEMINI_MODELO') || 'gemini-3.5-flash-lite',
+    groqKey: opcional('GROQ_KEY'),
+    groqModelo: opcional('GROQ_MODELO') || 'llama-3.3-70b-versatile',
+    tamanhoDoLote: numero('CLASSIFICADOR_LOTE', 8),
+    limite: numero('CLASSIFICADOR_LIMITE', 200),
+    confiancaMinima: fracao('CLASSIFICADOR_CONFIANCA_MINIMA', 0.6),
+    intervaloMs: numero('CLASSIFICADOR_INTERVALO_MS', 4500),
+  };
+}
+
 export function carregarConfig(opts: { precisaDb: boolean; precisaFonte: boolean }): Config {
   const creditosTotais = numero('SERPER_CREDITOS_TOTAIS', 2500);
   const orcamentoPorRun = numero('SERPER_ORCAMENTO_POR_RUN', 150);
