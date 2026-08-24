@@ -185,7 +185,8 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 - **Solução melhor para os posts.** O bloco funciona e generaliza, mas: 26% dos títulos são genéricos, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo (PM 49, Enfermeiro 8). Adiado por decisão do Pedro em 23/08.
 - **Desenho dos tiers** (precisão × quantidade × preço). Base de custo: ~16 créditos por par cargo×cidade.
 - **Fonte única de ATS** (Gupy). Risco registrado, não resolvido.
-- **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de 6 meses. Na cadência atual (1x/dia, 84 créditos) duram ~27 dias. Depois disso é decisão de pagar ou reduzir cobertura.
+- **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de **6 meses** (vence por volta de 22/02/2027). Consumidos até 24/08: 244. Uma rodada completa custa ~84.
+- **A coleta não roda em cron, por decisão do Pedro (24/08).** Coletar todo dia sem front-end lendo o banco seria gastar saldo para ninguém. O `schedule` está comentado no workflow. Religar quando o Passo 4 existir — ou antes disso, se for medir fluxo semanal.
 
 ---
 
@@ -194,7 +195,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 | Passo | Estado |
 |---|---|
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
-| 2 — Coletor | ✅ **em produção.** Repo em github.com/OrdepPedro/wagas (privado), cron 1x/dia às 06h BRT, gravando em `raw_results` |
+| 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | pendente |
 | 4 — Feed mínimo (Next.js + Supabase Auth) | pendente |
 | 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente |

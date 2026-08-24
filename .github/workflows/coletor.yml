@@ -1,20 +1,20 @@
 name: coletor
 
-# Uma rodada por dia, 06h de Brasília.
+# SOB DEMANDA — sem cron, de propósito.
 #
-# A cadência mudou junto com a fonte. A PSE tinha cota diária que zerava, então
-# rodar 3x/dia era de graça. Os créditos da Serper são um SALDO ÚNICO que não
-# renova — cada rodada consome de um estoque finito.
+# Os créditos da Serper são um SALDO ÚNICO que não renova: 2.500, e cada rodada
+# completa custa ~84 (7 alvos x 3 blocos x 2 recortes x 2 páginas). Um cron
+# diário esgotaria o saldo em menos de um mês coletando para ninguém — não há
+# front-end lendo o banco ainda.
 #
-# Conta com a configuração atual (7 alvos x 3 blocos x 2 recortes x 2 páginas):
-#   84 créditos por rodada -> os 2.500 gratuitos duram ~27 dias em 1x/dia.
+# Religar quando houver front-end consumindo o cache: descomente o `schedule`
+# abaixo. A cadência que fazia sentido era 1x/dia; mais que isso rende pouco,
+# porque a janela é de 7 dias e o mesmo resultado voltaria quase inteiro.
 #
-# Rodar mais vezes por dia não traz muito: a janela é de 7 dias e o mesmo
-# resultado voltaria quase inteiro, gasto em dobro. Aumentar SERPER_PAGINAS
-# aumenta a cobertura por rodada e encurta a duração do saldo na mesma medida.
+# on:
+#   schedule:
+#     - cron: '0 9 * * *'   # 06h de Brasília
 on:
-  schedule:
-    - cron: '0 9 * * *'
   workflow_dispatch:
     inputs:
       dry_run:

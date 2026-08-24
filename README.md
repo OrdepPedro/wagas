@@ -109,11 +109,17 @@ Para refazer do zero em outro ambiente:
 
 A chave secreta ignora RLS: só em secret do Actions e em `.env` local, nunca no frontend. Serve tanto a nova `sb_secret_…` quanto a legacy `service_role`.
 
-**O cron está no ar.** Repo privado em [OrdepPedro/wagas](https://github.com/OrdepPedro/wagas), rodando 1x/dia às 09:00 UTC (06h de Brasília). Os três secrets estão cadastrados e uma execução real foi validada: 4 consultas, 16 resultados já conhecidos deduplicados e 10 novos gravados.
+**A coleta roda sob demanda, não em cron.** Repo privado em [OrdepPedro/wagas](https://github.com/OrdepPedro/wagas), com os três secrets cadastrados. Uma execução real foi validada pelo Actions: 4 consultas, 16 resultados já conhecidos deduplicados e 10 novos gravados.
 
-**Cadência e duração do saldo.** O workflow roda 1x/dia. Com 7 alvos, 3 blocos, 2 recortes e 2 páginas são **84 créditos por rodada**, e os 2.500 gratuitos duram **~27 dias**. Rodar mais vezes por dia rende pouco — a janela é de 7 dias e o mesmo resultado voltaria quase inteiro, gasto em dobro. Subir `SERPER_PAGINAS` aumenta a cobertura e encurta a duração na mesma proporção.
+Para disparar:
 
-> O GitHub desativa workflows agendados após 60 dias sem commit no repositório. Se a coleta parar sozinha, é isso.
+```bash
+gh workflow run coletor.yml --repo OrdepPedro/wagas -f paginas=2
+```
+
+Aceita também `-f dry_run=true`, `-f alvo=<id>` e `-f limite=N`.
+
+**Custo por rodada.** Com 7 alvos, 3 blocos, 2 recortes e 2 páginas são **84 créditos**. O saldo gratuito é de 2.500 e não renova, então cada disparo conta. Enquanto não houver front-end lendo o banco, coletar em cron seria gastar para ninguém — por isso o `schedule` está comentado no workflow, pronto para religar.
 
 ## Decisões que estão no código por um motivo
 
