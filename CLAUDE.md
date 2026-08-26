@@ -155,6 +155,35 @@ As classes de falso positivo nomeadas no Passo 1 morreram em dado real, não só
 5. **Localização não é medida.** Remoto dos EUA vs. remoto do Brasil segue sem número, e o produto promete remoto do Brasil.
 6. **O Groq nunca rodou.**
 
+### Passo 4 — base do feed pronta, tela pendente (25/08/2026)
+
+O Passo 4 começou pelo dado, não pela tela, porque o feed é uma consulta com quatro predicados — cargo, cidade, modelo e janela de 7 dias — e **nenhum dos quatro existia como coluna consultável**. Medido sobre as 197 linhas de `jobs`:
+
+| predicado | estado ao entrar no Passo 4 |
+|---|---|
+| cargo | `cargo_normalizado` com 15+ valores distintos para 6 cargos. Igualdade devolve quase nada, e `ilike` não sabe que Product Owner é da família de Product Manager |
+| cidade | `localizacao` é texto livre do LLM: 25 grafias de São Paulo, 42 nulls, "Green Bay, Wisconsin" no meio |
+| modelo | null em 114 de 197 (58%) |
+| janela | `data_publicacao` null em 197 de 197 |
+
+**Migration `0004_feed.sql`** dá as colunas que faltavam: `familia_tokens` e `familia_classes` (arrays com índice GIN), `cidade_slug`, `uf`, `pais_br`, `local_avaliado`, `data_publicacao_origem` e a coluna gerada `data_referencia`.
+
+**O filtro de família virou SQL sem virar uma segunda regra.** `familia_tokens @> ARRAY[...]` é a condição 1 de `cargoBateNoTitulo` (todo domínio do cargo buscado está no título); `familia_classes && ARRAY[...]` é a condição 2 (ao menos uma função da mesma classe). Um teste roda 12 pares cargo×título pelos dois caminhos e exige o mesmo veredito — porque duas implementações que divergem produzem feed vazio sem causa aparente, que é o pior modo de falha deste produto.
+
+**`pais_br` tem três estados de propósito.** `true` Brasil confirmado, `false` fora confirmado, `null` não deu para saber. Colapsar `null` em `false` esconderia vaga brasileira que o anúncio não qualificou; colapsar em `true` deixaria a vaga remota da França no feed. A composição do feed é `cidade_slug = <a dele>` OU (`modelo = remoto` E `pais_br IS NOT FALSE`).
+
+**A janela de 7 dias está declarada, não cumprida.** `data_referencia = coalesce(data_publicacao, data_coleta)` é coluna gerada para o predicado ser indexável, e o comentário no schema diz o que ela é: com `data_publicacao` null na maioria, `data_referencia >= now() - 7 dias` entrega uma janela real de **até 14 dias**, porque um item coletado ontem já tinha até 7. O achado 19 fechou a saída fácil — a data relativa do LinkedIn não serve. Só a data de publicação de verdade resolve.
+
+**Reclassificação completa em 25/08.** As 278 linhas voltaram para a fila e passaram pelo pipeline com o portão de local ligado: 63 cortadas no pré-filtro (número idêntico ao da rodada anterior — o controle determinístico), 20 no LLM, **195 aprovadas, 192 gravadas**. `jobs` está com `local_avaliado = true` em 100% das linhas e zero vaga estrangeira. Detalhe dos vereditos de local no achado 22, e da variação entre rodadas no achado 23.
+
+Estado do acervo depois disso: 105 linhas em `sao-paulo`, `pais_br` confirmado em 146 e desconhecido em 46, **`modelo` ainda null em 102 de 192 (53%)**, `data_publicacao` null em 192 de 192, empresa não identificada em 54 (28%).
+
+O feed responde hoje, com janela de 7 dias, em São Paulo: Auxiliar Administrativo 39, Analista de Marketing 34, Analista de Dados 32, Front-end 28, Product Designer 26, Product Manager 14. "Enfermeiro" devolve vazio — cargo não coletado, que é o estado vazio previsto.
+
+**A precisão do feed é a do pré-filtro, não a do pipeline.** No Passo 3 o LLM julgava cada vaga contra o cargo que a coletou; no feed a pergunta de família é refeita contra o cargo que o USUÁRIO digitou, e ali não há LLM. Medido: 3 vazamentos em 192 linhas servidas (2%), todos na família `product` — e concentrados, porque no feed de Product Manager duas das 14 linhas são de design (`Technical Lead Product Designer`, `Product Design`). Testei o eixo alternativo, filtrar pelo `cargo_busca` que o LLM validou: 2 falsos positivos e 3 falsos negativos, contra 3 e 2. **Empatam** — a troca moveria 5 linhas em 192 e não resolve o problema estrutural, então o eixo ficou como está.
+
+**O que este passo NÃO fez:** a tela. Não há Next.js, não há Supabase Auth, não há registro de clique nem de demanda. `scripts/consultar-feed.ts` roda a consulta de produção pela linha de comando, com o mesmo módulo que a tela vai usar — é o que permite medir o feed antes de existir feed.
+
 ---
 
 ## Medições feitas
@@ -196,13 +225,13 @@ As classes de falso positivo nomeadas no Passo 1 morreram em dado real, não só
 
 **5. ID de vaga do LinkedIn é proxy de idade,** mas **frágil**: a estimativa por ID errou o volume por uma ordem de grandeza, porque foi feita sobre amostra ordenada por relevância. Só usar com âncoras e sobre conjunto já filtrado por data.
 
-**6. Gupy expõe `Publicada em DD/MM/AAAA`** no snippet. Melhor sinal de data estruturado de todas as fontes.
+**6. Gupy expõe `Publicada em: DD/MM/AAAA` no snippet — mas em 16% dos casos, e com dois-pontos.** ⚠️ **Corrigido em 25/08.** Ficou escrito aqui que era "o melhor sinal de data estruturado de todas as fontes". É o único sinal real, o que não é a mesma coisa: **9 dos 57 snippets de Gupy em produção têm a data**, os outros 48 não. E os 9 foram todos perdidos, porque a regex exigia `\s+` depois de "em" e a Gupy escreve `Publicada em: 21/08/2026`. Um caractere. Consequência medida: `data_publicacao` null em 197 de 197 linhas de `jobs`.
 
 **7. Duplicação entre blocos confirmada com caso real.** A Omie aparece duas vezes na Gupy e uma como post do agregador "Quero Home", com **URLs diferentes** — a dedup por hash não pega. Dedup semântica é requisito de lançamento.
 
 **Verificado em produção (24/08).** A primeira rodada do classificador colapsou dois posts distintos da mesma vaga da Omie ("Portal Vagas - Product Manager (Cash Management)" e "Vagas Home Office - Product Manager (Cash Management)") na chave `omie|product manager`. A decisão de schema do dia 1 se pagou.
 
-**E falhou na linha seguinte, pelo mesmo motivo que a fez funcionar.** Dois posts da mesma vaga do Grupo Boticário viraram DUAS linhas em `jobs`, porque o LLM extraiu o cargo diferente em cada um:
+**E falhou na linha seguinte, pelo mesmo motivo que a fez funcionar.** ⚠️ **Diagnóstico corrigido em 25/08.** Ficou escrito aqui que eram "dois posts da mesma vaga do Grupo Boticário". Abrindo as URLs: são `activity:7496187385316208640` (Soluções Corporativas) e `activity:7496202535502934017` (CEx Tech Franqueados) — **duas vagas diferentes**, e duas linhas em `jobs` é o certo. O defeito real é outro e é pior: o LLM truncou um dos cargos e produziu a chave `boticario|product manager`, larga o bastante para engolir em silêncio qualquer outra vaga de PM da empresa. Na reclassificação de 25/08 ele extraiu os dois por inteiro e as chaves saíram corretas — mesma entrada, resultado diferente.
 
     Vaga Home Office: Product Manager - Especialista I (CEx...  ->  boticario|product manager
     Vaga Home Office: Product Manager Especialista I ...         ->  boticario|product manager especialista i
@@ -269,6 +298,75 @@ Isso também explica o resultado da SERP: o dork de hashtag veio estreito porque
 
 **Nota de método:** a página pública do post abre sem authwall em GET anônimo — os 137 baixaram. Isso NÃO é a exceção da restrição 2 do CLAUDE.md, que trata de scraping autenticado (DOM logado, sessão, endpoint interno) e continua valendo. É medição pontual, sem cookie e sem conta envolvida. Transformar isso em coleta de produção é decisão à parte, não tomada.
 
+
+**18. O portão de local nunca rodou em produção — e dá para provar pelo relógio (25/08).** Zero linhas de `raw_results` com motivo `local_nao_serve`. As duas rodadas de produção foram em 24/08 às 14:33; o commit que criou o portão é de 24/08 às 17:23. As 197 linhas de `jobs` são todas anteriores a ele.
+
+O resultado está no banco e apareceria na primeira tela do feed:
+
+| empresa | cargo | modelo | localização |
+|---|---|---|---|
+| Schreiber Foods | Digital Product Manager | híbrido | Green Bay, Wisconsin |
+| — | Senior Product Manager | remoto | France |
+| BairesDev | ServiceNow Product Manager | remoto | Federal District, Venezuela |
+
+O achado 17 continua válido como medição do portão sobre o golden set. O que ele não diz, e passou a parecer que dizia, é que o portão tenha julgado alguma vaga de produção. Não julgou nenhuma. `jobs.local_avaliado` existe desde a migration 0004 para essa diferença nunca mais ficar implícita.
+
+**19. `tbs=qdr:w` não garante vaga de até 7 dias.** Dos 202 snippets de `linkedin_job`, 33 trazem um "Há X dias/semanas/meses" ancorado no próprio título da vaga (o título aparece ANTES da expressão, e não é a barra lateral). Distribuição desses 33: 8 com menos de 1 dia, 16 entre 1 e 7 dias, **8 entre 8 e 30 dias, 1 acima de 30**.
+
+Ou seja: pelo menos 27% do que o filtro de data devolveu já tinha mais de uma semana. Duas explicações possíveis e não separáveis sem verdade de campo — a âncora pode estar errada, ou o `qdr:w` filtra a data do ÍNDICE e não a da publicação. As duas são ruins do mesmo jeito para a promessa central.
+
+**Não vale como fonte de `data_publicacao`.** O sinal existe em 16% das linhas do LinkedIn e erra em pelo menos um quarto delas. Foi medido e descartado, não implementado.
+
+**20. O modelo de trabalho não está no título. Em nenhum.** Regra determinística de leitura de "home office", "100% remoto", "híbrido" e "presencial", rodada sobre as 114 linhas em que o LLM não respondeu `modelo`: **recuperou 0**.
+
+| fonte | sem modelo | o título daria | o snippet daria |
+|---|---|---|---|
+| linkedin_job | 89 | 0 | 17 |
+| ats_gupy | 22 | 0 | 0 |
+| linkedin_post | 3 | 0 | 0 |
+
+Os 17 que o snippet resolveria são todos `linkedin_job`, onde o snippet é a barra lateral (achado 1) — ler dali gravaria o modelo de OUTRA vaga. Os títulos que carregam o termo são exatamente aqueles que o LLM já tinha rotulado, então não sobra nada.
+
+A regra ficou no código (`modeloDoTexto`, seis linhas, e dispara em coleta com mais posts), mas **não conserta os 58% sem modelo**. Só a página conserta — a mesma conta de uma requisição por item que trava a extração de empresa e a solução dos posts.
+
+**21. Vinte e cinco grafias de São Paulo colapsam em uma.** `normalizarLocal` sobre as 197 linhas: 132 ganham cidade identificada, e **103 delas viram `sao-paulo`** — vindas de `São Paulo, SP`, `São Paulo`, `São Paulo - SP`, `São Paulo/SP`, `São Paulo, Brasil`, `São Paulo e Região`, `Vila Mariana – São Paulo/SP` e mais. País confirmado Brasil em 139, desconhecido em 52, confirmado fora em 6.
+
+A regra que desambigua cidade de estado homônimo não é gazetteer, é gramática de endereço: **quando a sigla da UF está escrita, ela já ocupa o papel de estado**, então `São Paulo` em `Vila Mariana – São Paulo/SP` só pode ser a cidade. Sem sigla, em `Osasco, São Paulo`, quem faz papel de estado é o nome por extenso e a cidade é Osasco. Mesma forma, papéis diferentes.
+
+
+**22. O portão de local, medido dos DOIS lados em produção (25/08).** As 278 linhas foram reclassificadas com o portão ligado. Resultado: **9 reprovas por `local_nao_serve`**, contra zero antes (achado 18). Abrindo uma a uma:
+
+| # | vaga | local real | veredito |
+|---|---|---|---|
+| 1 | BairesDev — ServiceNow PM | Federal District, Venezuela | ✅ certo |
+| 2 | Schreiber Foods — Digital PM | Green Bay, Wisconsin (híbrido) | ✅ certo |
+| 3 | Senior PM, Remote Build | Remote France | ✅ certo |
+| 4 | Pennylane — Product Designer | Germany / Lisboa, Portugal | ✅ certo |
+| 5 | JIXAAR AI — Sr Product Designer | Uganda | ✅ certo |
+| 6 | Jobgether — Sr Product Designer | Canada | ✅ certo |
+| 7 | Walsywa — Analista de Mkt Digital | Jundiaí, SP (busca: São Paulo) | ✅ certo |
+| 8 | Supermix Concreto — Aux. Admin. | Piracicaba, SP (busca: São Paulo) | ✅ certo |
+| 9 | Grupo LSL — Aux. Admin. Fiscal | **São Bernardo do Campo** (busca: São Paulo) | ❌ errado |
+
+**8 de 9 corretas.** A nona é falso positivo: São Bernardo do Campo é região metropolitana de São Paulo, e o próprio prompt manda contar região metropolitana.
+
+**E o erro não é do prompt: é de consistência dentro da MESMA rodada.** Havia três linhas de São Bernardo do Campo, todas da busca `Auxiliar Administrativo / São Paulo`. **Duas foram aprovadas e uma reprovada.** Não há dado que separe as três — é achado 11 aparecendo no eixo de local.
+
+Isso tira a pendência "o portão está medido só de um lado" e põe outra no lugar, mais específica: **pertencer à região metropolitana é julgamento que o LLM faz de forma instável.** Existe saída determinística — `cidade_slug` já está gravado, e uma tabela de municípios por região metropolitana é conjunto fechado, como as 27 UFs. Não foi feita.
+
+**23. Reclassificar o mesmo acervo move números que não deveriam se mover.** Mesmas 278 linhas, mesmo prompt, mesmo modelo, `temperature: 0`:
+
+| | rodada de 24/08 | rodada de 25/08 |
+|---|---|---|
+| pré-filtro (determinístico) | 63 | **63** |
+| `cargo_de_outra_familia` | 7 | 7 |
+| `nao_e_vaga` | 7 | **2** |
+| `confianca_baixa` | 0 | **2** |
+| `local_nao_serve` | — | 9 |
+| aprovadas | 201 | 195 |
+
+O pré-filtro bateu exatamente, que é o controle: o que é determinístico não se move. Tudo que se moveu passou pelo modelo. `nao_e_vaga` caindo de 7 para 2 sem uma linha de código mudar é a medida honesta do ruído — **cinco vagas entram ou não no feed por sorteio**. Achado 11 continua sendo o achado mais caro deste projeto.
+
 ---
 
 ## Decisões de produto
@@ -300,8 +398,11 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 
 ## Pendências abertas
 
+- **A tela do Passo 4.** Next.js + Supabase Auth, estado vazio que registra a demanda (cargo×cidade pedido e não coberto), e registro de clique em "ver vaga" — que é a métrica que importa. A base já está pronta e medida; falta o produto.
+- **`data_publicacao` continua null na prática.** O fix da regex da Gupy recupera 9 de 57 na próxima coleta; o LinkedIn não tem sinal utilizável (achado 19). Enquanto isso a janela de 7 dias é uma janela de até 14.
+- **58% das vagas sem modelo de trabalho,** e a leitura determinística recuperou 0 (achado 20). Sem modelo, a vaga não entra no balde remoto do feed. É a mesma conta da extração de empresa: uma requisição por item.
 - **Solução melhor para os posts.** O bloco funciona e generaliza, mas: o título vem reescrito pelo Google, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo. Em produção, com `intitle:`, ele é a MENOR fonte — 19 itens em 248, ou 7,7% do acervo, sendo o bloco que sustenta o diferencial declarado do produto. Caminhos já descartados por medição: hashtag como filtro (achado 16). Caminho vivo: rotular à mão os 35 aprovados que o dork sem `intitle:` traz a mais (achado 15).
-- **Faltam negativos de localização no golden set.** São 3. Enquanto for assim, o portão de local (achado 17) está medido só de um lado: dá para saber que ele não descarta vaga boa, não que ele pega vaga de outra cidade.
+- **Região metropolitana é julgamento instável do LLM.** O portão de local acertou 8 de 9 em produção (achado 22), e a única errada foi São Bernardo do Campo reprovada numa busca por São Paulo — com outras duas linhas da MESMA cidade aprovadas na mesma rodada. A saída determinística existe (`cidade_slug` + tabela de municípios por região metropolitana, conjunto fechado como as 27 UFs) e não foi feita.
 - **`GROQ_KEY` não existe.** O `classificador.yml` já a referencia e o código trata ausência sem quebrar, mas sem ela não há reserva quando a cota diária do Gemini estourar: a rodada para em vez de continuar. O id de modelo padrão do Groq (`llama-3.3-70b-versatile`) nunca foi exercitado e pode estar morto como o do Gemini estava.
 - **Repetir o harness três vezes antes de citar 95% como número.** Duas rodadas idênticas deram conjuntos diferentes de falso negativo, com `temperature: 0`.
 - **Recoletar guardando o snippet no golden set.** Hoje ele só tem título e URL, e sem snippet o bloco de posts não é avaliável — 23 dos 49 casos de post estão `indeterminado`.
@@ -323,7 +424,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
-| 4 — Feed mínimo (Next.js + Supabase Auth) | pendente |
+| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **base pronta (25/08), tela pendente.** Migration 0004, normalização de local, filtro de família em SQL e `scripts/consultar-feed.ts`. Falta Next.js, Auth, clique e registro de demanda |
 | 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente |
 
 **Não ajude o Pedro a pular etapas.**

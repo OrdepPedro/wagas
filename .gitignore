@@ -5,3 +5,8 @@ node_modules/
 
 # Resultados de medicao ficam versionados de proposito: o --comparar do
 # medir-alertas.ts precisa da baseline anterior para calcular fluxo.
+
+# Backup de `jobs` gravado pelo scripts/reclassificar.ts antes de apagar a
+# tabela. E artefato de seguranca de uma execucao, nao medicao: nao ha nada
+# nele que outra pessoa precise reproduzir.
+backup-jobs-*.json

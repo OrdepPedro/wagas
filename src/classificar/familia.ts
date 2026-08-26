@@ -384,3 +384,58 @@ export function senioridadeDoTitulo(titulo: string): string | null {
   const escolhido = encontrados.find((t) => !ROMANO.test(t)) ?? encontrados[0];
   return escolhido ? (CANONICA[escolhido] ?? null) : null;
 }
+
+/**
+ * As mesmas duas condições de `cargoBateNoTitulo`, em forma de chave gravável.
+ *
+ * O feed precisa filtrar por família DENTRO do Postgres — a regra do CLAUDE.md
+ * é que o filtro roda sobre o cache, e filtrar em memória no servidor só
+ * funciona enquanto o acervo couber numa página. `cargo_normalizado` não serve:
+ * as 197 linhas gravadas têm 15+ valores distintos para 6 cargos (`senior
+ * product manager`, `growth product manager`, `product manager jr`), e igualdade
+ * devolveria quase nada.
+ *
+ * A tradução é literal, não uma aproximação:
+ *
+ *   condição 1 (todo domínio do buscado está no título)  ->  tokens @> :dominio
+ *   condição 2 (ao menos uma função da mesma classe)     ->  classes && :classes
+ *
+ * `tokensDeFamilia` guarda as duas formas de cada token (plural e singular),
+ * exatamente como `cargoBateNoTitulo` monta o conjunto do título; a busca
+ * consulta pela forma singular. Sem isso o `@>` erraria em "vendas"/"venda".
+ */
+export function tokensDeFamilia(titulo: string): string[] {
+  const nucleo = decompor(titulo);
+  const todos = [
+    ...nucleo.dominio,
+    ...nucleo.funcoes.map((f) => f.token),
+    ...nucleo.senioridade,
+  ];
+
+  const conjunto = new Set<string>();
+  for (const token of todos) {
+    for (const forma of chaves(token)) conjunto.add(forma);
+  }
+  return [...conjunto];
+}
+
+/** Classes de função presentes no título. Vazio quando não há função reconhecida. */
+export function classesDeFamilia(titulo: string): ClasseFuncao[] {
+  return [...new Set(decompor(titulo).funcoes.map((f) => f.classe))];
+}
+
+export interface FiltroDeFamilia {
+  /** Tokens que o título PRECISA conter. Forma singular, para casar com `tokensDeFamilia`. */
+  dominio: string[];
+  /** Classes aceitas. Vazio significa "não restringe por função". */
+  classes: ClasseFuncao[];
+}
+
+/** Traduz o cargo digitado pelo usuário nos dois arrays do `WHERE`. */
+export function filtroDeFamilia(cargoBuscado: string): FiltroDeFamilia {
+  const alvo = decompor(cargoBuscado);
+  return {
+    dominio: [...new Set(alvo.dominio.map((t) => semPlural(t)))],
+    classes: [...new Set(alvo.funcoes.map((f) => f.classe))],
+  };
+}

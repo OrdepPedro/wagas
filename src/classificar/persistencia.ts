@@ -10,6 +10,8 @@ import type { SupabaseRest } from '../db/supabase.ts';
 import type { Fonte } from '../tipos.ts';
 import { normalizarCargo } from '../dedupe.ts';
 import { chaveDaDecisao } from './classificador.ts';
+import { classesDeFamilia, tokensDeFamilia } from './familia.ts';
+import { normalizarLocal } from '../normalize/local.ts';
 import type { Candidato, Decisao } from './tipos.ts';
 
 interface LinhaRaw {
@@ -22,10 +24,11 @@ interface LinhaRaw {
   cargo_busca: string;
   localizacao_busca: string | null;
   data_publicacao: string | null;
+  data_publicacao_origem: string | null;
 }
 
 const COLUNAS =
-  'id,fonte,fonte_id,url_canonica,titulo,snippet,cargo_busca,localizacao_busca,data_publicacao';
+  'id,fonte,fonte_id,url_canonica,titulo,snippet,cargo_busca,localizacao_busca,data_publicacao,data_publicacao_origem';
 
 /**
  * Pendentes, do mais novo para o mais velho.
@@ -50,6 +53,7 @@ export async function lerPendentes(db: SupabaseRest, limite: number): Promise<Ca
     cargoBusca: l.cargo_busca,
     localizacaoBusca: l.localizacao_busca,
     dataPublicacao: l.data_publicacao,
+    dataPublicacaoOrigem: l.data_publicacao_origem,
   }));
 }
 
@@ -57,6 +61,7 @@ export async function lerPendentes(db: SupabaseRest, limite: number): Promise<Ca
 export function paraLinhaJob(decisao: Decisao): Record<string, unknown> {
   const { candidato, extracao } = decisao;
   const cargo = extracao?.cargo ?? candidato.titulo;
+  const local = normalizarLocal(extracao?.localizacao);
 
   return {
     raw_result_id: candidato.id,
@@ -67,13 +72,25 @@ export function paraLinhaJob(decisao: Decisao): Record<string, unknown> {
     // Mesma normalização da chave de dedup: o feed vai facetar por esta coluna,
     // e duas normalizações diferentes fariam a faceta discordar da dedup.
     cargo_normalizado: normalizarCargo(cargo),
+    // O que o feed realmente filtra. `cargo_normalizado` não serve para isso:
+    // são 15+ valores distintos para 6 cargos, e igualdade devolve quase nada.
+    familia_tokens: tokensDeFamilia(cargo),
+    familia_classes: classesDeFamilia(cargo),
     senioridade: extracao?.senioridade ?? null,
     modelo: extracao?.modelo ?? null,
     localizacao: extracao?.localizacao ?? null,
+    cidade_slug: local.cidadeSlug,
+    uf: local.uf,
+    pais_br: local.paisBr,
+    // Marca que ESTA linha passou pelo portão de local. As 197 primeiras não
+    // passaram — foram classificadas antes de ele existir — e sem a marca não
+    // dá para distinguir "o portão aprovou" de "o portão não rodou".
+    local_avaliado: decisao.estagio === 'llm',
     url: candidato.urlCanonica,
     fonte: candidato.fonte,
     descricao: candidato.snippet || null,
     data_publicacao: candidato.dataPublicacao,
+    data_publicacao_origem: candidato.dataPublicacaoOrigem ?? 'desconhecida',
     classificado_em: new Date().toISOString(),
     classificador: decisao.classificador,
     confianca: decisao.confianca,

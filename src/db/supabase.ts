@@ -115,6 +115,19 @@ export class SupabaseRest {
     });
   }
 
+  /**
+   * DELETE com filtro em `query`, obrigatório pelo mesmo motivo do `update`:
+   * PostgREST sem `where` apaga a tabela inteira, e aqui isso seria o acervo
+   * classificado. Só a reclassificação usa este método.
+   */
+  async remove(tabela: string, query: string): Promise<void> {
+    if (query.trim() === '') throw new Error(`delete em ${tabela} sem filtro`);
+    await this.#requisicao(`/rest/v1/${tabela}?${query}`, {
+      method: 'DELETE',
+      headers: this.#cabecalhos({ prefer: 'return=minimal' }),
+    });
+  }
+
   async rpc<T>(funcao: string, args: Record<string, unknown>): Promise<T> {
     const dados = await this.#requisicao(`/rest/v1/rpc/${funcao}`, {
       method: 'POST',

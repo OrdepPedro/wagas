@@ -14,6 +14,7 @@
 import { log } from '../logger.ts';
 import { chaveDedupVaga, normalizarCargo } from '../dedupe.ts';
 import { senioridadeDoTitulo } from './familia.ts';
+import { modeloDoTexto } from '../normalize/local.ts';
 import { LlmIndisponivel, type Provedor } from './llm.ts';
 import { prefiltrar } from './prefiltro.ts';
 import { interpretarResposta, montarPrompt, SCHEMA_RESPOSTA, type Julgamento } from './prompt.ts';
@@ -77,6 +78,22 @@ export function empresaDoSubdominioGupy(urlCanonica: string): string | null {
   }
 }
 
+/**
+ * Os campos de texto em que se pode confiar, por fonte. É a mesma leitura que o
+ * prompt dá ao modelo, aplicada às regras determinísticas:
+ *
+ *   linkedin_job   título confiável; snippet contaminado pela barra lateral de
+ *                  "vagas similares" (achado 1), então fica de fora.
+ *   linkedin_post  título reescrito pelo Google ("Publicação de Fulano"); o
+ *                  sinal está no snippet, que é o começo do texto do post.
+ *   ats_gupy       os dois servem.
+ */
+function textoConfiavel(candidato: Candidato): string[] {
+  if (candidato.fonte === 'linkedin_job') return [candidato.titulo];
+  if (candidato.fonte === 'linkedin_post') return [candidato.snippet];
+  return [candidato.titulo, candidato.snippet];
+}
+
 function completarExtracao(candidato: Candidato, extraido: Extracao): Extracao {
   return {
     empresa:
@@ -84,7 +101,13 @@ function completarExtracao(candidato: Candidato, extraido: Extracao): Extracao {
       (candidato.fonte === 'ats_gupy' ? empresaDoSubdominioGupy(candidato.urlCanonica) : null),
     cargo: extraido.cargo ?? (candidato.fonte === 'linkedin_post' ? null : candidato.titulo),
     senioridade: extraido.senioridade ?? senioridadeDoTitulo(candidato.titulo),
-    modelo: extraido.modelo,
+    // O modelo é a metade da composição do feed (presencial/híbrido na cidade +
+    // remoto no Brasil) e o modelo de linguagem deixou 58% das linhas sem ele.
+    // O termo costuma estar escrito no anúncio — "Vaga Home Office:",
+    // "[100% remoto]", "(Híbrida em BH)" — então vale a leitura determinística
+    // antes de desistir. Só entra quando o LLM não respondeu: julgamento vence
+    // regex quando os dois existem.
+    modelo: extraido.modelo ?? modeloDoTexto(...textoConfiavel(candidato)),
     localizacao: extraido.localizacao ?? candidato.localizacaoBusca,
   };
 }

@@ -20,6 +20,8 @@ export interface Candidato {
   cargoBusca: string;
   localizacaoBusca: string | null;
   dataPublicacao: string | null;
+  /** Procedência da data. Data sem procedência não é verificável no feed. */
+  dataPublicacaoOrigem?: string | null;
 }
 
 export type Veredito = 'aprovado' | 'rejeitado' | 'erro';
