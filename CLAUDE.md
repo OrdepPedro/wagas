@@ -182,7 +182,19 @@ O feed responde hoje, com janela de 7 dias, em São Paulo: Auxiliar Administrati
 
 **A precisão do feed é a do pré-filtro, não a do pipeline.** No Passo 3 o LLM julgava cada vaga contra o cargo que a coletou; no feed a pergunta de família é refeita contra o cargo que o USUÁRIO digitou, e ali não há LLM. Medido: 3 vazamentos em 192 linhas servidas (2%), todos na família `product` — e concentrados, porque no feed de Product Manager duas das 14 linhas são de design (`Technical Lead Product Designer`, `Product Design`). Testei o eixo alternativo, filtrar pelo `cargo_busca` que o LLM validou: 2 falsos positivos e 3 falsos negativos, contra 3 e 2. **Empatam** — a troca moveria 5 linhas em 192 e não resolve o problema estrutural, então o eixo ficou como está.
 
-**O que este passo NÃO fez:** a tela. Não há Next.js, não há Supabase Auth, não há registro de clique nem de demanda. `scripts/consultar-feed.ts` roda a consulta de produção pela linha de comando, com o mesmo módulo que a tela vai usar — é o que permite medir o feed antes de existir feed.
+**A tela existe desde 25/08.** Next.js 16 (App Router) + Supabase Auth por link mágico, em `web/`. Três estados numa página só: sem sessão → e-mail; com sessão e sem perfil → cargo + cidade; com perfil → feed.
+
+**`web/` importa `../src` em vez de copiar.** `lib/feed.ts` chama o mesmo `consultaDeFeed` que `scripts/consultar-feed.ts` usa, e `lib/perfil.ts` usa o mesmo `slugCidade` que gravou `jobs.cidade_slug`. Copiar esses módulos para dentro do Next criaria uma segunda implementação da regra de família e da normalização de cidade — e o sintoma de as duas divergirem é feed vazio sem causa aparente, que é a falha mais cara deste produto. O `outputFileTracingRoot` no `next.config.ts` é o que faz o build enxergar a pasta de fora.
+
+**A leitura passa pela RLS, não pela chave secreta.** O front usa a chave pública e a policy `jobs_leitura_autenticada` (migration 0005), que só entrega linha com `ativo = true`. A `sb_secret_…` do coletor ignora RLS e continua só no Actions e no `.env` local — pôr ela no front entregaria o acervo inteiro para qualquer visitante, inclusive as linhas que o portão de local desativou.
+
+**O clique passa por `/ir/[id]`, não por `onClick`.** A métrica que decide o produto é clique em "ver vaga" por usuário por semana, e contador em JavaScript no cliente perde bloqueador, aba aberta no meio do botão e navegação antes do evento subir. Numa rota de servidor, o clique só deixa de ser contado se o servidor não responder — e aí o usuário também não chega na vaga. A URL de destino vem do BANCO, nunca da query string: aceitar destino por parâmetro transformaria isso num redirecionador aberto.
+
+**O estado vazio é coleta de dado, não tela de desculpa.** `buscas` grava uma linha por carga de feed COM a contagem de resultados, então demanda descoberta é `where resultados = 0` e sai da mesma linha que mede quanto o feed entregou. Uma tabela separada só para o vazio discordaria desta na primeira semana. A view `demanda_descoberta` ordena os pares por **pessoas distintas** que pediram — que é exatamente como o custo escala (pares cargo × cidade, não usuários).
+
+**A data é dita com a procedência.** Com `data_publicacao` null em 192 de 192, o cartão escreve "vista em 24/08", não "publicada há 2 dias". A segunda frase seria invenção: com `qdr:w`, item coletado ontem podia ter até sete dias.
+
+**O que a tela ainda NÃO tem:** deploy na Vercel, e SMTP próprio. O remetente padrão do Supabase tem limite baixo de e-mails por hora — serve para um usuário, não para as dez pessoas do Passo 5.
 
 ---
 
@@ -398,7 +410,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 
 ## Pendências abertas
 
-- **A tela do Passo 4.** Next.js + Supabase Auth, estado vazio que registra a demanda (cargo×cidade pedido e não coberto), e registro de clique em "ver vaga" — que é a métrica que importa. A base já está pronta e medida; falta o produto.
+- **Deploy da tela e SMTP próprio.** `web/` roda local e o build passa, mas não está na Vercel. E o remetente padrão do Supabase limita e-mails por hora: serve para um usuário testando, não para as dez pessoas do Passo 5.
 - **`data_publicacao` continua null na prática.** O fix da regex da Gupy recupera 9 de 57 na próxima coleta; o LinkedIn não tem sinal utilizável (achado 19). Enquanto isso a janela de 7 dias é uma janela de até 14.
 - **58% das vagas sem modelo de trabalho,** e a leitura determinística recuperou 0 (achado 20). Sem modelo, a vaga não entra no balde remoto do feed. É a mesma conta da extração de empresa: uma requisição por item.
 - **Solução melhor para os posts.** O bloco funciona e generaliza, mas: o título vem reescrito pelo Google, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo. Em produção, com `intitle:`, ele é a MENOR fonte — 19 itens em 248, ou 7,7% do acervo, sendo o bloco que sustenta o diferencial declarado do produto. Caminhos já descartados por medição: hashtag como filtro (achado 16). Caminho vivo: rotular à mão os 35 aprovados que o dork sem `intitle:` traz a mais (achado 15).
@@ -424,7 +436,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
-| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **base pronta (25/08), tela pendente.** Migration 0004, normalização de local, filtro de família em SQL e `scripts/consultar-feed.ts`. Falta Next.js, Auth, clique e registro de demanda |
+| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **base e tela prontas (25/08), sem deploy.** Migrations 0004 e 0005, filtro de família em SQL, `web/` com Auth por link mágico, clique em `/ir/[id]` e demanda gravada em `buscas`. Falta Vercel e SMTP próprio |
 | 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente |
 
 **Não ajude o Pedro a pular etapas.**

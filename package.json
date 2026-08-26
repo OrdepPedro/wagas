@@ -20,7 +20,9 @@
     "passo1": "node --env-file-if-exists=.env scripts/comparar-passo1.ts",
     "alertas": "node --env-file-if-exists=.env scripts/medir-alertas.ts",
     "backfill": "node --env-file-if-exists=.env scripts/backfill-feed.ts",
-    "feed": "node --env-file-if-exists=.env scripts/consultar-feed.ts"
+    "feed": "node --env-file-if-exists=.env scripts/consultar-feed.ts",
+    "web": "npm run dev --prefix web",
+    "web:build": "npm run build --prefix web"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
