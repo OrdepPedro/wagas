@@ -89,6 +89,11 @@ function FeedVazio({
   cidade: string;
   soRemoto: boolean;
 }) {
+  // O formulário NÃO se repete aqui: ele está fixo no topo da página, onde
+  // sempre esteve o certo. A versão anterior o escondia no rodapé, dentro de um
+  // <details> fechado chamado "Mudar cargo ou cidade" — a ação principal de um
+  // produto cuja premissa é "o usuário informa cargo e cidade" ficava abaixo da
+  // dobra e com nome de configuração.
   return (
     <>
       <div className="caixa aviso" style={{ marginBottom: 24 }}>
@@ -101,8 +106,6 @@ function FeedVazio({
           este par acabou de entrar na fila.
         </p>
       </div>
-      <h2 style={{ fontSize: '1rem', marginBottom: 12 }}>Procurar outra coisa</h2>
-      <FormularioDeBusca cargo={cargo} cidade={cidade} soRemoto={soRemoto} rotulo="Buscar" />
     </>
   );
 }
@@ -178,17 +181,6 @@ async function Feed({
         ))}
       </ul>
       <div className="rodape">
-        <details>
-          <summary style={{ cursor: 'pointer' }}>Mudar cargo ou cidade</summary>
-          <div style={{ marginTop: 16 }}>
-            <FormularioDeBusca
-              cargo={cargo}
-              cidade={cidade}
-              soRemoto={soRemoto}
-              rotulo="Atualizar busca"
-            />
-          </div>
-        </details>
         <p className="limite">
           {limite.restantes} de {limite.teto}{' '}
           {limite.teto === 1 ? 'busca restante' : 'buscas restantes'} hoje.
@@ -253,6 +245,18 @@ export default async function Pagina() {
           </button>
         </form>
       </div>
+
+      {/* A busca é a ação principal do produto, então fica no topo e aberta.
+          Ela renderiza na hora; o feed abaixo é assíncrono e chega depois. */}
+      <section className="busca">
+        <FormularioDeBusca
+          cargo={perfil.cargo}
+          cidade={perfil.cidade}
+          soRemoto={perfil.soRemoto}
+          rotulo="Buscar"
+        />
+      </section>
+
       <Feed
         cargo={perfil.cargo}
         cidade={perfil.cidade}

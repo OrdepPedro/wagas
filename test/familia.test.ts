@@ -7,6 +7,7 @@ import {
   senioridadeDoTitulo,
   tokenizar,
   chaveDeFamilia,
+  semSenioridade,
 } from '../src/classificar/familia.ts';
 
 describe('decompor', () => {
@@ -154,4 +155,36 @@ test('cargos comerciais distintos não viram o mesmo pedido', () => {
 /** O que a regra NÃO resolve, dito em teste para não virar surpresa. */
 test('área e profissão continuam separadas: enfermagem não é enfermeiro', () => {
   assert.notEqual(chaveDeFamilia('Enfermagem'), chaveDeFamilia('Enfermeiro'));
+});
+
+/**
+ * Nasceu de um falso negativo real: o Pedro buscou "Senior UX Designer" e o
+ * feed veio vazio. A fonte casa por SUBSTRING, e a senioridade no termo
+ * estreitava a busca na origem — 3 itens contra 7 sem ela.
+ */
+test('tira a senioridade do termo, preservando a ordem das palavras', () => {
+  assert.equal(semSenioridade('Senior UX Designer'), 'UX Designer');
+  assert.equal(semSenioridade('UX Designer Sênior'), 'UX Designer');
+  assert.equal(semSenioridade('Auxiliar Administrativo'), 'Auxiliar Administrativo');
+});
+
+/**
+ * O texto vai para uma fonte que casa por SUBSTRING, então as variantes
+ * lexicais de `tokenizar` (dados -> data) NÃO podem ser aplicadas aqui:
+ * "analista de data" não casa "Analista de Dados".
+ */
+test('preserva a grafia original, sem aplicar variantes', () => {
+  assert.equal(semSenioridade('Analista de Dados Pleno'), 'Analista de Dados');
+  assert.equal(semSenioridade('Gerente de Produtos'), 'Gerente de Produtos');
+});
+
+/** Ordem importa: "administrativo auxiliar" não casaria "Auxiliar Administrativo". */
+test('não reordena o que sobrou', () => {
+  assert.equal(semSenioridade('Auxiliar Administrativo Jr'), 'Auxiliar Administrativo');
+});
+
+/** Cargo que é só senioridade não pode virar string vazia e buscar tudo. */
+test('nunca devolve vazio', () => {
+  assert.notEqual(semSenioridade('Sênior'), '');
+  assert.notEqual(semSenioridade('Trainee'), '');
 });

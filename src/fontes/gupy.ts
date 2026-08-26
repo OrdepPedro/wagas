@@ -40,7 +40,7 @@
  *    aviso: tudo aqui degrada para lista vazia em vez de quebrar o feed.
  */
 import dns from 'node:dns';
-import { cargoBateNoTitulo } from '../classificar/familia.ts';
+import { cargoBateNoTitulo, semSenioridade } from '../classificar/familia.ts';
 import { normalizarLocal, slugCidade, type Modelo } from '../normalize/local.ts';
 import { log } from '../logger.ts';
 
@@ -187,6 +187,12 @@ export async function buscarNaGupy(pedido: PedidoNaGupy): Promise<RespostaDaGupy
   const corte = agora.getTime() - janelaDias * 24 * 60 * 60 * 1000;
   const cidadeAlvo = pedido.cidade ? slugCidade(pedido.cidade) : null;
 
+  // A fonte casa por substring, então a senioridade no termo estreita a busca
+  // na origem: "Senior UX Designer" devolveu 3 itens, "UX Designer" devolveu 7.
+  // Pedir o núcleo e filtrar depois é a mesma divisão de trabalho que o
+  // pré-filtro já usa — a fonte dá recall, `cargoBateNoTitulo` dá precisão.
+  const termo = semSenioridade(pedido.cargo);
+
   const saida: VagaDaGupy[] = [];
   let vistos = 0;
   let foraDaJanela = 0;
@@ -195,7 +201,7 @@ export async function buscarNaGupy(pedido: PedidoNaGupy): Promise<RespostaDaGupy
 
   for (let offset = 0; offset < limite; offset += POR_PAGINA) {
     const params = new URLSearchParams({
-      jobName: pedido.cargo,
+      jobName: termo,
       limit: String(Math.min(POR_PAGINA, limite - offset)),
       offset: String(offset),
     });

@@ -497,3 +497,26 @@ export function chaveDeFamilia(cargo: string): string {
 
   return `${dominio.join('-')}|${classes.join('-')}`;
 }
+
+/**
+ * O cargo sem os termos de senioridade, preservando a ordem das palavras.
+ *
+ * Existe para a consulta a fontes que casam por SUBSTRING, como a API da Gupy.
+ * Medido: `jobName="Senior UX Designer"` devolve 3 itens e nenhum dentro da
+ * janela; `jobName="UX Designer"` devolve 7. A senioridade estreita a busca na
+ * ORIGEM, antes de `cargoBateNoTitulo` ter o que filtrar — e o casamento já
+ * ignora senioridade de propósito, então mandá-la para a fonte é pedir menos
+ * pelo mesmo resultado.
+ *
+ * Preserva a ordem porque casamento por substring depende dela: "administrativo
+ * auxiliar" não casa "Auxiliar Administrativo".
+ */
+export function semSenioridade(cargo: string): string {
+  // Opera sobre o texto ORIGINAL, não sobre `tokenizar`. Aquele aplica as
+  // variantes lexicais (`dados` -> `data`, `produtos` -> `product`), que servem
+  // para COMPARAR e destroem uma busca por substring: "Analista de Dados"
+  // viraria "analista de data" e deixaria de casar com o próprio cargo.
+  const palavras = cargo.split(/\s+/).filter((p) => p !== '');
+  const restantes = palavras.filter((p) => !SENIORIDADES.has(normalizarTexto(p)));
+  return (restantes.length > 0 ? restantes : palavras).join(' ').trim();
+}

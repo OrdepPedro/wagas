@@ -25,10 +25,11 @@ interface LinhaRaw {
   localizacao_busca: string | null;
   data_publicacao: string | null;
   data_publicacao_origem: string | null;
+  data_coleta: string;
 }
 
 const COLUNAS =
-  'id,fonte,fonte_id,url_canonica,titulo,snippet,cargo_busca,localizacao_busca,data_publicacao,data_publicacao_origem';
+  'id,fonte,fonte_id,url_canonica,titulo,snippet,cargo_busca,localizacao_busca,data_publicacao,data_publicacao_origem,data_coleta';
 
 /**
  * Pendentes, do mais novo para o mais velho.
@@ -54,6 +55,7 @@ export async function lerPendentes(db: SupabaseRest, limite: number): Promise<Ca
     localizacaoBusca: l.localizacao_busca,
     dataPublicacao: l.data_publicacao,
     dataPublicacaoOrigem: l.data_publicacao_origem,
+    dataColeta: l.data_coleta,
   }));
 }
 
@@ -91,6 +93,10 @@ export function paraLinhaJob(decisao: Decisao): Record<string, unknown> {
     descricao: candidato.snippet || null,
     data_publicacao: candidato.dataPublicacao,
     data_publicacao_origem: candidato.dataPublicacaoOrigem ?? 'desconhecida',
+    // Herdada de `raw_results`, NUNCA `default now()`. Reclassificar reescreve
+    // a linha, e sem isto o acervo inteiro é carimbado como coletado hoje —
+    // a janela de 7 dias se renovaria sozinha a cada rodada.
+    data_coleta: candidato.dataColeta ?? new Date().toISOString(),
     classificado_em: new Date().toISOString(),
     classificador: decisao.classificador,
     confianca: decisao.confianca,

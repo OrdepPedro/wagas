@@ -5,6 +5,7 @@ import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 import { clienteDoServidor, usuarioAtual } from '../lib/supabase.ts';
 import { salvarPerfil } from '../lib/perfil.ts';
+import { chaveDaBusca, gravarBuscaDaSessao } from '../lib/sessao.ts';
 
 export interface EstadoDoFormulario {
   erro?: string;
@@ -60,13 +61,17 @@ export async function definirBusca(
   const usuario = await usuarioAtual();
   if (!usuario) return { erro: 'Sua sessão expirou. Entre de novo.' };
 
-  const falha = await salvarPerfil(
-    usuario.id,
-    String(form.get('cargo') ?? ''),
-    String(form.get('cidade') ?? ''),
-    form.get('soRemoto') === 'on',
-  );
+  const cargo = String(form.get('cargo') ?? '');
+  const cidade = String(form.get('cidade') ?? '');
+  const soRemoto = form.get('soRemoto') === 'on';
+
+  const falha = await salvarPerfil(usuario.id, cargo, cidade, soRemoto);
   if (falha) return { erro: falha.mensagem };
+
+  // Server Action é um dos dois lugares onde o Next deixa gravar cookie. É aqui
+  // que a sessão aprende que esta busca foi pedida — e, se já tinha sido, que
+  // esta submissão é uma repetição.
+  await gravarBuscaDaSessao(chaveDaBusca(cargo, cidade, soRemoto));
 
   revalidatePath('/');
   redirect('/');

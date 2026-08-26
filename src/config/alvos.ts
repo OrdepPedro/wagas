@@ -81,6 +81,10 @@ export const ALVOS: Alvo[] = [
   // Fora do núcleo tech: medido em 23/08 e funciona (ver CLAUDE.md).
   { id: 'mkt-sp', cargo: 'Analista de Marketing', cidade: 'São Paulo', ativo: true },
   { id: 'adm-sp', cargo: 'Auxiliar Administrativo', cidade: 'São Paulo', ativo: true },
+  // Entrou pela fila de demanda (26/08): o Pedro buscou "Senior UX Designer" e
+  // viu um post de recrutador do mesmo dia que o feed não tinha. É o primeiro
+  // teste do bloco de posts num cargo verificável à mão.
+  { id: 'ux-bh', cargo: 'UX Designer', cidade: 'Belo Horizonte', ativo: true },
 ];
 
 const BLOCOS: Bloco[] = ['linkedin_job', 'linkedin_post', 'ats_gupy'];

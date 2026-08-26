@@ -256,3 +256,20 @@ ul.vagas {
   color: var(--texto-fraco);
   margin-top: 14px;
 }
+
+/* A busca é a ação principal: caixa própria, no topo, sempre aberta. */
+.busca {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 18px 20px 6px;
+  margin-bottom: 24px;
+}
+
+.busca .campos {
+  margin-bottom: 14px;
+}
+
+.busca .opcao {
+  margin-bottom: 16px;
+}

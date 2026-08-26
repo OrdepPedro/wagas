@@ -120,6 +120,10 @@ function linhaJob(linha: LinhaPronta, rawId: number | null): Record<string, unkn
     descricao: vaga.descricao,
     data_publicacao: vaga.dataPublicacao,
     data_publicacao_origem: 'gupy_api',
+    // Explícito, ainda que igual ao default: nesta rota "agora" é mesmo a hora
+    // da coleta, e deixar implícito esconderia a diferença para a rota da SERP,
+    // onde o default estava errado.
+    data_coleta: new Date().toISOString(),
     classificado_em: new Date().toISOString(),
     classificador: CLASSIFICADOR,
     // Sem confiança: não houve estimativa. `null` é honesto, 1.0 seria inventar

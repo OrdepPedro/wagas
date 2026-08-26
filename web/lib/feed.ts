@@ -15,7 +15,7 @@ import { chaveDeFamilia } from '../../src/classificar/familia.ts';
 import { consultaDeFeed, JANELA_DIAS } from '../../src/feed/consulta.ts';
 import { preencherSeNecessario, type MotivoDoPreenchimento } from '../../src/fontes/sob-demanda.ts';
 import { clienteAdministrativo, coletaSobDemandaDisponivel } from './admin.ts';
-import { anotarBuscaNaSessao, buscaRecenteNaSessao, chaveDaBusca } from './sessao.ts';
+import { chaveDaBusca, ehRepeticao, lerBuscaDaSessao } from './sessao.ts';
 import { clienteDoServidor, SUPABASE_ANON, SUPABASE_URL } from './supabase.ts';
 
 export { JANELA_DIAS };
@@ -71,11 +71,13 @@ export async function carregarFeed(
   let coleta: ResultadoDoFeed['coleta'] = 'desligada';
   let vagasNovas = 0;
 
-  // Camada rasa: a sessão já viu exatamente esta busca há pouco. Ela só permite
-  // PULAR trabalho, nunca autoriza nada — quem decide de verdade é
-  // `coletas_sob_demanda`, no banco, que vale para todos os usuários.
+  // Camada rasa: a sessão já pediu exatamente esta busca antes. Ela só permite
+  // PULAR trabalho, nunca autoriza nada — quem garante é `coletas_sob_demanda`,
+  // no banco, que vale para todos os usuários e todos os dispositivos. Quem
+  // ESCREVE a sessão é a ação de buscar; aqui só se lê, porque Server Component
+  // não pode gravar cookie.
   const chave = chaveDaBusca(cargo, cidade, soRemoto);
-  const jaVista = await buscaRecenteNaSessao(chave);
+  const jaVista = ehRepeticao(await lerBuscaDaSessao(), chave);
 
   // Teto diário estourado: o feed ainda mostra o acervo, mas não dispara
   // trabalho novo. É a diferença entre limitar e punir.
@@ -91,7 +93,6 @@ export async function carregarFeed(
     });
     coleta = preenchimento.motivo;
     vagasNovas = preenchimento.vagasGravadas;
-    await anotarBuscaNaSessao(chave);
   }
 
   const supabase = await clienteDoServidor();

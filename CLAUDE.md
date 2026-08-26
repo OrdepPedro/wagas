@@ -420,6 +420,47 @@ Corrigido com uma janela de 60 segundos — busca repetida pelo mesmo usuário d
 
 O que ela deliberadamente NÃO resolve, e está em teste para não virar surpresa: **"enfermagem" continua separado de "enfermeiro"**. São derivações diferentes — a área e a profissão — e colapsá-las exigiria léxico, que é o que o CLAUDE.md proíbe para regra de cargo. A view guarda a coluna `termos` com o que o usuário escreveu de fato, justamente para esse tipo de caso ficar visível.
 
+
+**27. A SERP não enxerga o post no dia em que ele é publicado — e isso bate no diferencial do produto (26/08).** O Pedro buscou "Senior UX Designer", recebeu vazio, e tinha aberto na tela um post de recrutador do mesmo dia anunciando exatamente essa vaga. Rodamos a Serper nesse cargo (11 créditos) para descobrir por quê.
+
+O bloco de posts devolveu **1 item em 37 coletados**, e não era o dele. Duas sondas separaram a causa:
+
+| sonda | resultado |
+|---|---|
+| a frase exata do post, **sem nenhuma restrição** | **0 resultados** |
+| `site:linkedin.com/posts "Senior UX Designer"` com `qdr:w` | 10 resultados |
+
+**O Google não tinha o post.** Ele tinha 5 horas. O dork funciona e há volume; o que falta é o índice.
+
+Isso não é um problema de dork, e nenhum ajuste de `intitle:` resolve. O CLAUDE.md abre dizendo que o diferencial é capturar post de recrutador; post de vaga tem meia-vida de horas; e a única via para posts é a SERP. **Se a indexação demora mais que a meia-vida do anúncio, o produto chega estruturalmente atrasado na fonte que o diferencia.**
+
+É UM caso, não uma medição — mas é o primeiro teste do bloco de posts num anúncio verificável à mão, e o resultado é negativo. Fechar a conta custa 1 crédito: repetir a sonda da frase exata dias depois e ver quando (ou se) ela aparece.
+
+Achado colateral: dos 10 resultados do dork de posts, a maioria é em inglês e de fora do Brasil. O bloco traz ruído internacional mesmo quando funciona.
+
+**28. Reclassificar rejuvenescia o acervo inteiro, em silêncio (26/08).** `paraLinhaJob` não gravava `data_coleta`, então o Postgres aplicava `default now()`. Como a reclassificação apaga e reinsere `jobs`, todas as linhas da SERP ficaram carimbadas com a hora da reclassificação:
+
+    jobs.data_coleta        2026-08-26T00:14   <- momento da reclassificação
+    raw_results.data_coleta 2026-08-24T17:47   <- a verdade
+
+Três estragos, e o terceiro é o pior. O cartão exibia "vista em 26/08" para algo visto em 24/08. As linhas da SERP passaram a rankear como a coisa mais fresca do banco e enterravam as vagas da Gupy, que têm data de publicação real — em Auxiliar Administrativo havia 11 vagas da Gupy e as 10 primeiras da lista eram todas LinkedIn. E, sobretudo, **`data_referencia` é o predicado da janela de 7 dias**: vaga de 24/08 passava a sobreviver até 02/09, e cada nova reclassificação estenderia de novo.
+
+`data_coleta` agora é herdada de `raw_results`. Backfill corrigiu 275 linhas.
+
+**29. Senioridade no termo estreita a busca na ORIGEM (26/08).** A API da Gupy casa por substring, e o casamento de família já ignora senioridade de propósito — mas o termo ia cru para a fonte:
+
+| busca | antes | depois |
+|---|---|---|
+| Senior UX Designer, remoto | 0 | 1 |
+| Senior UX Designer, São Paulo | 0 | 2 |
+| Analista de Dados Sênior, SP | 2 | **19** |
+
+O ganho maior não veio da senioridade: veio de um bug que o teste pegou DENTRO da correção. A primeira versão usava `tokenizar`, que aplica as variantes lexicais (`dados`→`data`) — então a consulta virava "analista de data" e perdia todas as vagas escritas "Analista de Dados". `semSenioridade` opera sobre a grafia original, e existe teste dizendo por quê.
+
+**30. A busca ficou escondida no rodapé, dentro de um `<details>` fechado (26/08).** Num produto cuja premissa é "o usuário informa cargo e cidade", o formulário estava depois da lista inteira de vagas, colapsado, com o rótulo "Mudar cargo ou cidade". O Pedro reportou como "ainda não consigo pesquisar por qualquer vaga" — e não era o dado, que já funcionava: era que não havia onde pesquisar. Subiu para o topo, em caixa própria, sempre aberta.
+
+**31. Código que finge funcionar é pior que código ausente (26/08).** A memória de busca da sessão gravava cookie durante a renderização de um Server Component. O Next só permite isso em Server Action ou Route Handler, e o `try/catch` engolia o erro — o cookie nunca foi gravado e nada acusou. A escrita passou para a ação de buscar; o feed só lê. A garantia de não repetir consulta sempre foi da camada de banco (`coletas_sob_demanda`), que é a que vale para todos os usuários.
+
 ---
 
 ## Decisões de produto
@@ -451,6 +492,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 
 ## Pendências abertas
 
+- **O diferencial do produto pode não ser alcançável pela SERP** (achado 27). Post de recrutador tem meia-vida de horas e o Google não indexou um post de 5 horas. Fechar a conta custa 1 crédito e não foi feito.
 - **Visitante não existe.** O caminho está pronto (`is_anonymous` lido, teto de 3 aplicado), mas o app exige login. Para haver visitante de verdade é preciso ligar **Anonymous Sign-ins** no Supabase — decisão do Pedro, não feita.
 - **A camada Serper enfileira mas não coleta sozinha.** `coletar-demanda.ts` imprime as linhas prontas para colar em `alvos.ts`. O último passo é manual de propósito: são créditos de um saldo que não renova, e automatizar o gasto antes de a fila estar provada esvazia saldo sem ninguém notar.
 - **A Gupy virou fonte carregada, não complemento.** Ela sustenta o caso de cargo novo sozinha. Segunda fonte gratuita brasileira é a mitigação óbvia e não foi feita.
