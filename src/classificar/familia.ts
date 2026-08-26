@@ -439,3 +439,61 @@ export function filtroDeFamilia(cargoBuscado: string): FiltroDeFamilia {
     classes: [...new Set(alvo.funcoes.map((f) => f.classe))],
   };
 }
+
+/**
+ * Flexões de gênero em título de vaga em pt-BR, para a chave de agrupamento.
+ *
+ * Lista curta e por SUFIXO, não por palavra: "vendedora"->"vendedor",
+ * "enfermeira"->"enfermeiro". O que ela deliberadamente NÃO faz é trocar `-a`
+ * por `-o` no geral — "analista", "motorista" e "dentista" viram lixo com essa
+ * regra, e são cargos comuns.
+ */
+const FEMININO: Array<[RegExp, string]> = [
+  [/eira$/, 'eiro'],
+  [/ora$/, 'or'],
+  [/aria$/, 'ario'],
+  [/ica$/, 'ico'],
+];
+
+function semGenero(token: string): string {
+  if (token.length < 5) return token;
+  for (const [de, para] of FEMININO) {
+    if (de.test(token)) return token.replace(de, para);
+  }
+  return token;
+}
+
+/**
+ * Chave de agrupamento da DEMANDA. Não é a regra de casamento.
+ *
+ * Existe por um defeito medido no primeiro uso real: o usuário digitou
+ * "Enfermagem", "Enfermeira" e "Enfermeiro" na mesma sessão, e a fila de
+ * priorização mostrou três pedidos de uma pessoa cada — uma necessidade
+ * fragmentada em três sinais fracos. Como é essa fila que decide onde gastar
+ * crédito da Serper, contar errado aqui gasta errado lá.
+ *
+ * Ela é mais agressiva que `cargoBateNoTitulo` de propósito, e isso é seguro
+ * porque ninguém é aprovado ou reprovado por ela: no máximo dois pedidos
+ * parecidos viram um só na fila.
+ *
+ * O que ela NÃO resolve: "enfermagem" continua separado de "enfermeiro". São
+ * derivações diferentes — a área e a profissão — e colapsar isso exigiria
+ * léxico, que é justamente o que o CLAUDE.md proíbe para regra de cargo.
+ */
+export function chaveDeFamilia(cargo: string): string {
+  const nucleo = decompor(cargo);
+  const classes = [...new Set(nucleo.funcoes.map((f) => f.classe))].sort();
+
+  let dominio = [...new Set(nucleo.dominio.map((t) => semGenero(semPlural(t))))].sort();
+
+  // Profissão que é só função ("Vendedor", "Designer") sai de `decompor` com
+  // domínio vazio, e a chave viraria a CLASSE inteira — "Vendedor", "SDR" e
+  // "Representante" no mesmo balde. Para a fila isso é agressivo demais: são
+  // dorks diferentes e coletas diferentes. Nesse caso a própria função vira o
+  // domínio.
+  if (dominio.length === 0) {
+    dominio = [...new Set(nucleo.funcoes.map((f) => semGenero(semPlural(f.token))))].sort();
+  }
+
+  return `${dominio.join('-')}|${classes.join('-')}`;
+}

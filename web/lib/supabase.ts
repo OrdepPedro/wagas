@@ -49,6 +49,12 @@ export async function clienteDoServidor() {
 export interface Usuario {
   id: string;
   email: string | null;
+  /**
+   * Sessão anônima (Supabase `signInAnonymously`). Conta como visitante para o
+   * teto diário. Se logins anônimos estiverem desligados no projeto, ninguém
+   * chega aqui com `true` e o caminho simplesmente não é usado.
+   */
+  visitante: boolean;
 }
 
 /** Quem está logado, ou null. Usa `getUser`, que valida o token no servidor. */
@@ -56,5 +62,9 @@ export async function usuarioAtual(): Promise<Usuario | null> {
   const supabase = await clienteDoServidor();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return null;
-  return { id: data.user.id, email: data.user.email ?? null };
+  return {
+    id: data.user.id,
+    email: data.user.email ?? null,
+    visitante: Boolean(data.user.is_anonymous),
+  };
 }

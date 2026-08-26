@@ -55,10 +55,12 @@ export function FormularioDeEntrada() {
 export function FormularioDeBusca({
   cargo = '',
   cidade = '',
+  soRemoto = false,
   rotulo = 'Ver vagas',
 }: {
   cargo?: string;
   cidade?: string;
+  soRemoto?: boolean;
   rotulo?: string;
 }) {
   const [estado, acao] = useActionState(definirBusca, VAZIO);
@@ -89,6 +91,17 @@ export function FormularioDeBusca({
           />
         </div>
       </div>
+      <label className="opcao">
+        <input type="checkbox" name="soRemoto" defaultChecked={soRemoto} />
+        <span>
+          Só vagas remotas
+          {/* Não é um filtro a mais sobre o feed normal: é outra composição.
+              Ligado, a cidade deixa de valer e o feed passa a ser o Brasil
+              inteiro. Dizer isso aqui evita a pergunta "cadê minhas vagas
+              presenciais". */}
+          <small>Ignora a cidade e busca em todo o Brasil.</small>
+        </span>
+      </label>
       {estado.erro ? <p className="erro">{estado.erro}</p> : null}
       <Enviar>{rotulo}</Enviar>
     </form>

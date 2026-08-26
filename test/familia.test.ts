@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
+import { describe, it, test } from 'node:test';
 
 import {
   cargoBateNoTitulo,
   decompor,
   senioridadeDoTitulo,
   tokenizar,
+  chaveDeFamilia,
 } from '../src/classificar/familia.ts';
 
 describe('decompor', () => {
@@ -121,4 +122,36 @@ describe('senioridadeDoTitulo', () => {
   it('devolve null quando o título não diz', () => {
     assert.equal(senioridadeDoTitulo('Enfermeiro - Clínica Mac Weber'), null);
   });
+});
+
+/**
+ * A chave de agrupamento da DEMANDA. Nasceu de um defeito medido: o usuário
+ * digitou "Enfermagem", "Enfermeira" e "Enfermeiro" na mesma sessão e a fila de
+ * priorização mostrou três pedidos de uma pessoa cada.
+ */
+test('gênero gramatical não fragmenta a fila de demanda', () => {
+  assert.equal(chaveDeFamilia('Enfermeira'), chaveDeFamilia('Enfermeiro'));
+  assert.equal(chaveDeFamilia('Vendedora'), chaveDeFamilia('Vendedor'));
+  assert.equal(chaveDeFamilia('Assistente Administrativa'), chaveDeFamilia('Auxiliar Administrativo'));
+});
+
+test('cargo adjacente cai no mesmo balde da fila', () => {
+  assert.equal(chaveDeFamilia('Gerente de Produto'), chaveDeFamilia('Product Manager'));
+  assert.equal(chaveDeFamilia('Analista de dados sênior'), chaveDeFamilia('Analista de Dados'));
+});
+
+/** A regra é por sufixo, não `-a` -> `-o`: senão "analista" vira lixo. */
+test('não estraga cargo terminado em -ista', () => {
+  assert.ok(chaveDeFamilia('Analista de Dados').startsWith('data|'));
+  assert.notEqual(chaveDeFamilia('Motorista'), chaveDeFamilia('Motoristo'));
+});
+
+/** Profissão que é só função não pode colapsar a classe inteira num balde. */
+test('cargos comerciais distintos não viram o mesmo pedido', () => {
+  assert.notEqual(chaveDeFamilia('Vendedor'), chaveDeFamilia('SDR'));
+});
+
+/** O que a regra NÃO resolve, dito em teste para não virar surpresa. */
+test('área e profissão continuam separadas: enfermagem não é enfermeiro', () => {
+  assert.notEqual(chaveDeFamilia('Enfermagem'), chaveDeFamilia('Enfermeiro'));
 });

@@ -228,3 +228,31 @@ ul.vagas {
   font-size: 0.8125rem;
   color: var(--texto-fraco);
 }
+
+.opcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.opcao input {
+  margin: 3px 0 0;
+  accent-color: var(--acento);
+  width: 16px;
+  height: 16px;
+}
+
+.opcao small {
+  display: block;
+  color: var(--texto-fraco);
+  font-size: 0.8125rem;
+}
+
+.limite {
+  font-size: 0.8125rem;
+  color: var(--texto-fraco);
+  margin-top: 14px;
+}

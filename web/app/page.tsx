@@ -1,5 +1,6 @@
 import { carregarFeed, JANELA_DIAS, type Vaga } from '../lib/feed.ts';
 import { registrarBusca } from '../lib/feed.ts';
+import { estadoDoLimite } from '../lib/limites.ts';
 import { lerPerfil } from '../lib/perfil.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
 import { sair } from './actions.ts';
@@ -79,12 +80,21 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
  * gravada com a contagem de resultados mesmo (e principalmente) quando ela é
  * zero. Ver a view `demanda_descoberta`.
  */
-function FeedVazio({ cargo, cidade }: { cargo: string; cidade: string }) {
+function FeedVazio({
+  cargo,
+  cidade,
+  soRemoto,
+}: {
+  cargo: string;
+  cidade: string;
+  soRemoto: boolean;
+}) {
   return (
     <>
       <div className="caixa aviso" style={{ marginBottom: 24 }}>
         <p>
-          Ainda não cobrimos <strong>{cargo}</strong> em <strong>{cidade}</strong>.
+          Ainda não cobrimos <strong>{cargo}</strong>{' '}
+          {soRemoto ? <>em vagas remotas</> : <>em <strong>{cidade}</strong></>}.
         </p>
         <p className="fraco" style={{ margin: 0 }}>
           Anotei o seu pedido. A gente varre novos cargos e cidades por ordem de quem pediu — e
@@ -92,22 +102,75 @@ function FeedVazio({ cargo, cidade }: { cargo: string; cidade: string }) {
         </p>
       </div>
       <h2 style={{ fontSize: '1rem', marginBottom: 12 }}>Procurar outra coisa</h2>
-      <FormularioDeBusca cargo={cargo} cidade={cidade} rotulo="Buscar" />
+      <FormularioDeBusca cargo={cargo} cidade={cidade} soRemoto={soRemoto} rotulo="Buscar" />
     </>
   );
 }
 
-async function Feed({ cargo, cidade, userId }: { cargo: string; cidade: string; userId: string }) {
-  const { vagas, cidadeSlug, naCidade, remotas } = await carregarFeed(cargo, cidade);
+/**
+ * Teto diário estourado.
+ *
+ * Não some com o feed: o acervo que a pessoa já tem continua visível. O que o
+ * teto impede é DISPARAR trabalho novo — varredura na fonte externa e, mais
+ * adiante, coleta paga. Esconder o que já existe seria punir sem motivo.
+ */
+function LimiteEstourado({ teto, visitante }: { teto: number; visitante: boolean }) {
+  return (
+    <div className="caixa aviso" style={{ marginBottom: 24 }}>
+      <p>
+        Você já fez {teto} {teto === 1 ? 'busca' : 'buscas'} hoje.
+      </p>
+      <p className="fraco" style={{ margin: 0 }}>
+        {visitante
+          ? 'Entrar com e-mail aumenta o limite. O contador zera à meia-noite.'
+          : 'O contador zera à meia-noite. Recarregar o feed não conta — só trocar de cargo ou cidade.'}
+      </p>
+    </div>
+  );
+}
+
+async function Feed({
+  cargo,
+  cidade,
+  soRemoto,
+  userId,
+  visitante,
+}: {
+  cargo: string;
+  cidade: string;
+  soRemoto: boolean;
+  userId: string;
+  visitante: boolean;
+}) {
+  const limite = await estadoDoLimite(userId, visitante);
+
+  // ORDEM QUE IMPORTA: o teto é consultado ANTES de `carregarFeed`, porque é
+  // ela que dispara a coleta na fonte externa. Checar depois gastaria a
+  // varredura e só então diria "não pode".
+  const { vagas, cidadeSlug, naCidade, remotas } = await carregarFeed(cargo, cidade, {
+    ...(soRemoto ? { soRemoto: true } : {}),
+    ...(limite.estourou ? { apenasCache: true } : {}),
+  });
   await registrarBusca(userId, cargo, cidade, cidadeSlug, vagas.length);
 
-  if (vagas.length === 0) return <FeedVazio cargo={cargo} cidade={cidade} />;
+  if (vagas.length === 0) {
+    return (
+      <>
+        {limite.estourou ? <LimiteEstourado teto={limite.teto} visitante={visitante} /> : null}
+        <FeedVazio cargo={cargo} cidade={cidade} soRemoto={soRemoto} />
+      </>
+    );
+  }
 
   return (
     <>
+      {limite.estourou ? <LimiteEstourado teto={limite.teto} visitante={visitante} /> : null}
       <p className="resumo">
-        {vagas.length} {vagas.length === 1 ? 'vaga' : 'vagas'} — {naCidade} em {cidade}, {remotas}{' '}
-        {remotas === 1 ? 'remota no Brasil' : 'remotas no Brasil'}.
+        {vagas.length} {vagas.length === 1 ? 'vaga' : 'vagas'} —{' '}
+        {soRemoto
+          ? `${remotas} ${remotas === 1 ? 'remota' : 'remotas'} em todo o Brasil`
+          : `${naCidade} em ${cidade}, ${remotas} ${remotas === 1 ? 'remota no Brasil' : 'remotas no Brasil'}`}
+        .
       </p>
       <ul className="vagas">
         {vagas.map((vaga) => (
@@ -118,9 +181,18 @@ async function Feed({ cargo, cidade, userId }: { cargo: string; cidade: string; 
         <details>
           <summary style={{ cursor: 'pointer' }}>Mudar cargo ou cidade</summary>
           <div style={{ marginTop: 16 }}>
-            <FormularioDeBusca cargo={cargo} cidade={cidade} rotulo="Atualizar busca" />
+            <FormularioDeBusca
+              cargo={cargo}
+              cidade={cidade}
+              soRemoto={soRemoto}
+              rotulo="Atualizar busca"
+            />
           </div>
         </details>
+        <p className="limite">
+          {limite.restantes} de {limite.teto}{' '}
+          {limite.teto === 1 ? 'busca restante' : 'buscas restantes'} hoje.
+        </p>
       </div>
     </>
   );
@@ -171,7 +243,8 @@ export default async function Pagina() {
         <div>
           <h1>{perfil.cargo}</h1>
           <p className="fraco" style={{ margin: 0 }}>
-            {perfil.cidade} e remoto no Brasil · últimos {JANELA_DIAS} dias
+            {perfil.soRemoto ? 'remoto em todo o Brasil' : `${perfil.cidade} e remoto no Brasil`} ·
+            últimos {JANELA_DIAS} dias
           </p>
         </div>
         <form action={sair}>
@@ -180,7 +253,13 @@ export default async function Pagina() {
           </button>
         </form>
       </div>
-      <Feed cargo={perfil.cargo} cidade={perfil.cidade} userId={usuario.id} />
+      <Feed
+        cargo={perfil.cargo}
+        cidade={perfil.cidade}
+        soRemoto={perfil.soRemoto}
+        userId={usuario.id}
+        visitante={usuario.visitante}
+      />
     </>
   );
 }

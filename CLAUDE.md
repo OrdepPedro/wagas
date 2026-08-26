@@ -13,7 +13,8 @@ Agregador de vagas de emprego. O usuário informa cargo e cidade, e recebe um fe
 - **Janela fixa de 7 dias.** Não existe seletor de período. Se a vaga tem mais de 7 dias, não entra.
 - **O usuário informa cargo + cidade.** Nada mais.
 - **O feed junta três coisas:** vagas presenciais na cidade dele, híbridas na cidade dele, e remotas de todo o Brasil.
-- **No free tier não há seleção de modelo de trabalho** (remoto/híbrido/presencial).
+- ~~**No free tier não há seleção de modelo de trabalho**~~ — **revogado em 26/08 pelo Pedro.** Existe um toggle "Só vagas remotas". Ele NÃO é um filtro a mais sobre o feed: ligado, a cidade deixa de valer e o feed vira remoto de todo o Brasil. Somá-lo ao feed normal devolveria só a vaga remota que por acaso registrou a cidade da pessoa, que é quase nenhuma.
+- **O usuário busca qualquer cargo e recebe resultado** — decidido em 26/08, com consulta nova a cada troca de cargo ou cidade, e teto diário no tier gratuito. Ver a exceção registrada à regra crítica, abaixo.
 - **Fontes por vaga:** LinkedIn Jobs, posts do LinkedIn e Gupy.
 - **Tiers pagos** vão diferenciar precisão e quantidade. O desenho ainda não existe.
 
@@ -77,7 +78,13 @@ Cinco alertas ativos na conta `pedroafontoura3@gmail.com`, com os dorks validado
 
 **Regra crítica:** busca **nunca** é disparada por request de usuário. A coleta popula o cache; o usuário lê o cache. Filtros de cargo, modelo, local e período são aplicados **no Postgres sobre o cache** — traduzir filtro de usuário em consulta à API multiplicaria o custo pela combinatória.
 
-Isso vale independentemente de a coleta rodar em cron ou sob demanda: o que a regra proíbe é o caminho request-do-usuário → API paga.
+Isso vale independentemente de a coleta rodar em cron ou sob demanda: o que a regra proíbe é o caminho request-do-usuário → **API paga**.
+
+**Exceção registrada em 26/08, e ela é menor do que parece.** O Pedro decidiu que o usuário busca qualquer cargo e recebe resultado. Isso NÃO quebrou a regra, porque a fonte que atende o request é gratuita: a API pública do portal da Gupy (achado 24). O caminho continua sendo `coleta popula o cache → usuário lê o cache`; o que mudou foi quem puxa o gatilho e quanto custa — nada.
+
+O que continua **proibido** é a Serper no request. Ela mora em `scripts/coletar-demanda.ts`, fora do caminho do usuário, ordenada por pessoas distintas que pediram e não acharam, com teto por execução e último passo manual. A aritmética que sustenta isso: restam 2.133 créditos, não renovam, ~18 por par cargo×cidade — **~118 pares na vida inteira do produto**. Uma pessoa trocando de cargo dez vezes numa tarde consumiria 8% disso.
+
+A economia da regra vale igual para a fonte gratuita, só que a moeda é outra: `coletas_sob_demanda` impede dez usuários pedindo o mesmo par de virarem dez varreduras num serviço de terceiro que não nos deve nada.
 
 **Consequência econômica que importa:** o custo escala com **pares cargo×cidade distintos**, não com número de usuários. Dez usuários pedindo "Product Manager em São Paulo" custam uma varredura, não dez.
 
@@ -379,6 +386,40 @@ Isso tira a pendência "o portão está medido só de um lado" e põe outra no l
 
 O pré-filtro bateu exatamente, que é o controle: o que é determinístico não se move. Tudo que se moveu passou pelo modelo. `nao_e_vaga` caindo de 7 para 2 sem uma linha de código mudar é a medida honesta do ruído — **cinco vagas entram ou não no feed por sorteio**. Achado 11 continua sendo o achado mais caro deste projeto.
 
+
+**24. A API pública do portal da Gupy responde qualquer cargo, de graça, e resolve três dos quatro buracos de dado (26/08).** Endpoint que o próprio portal chama, sem chave e sem autenticação: `employability-portal.gupy.io/api/v1/jobs?jobName=…&city=…&workplaceType=remote`.
+
+Comparação sobre dado real, do mesmo dia:
+
+| campo | pela SERP (192 linhas) | pela API (76 linhas) |
+|---|---|---|
+| `data_publicacao` real | **0%** | **100%** (timestamp com hora) |
+| `modelo` de trabalho | 47% | **100%** |
+| empresa identificada | 72% | **100%** |
+| cidade e UF | parcial | **100%** |
+
+**Consequência que muda o desenho: esta camada não precisa de LLM.** As três perguntas do classificador viram — é vaga por construção (anúncio de ATS), `cargoBateNoTitulo` (determinístico, já medido) e comparação de campo estruturado. Zero crédito, zero cota, resposta em segundos. `Vendedor / São Paulo` foi de 1 para 77 vagas em dois segundos.
+
+**Volume dentro da janela de 7 dias**, e é o achado 9 confirmado com números: Enfermeiro 100+, Auxiliar Administrativo 100+, Marketing 61, Dados 41, **Product Manager 10, Front-end 3**. Ela cobre o que a SERP cobria mal e não substitui a SERP no que esta cobre bem. `Product Manager / Belo Horizonte` devolveu **1 vaga, vencida** — em cidade menor e cargo tech ela é magra.
+
+**Três limites que precisam ficar escritos:**
+
+1. **A fonte única de ATS virou fonte carregada.** Já era pendência registrada; agora sustenta o caso de cargo novo.
+2. **A API não é documentada.** É pública, anônima e sobre dado público — a mesma categoria de "ATSs brasileiros públicos" que a restrição 3 autoriza, e sem relação com a restrição 2, que trata do LinkedIn AUTENTICADO. Ainda assim pode mudar sem aviso: tudo degrada para lista vazia, e há teste para isso.
+3. **A fonte se contradiz.** Vaga com `city: São Paulo` e título dizendo Gravataí; `careerPageName` com texto de marketing (`🚀 A seleção já está rol`) no lugar do nome da empresa.
+
+**Uma distinção que só apareceu ao escrever teste:** fonte caída não é fonte vazia. A primeira versão engolia falha de rede e devolvia lista vazia, o que carimbaria o frescor e suprimiria a próxima tentativa por 30 minutos por causa de um soluço.
+
+**25. `buscas` gravava o dobro — e é a tabela que mede o produto (26/08).** Toda carga de feed gerava duas linhas. Causa: a escrita acontecia durante a renderização de um Server Component, e render repete (documento mais payload de RSC, prefetch, re-render em dev). Sintoma: toda métrica de busca inflada em 2×, incluindo a contagem de pedidos da fila de priorização.
+
+Corrigido com uma janela de 60 segundos — busca repetida pelo mesmo usuário dentro de um minuto não grava linha nova, o que também é a leitura honesta do comportamento. **Escrita durante render é o anti-padrão; a janela é o remendo.** Se um dia a telemetria precisar ser exata, ela sai do render.
+
+**26. A fila de demanda nascia fragmentada por gênero gramatical (26/08).** No primeiro uso real, o Pedro digitou "Enfermagem", "Enfermeira" e "Enfermeiro" na mesma sessão. A `demanda_descoberta` agrupava por texto cru e mostrou **três linhas com uma pessoa cada** — uma necessidade virando três sinais fracos, numa fila que decide onde gastar crédito da Serper.
+
+`chaveDeFamilia` agrupa por sufixo (`-eira`→`-eiro`, `-ora`→`-or`, `-aria`→`-ario`, `-ica`→`-ico`), **não** por `-a`→`-o`, que estragaria "analista", "motorista" e "dentista". Depois do backfill: 3 linhas viraram 2, com `enfermeiro|` agregando `enfermeira, enfermeiro`.
+
+O que ela deliberadamente NÃO resolve, e está em teste para não virar surpresa: **"enfermagem" continua separado de "enfermeiro"**. São derivações diferentes — a área e a profissão — e colapsá-las exigiria léxico, que é o que o CLAUDE.md proíbe para regra de cargo. A view guarda a coluna `termos` com o que o usuário escreveu de fato, justamente para esse tipo de caso ficar visível.
+
 ---
 
 ## Decisões de produto
@@ -410,6 +451,10 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 
 ## Pendências abertas
 
+- **Visitante não existe.** O caminho está pronto (`is_anonymous` lido, teto de 3 aplicado), mas o app exige login. Para haver visitante de verdade é preciso ligar **Anonymous Sign-ins** no Supabase — decisão do Pedro, não feita.
+- **A camada Serper enfileira mas não coleta sozinha.** `coletar-demanda.ts` imprime as linhas prontas para colar em `alvos.ts`. O último passo é manual de propósito: são créditos de um saldo que não renova, e automatizar o gasto antes de a fila estar provada esvazia saldo sem ninguém notar.
+- **A Gupy virou fonte carregada, não complemento.** Ela sustenta o caso de cargo novo sozinha. Segunda fonte gratuita brasileira é a mitigação óbvia e não foi feita.
+- **Telemetria escreve durante o render** (achado 25). A janela de 60s remenda o dobro; a correção estrutural é tirar a escrita do render.
 - **Deploy da tela e SMTP próprio.** `web/` roda local e o build passa, mas não está na Vercel. E o remetente padrão do Supabase limita e-mails por hora: serve para um usuário testando, não para as dez pessoas do Passo 5.
 - **`data_publicacao` continua null na prática.** O fix da regex da Gupy recupera 9 de 57 na próxima coleta; o LinkedIn não tem sinal utilizável (achado 19). Enquanto isso a janela de 7 dias é uma janela de até 14.
 - **58% das vagas sem modelo de trabalho,** e a leitura determinística recuperou 0 (achado 20). Sem modelo, a vaga não entra no balde remoto do feed. É a mesma conta da extração de empresa: uma requisição por item.
@@ -436,7 +481,7 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
-| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **base e tela prontas (25/08), sem deploy.** Migrations 0004 e 0005, filtro de família em SQL, `web/` com Auth por link mágico, clique em `/ir/[id]` e demanda gravada em `buscas`. Falta Vercel e SMTP próprio |
+| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **funcionando local, sem deploy.** Migrations 0004–0007, `web/` com Auth por link mágico, busca de qualquer cargo pela API pública da Gupy, toggle Só Remoto, teto diário, clique em `/ir/[id]` e fila de coleta paga. Falta Vercel, SMTP próprio e login de visitante |
 | 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente |
 
 **Não ajude o Pedro a pular etapas.**

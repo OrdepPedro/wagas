@@ -11,7 +11,11 @@
  * criaria uma segunda tradução da regra de família, e duas traduções que
  * divergem produzem feed vazio sem causa aparente.
  */
+import { chaveDeFamilia } from '../../src/classificar/familia.ts';
 import { consultaDeFeed, JANELA_DIAS } from '../../src/feed/consulta.ts';
+import { preencherSeNecessario, type MotivoDoPreenchimento } from '../../src/fontes/sob-demanda.ts';
+import { clienteAdministrativo, coletaSobDemandaDisponivel } from './admin.ts';
+import { anotarBuscaNaSessao, buscaRecenteNaSessao, chaveDaBusca } from './sessao.ts';
 import { clienteDoServidor, SUPABASE_ANON, SUPABASE_URL } from './supabase.ts';
 
 export { JANELA_DIAS };
@@ -42,6 +46,10 @@ export interface ResultadoDoFeed {
   /** Quantas vieram porque a cidade bate, e quantas por serem remotas no Brasil. */
   naCidade: number;
   remotas: number;
+  /** O que a coleta sob demanda fez antes desta leitura. Vai para o log e para o rodapé. */
+  coleta: MotivoDoPreenchimento | 'desligada' | 'ja_visto_na_sessao' | 'limite_atingido';
+  vagasNovas: number;
+  soRemoto: boolean;
 }
 
 /**
@@ -50,13 +58,48 @@ export interface ResultadoDoFeed {
  * no `authorization`, então a RLS continua valendo: o usuário lê o que a policy
  * `jobs_leitura_autenticada` permite, nada além.
  */
-export async function carregarFeed(cargo: string, cidade: string): Promise<ResultadoDoFeed> {
+export async function carregarFeed(
+  cargo: string,
+  cidade: string,
+  opcoes: { soRemoto?: boolean; apenasCache?: boolean } = {},
+): Promise<ResultadoDoFeed> {
+  // ORDEM QUE IMPORTA: a fonte externa popula o cache, e só depois o feed lê o
+  // cache. O usuário nunca lê o resultado de uma chamada externa direto — se a
+  // fonte cair, ele vê o acervo que já existe em vez de um erro. É a regra
+  // "coleta popula, usuário lê" preservada, com um gatilho novo.
+  const soRemoto = Boolean(opcoes.soRemoto);
+  let coleta: ResultadoDoFeed['coleta'] = 'desligada';
+  let vagasNovas = 0;
+
+  // Camada rasa: a sessão já viu exatamente esta busca há pouco. Ela só permite
+  // PULAR trabalho, nunca autoriza nada — quem decide de verdade é
+  // `coletas_sob_demanda`, no banco, que vale para todos os usuários.
+  const chave = chaveDaBusca(cargo, cidade, soRemoto);
+  const jaVista = await buscaRecenteNaSessao(chave);
+
+  // Teto diário estourado: o feed ainda mostra o acervo, mas não dispara
+  // trabalho novo. É a diferença entre limitar e punir.
+  if (opcoes.apenasCache) {
+    coleta = 'limite_atingido';
+  } else if (jaVista) {
+    coleta = 'ja_visto_na_sessao';
+  } else if (coletaSobDemandaDisponivel()) {
+    const preenchimento = await preencherSeNecessario(clienteAdministrativo(), {
+      cargo,
+      cidade: soRemoto ? null : cidade,
+      ...(soRemoto ? { soRemoto: true } : {}),
+    });
+    coleta = preenchimento.motivo;
+    vagasNovas = preenchimento.vagasGravadas;
+    await anotarBuscaNaSessao(chave);
+  }
+
   const supabase = await clienteDoServidor();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new Error('feed pedido sem sessão');
 
-  const consulta = consultaDeFeed({ cargo, cidade });
+  const consulta = consultaDeFeed({ cargo, cidade, soRemoto });
 
   const resposta = await fetch(`${SUPABASE_URL()}/rest/v1/jobs?${consulta.query}`, {
     headers: {
@@ -78,8 +121,26 @@ export async function carregarFeed(cargo: string, cidade: string): Promise<Resul
     cidadeSlug: consulta.cidadeSlug,
     naCidade,
     remotas: vagas.length - naCidade,
+    coleta,
+    vagasNovas,
+    soRemoto,
   };
 }
+
+/**
+ * Janela em que uma busca repetida é considerada a MESMA busca.
+ *
+ * Existe por um defeito medido, não por preferência: `registrarBusca` roda
+ * durante a renderização de um Server Component, e render pode repetir —
+ * documento mais payload de RSC, prefetch do Next, re-render em
+ * desenvolvimento. Sem esta janela, cada carga de feed gravava DUAS linhas, e
+ * toda métrica de busca saía inflada em 2x, inclusive a contagem de pedidos da
+ * `demanda_descoberta`, que é a fila de priorização da coleta.
+ *
+ * Um minuto também é a leitura honesta do comportamento: quem recarrega a
+ * página em menos de um minuto não fez uma busca nova.
+ */
+const JANELA_DE_REPETICAO_MS = 60_000;
 
 /**
  * Registra a carga do feed, com a contagem de resultados.
@@ -100,11 +161,28 @@ export async function registrarBusca(
 ): Promise<void> {
   try {
     const supabase = await clienteDoServidor();
+
+    const desde = new Date(Date.now() - JANELA_DE_REPETICAO_MS).toISOString();
+    const { data: recente } = await supabase
+      .from('buscas')
+      .select('id')
+      .eq('user_id', userId)
+      .eq('cidade_slug', cidadeSlug)
+      .eq('cargo', cargo)
+      .gte('criado_em', desde)
+      .limit(1);
+
+    if (recente && recente.length > 0) return;
+
     await supabase.from('buscas').insert({
       user_id: userId,
       cargo,
       cidade,
       cidade_slug: cidadeSlug,
+      // Chave de família calculada em TS, com as mesmas funções que decidem se
+      // um cargo bate com uma vaga. É o que faz "Enfermeira" e "Enfermeiro"
+      // virarem UM pedido na fila de coleta em vez de dois sinais fracos.
+      cargo_familia: chaveDeFamilia(cargo),
       resultados,
     });
   } catch {

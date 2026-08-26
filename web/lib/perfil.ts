@@ -13,18 +13,25 @@ export interface Perfil {
   cargo: string;
   cidade: string;
   cidadeSlug: string;
+  /** true = feed só com remoto do Brasil inteiro; a cidade deixa de filtrar. */
+  soRemoto: boolean;
 }
 
 export async function lerPerfil(userId: string): Promise<Perfil | null> {
   const supabase = await clienteDoServidor();
   const { data } = await supabase
     .from('perfis')
-    .select('cargo,cidade,cidade_slug')
+    .select('cargo,cidade,cidade_slug,so_remoto')
     .eq('user_id', userId)
     .maybeSingle();
 
   if (!data) return null;
-  return { cargo: data.cargo, cidade: data.cidade, cidadeSlug: data.cidade_slug };
+  return {
+    cargo: data.cargo,
+    cidade: data.cidade,
+    cidadeSlug: data.cidade_slug,
+    soRemoto: Boolean(data.so_remoto),
+  };
 }
 
 export interface ErroDePerfil {
@@ -44,6 +51,7 @@ export async function salvarPerfil(
   userId: string,
   cargoBruto: string,
   cidadeBruta: string,
+  soRemoto = false,
 ): Promise<ErroDePerfil | null> {
   const cargo = cargoBruto.trim().replace(/\s+/g, ' ');
   const cidade = cidadeBruta.trim().replace(/\s+/g, ' ');
@@ -63,6 +71,7 @@ export async function salvarPerfil(
       cargo,
       cidade,
       cidade_slug: cidadeSlug,
+      so_remoto: soRemoto,
       atualizado_em: new Date().toISOString(),
     },
     { onConflict: 'user_id' },

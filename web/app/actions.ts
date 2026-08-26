@@ -64,6 +64,7 @@ export async function definirBusca(
     usuario.id,
     String(form.get('cargo') ?? ''),
     String(form.get('cidade') ?? ''),
+    form.get('soRemoto') === 'on',
   );
   if (falha) return { erro: falha.mensagem };
 

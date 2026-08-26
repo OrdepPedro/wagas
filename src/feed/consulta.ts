@@ -29,6 +29,13 @@ export const JANELA_DIAS = 7;
 export interface PedidoDeFeed {
   cargo: string;
   cidade: string;
+  /**
+   * "Só Remoto". Quando ligado, a CIDADE deixa de filtrar: o feed vira remoto
+   * de todo o Brasil. Não é um filtro a mais sobre o feed normal — é outra
+   * composição, e tratá-lo como filtro extra devolveria só as vagas remotas que
+   * por acaso registraram a cidade da pessoa, que é quase nenhuma.
+   */
+  soRemoto?: boolean;
   janelaDias?: number;
   limite?: number;
   agora?: Date;
@@ -107,7 +114,9 @@ export function consultaDeFeed(pedido: PedidoDeFeed): ConsultaDeFeed {
     // confirmado E não-sei; barra só o que foi identificado como de fora — é
     // assim que a vaga remota da França sai do feed sem levar junto as vagas
     // brasileiras cuja localização o anúncio não qualificou.
-    `or(cidade_slug.eq.${cidadeSlug},and(modelo.eq.remoto,pais_br.not.is.false))`,
+    pedido.soRemoto
+      ? `and(modelo.eq.remoto,pais_br.not.is.false)`
+      : `or(cidade_slug.eq.${cidadeSlug},and(modelo.eq.remoto,pais_br.not.is.false))`,
   ];
   if (classes.length > 0) {
     grupos.unshift(`or(familia_classes.eq.{},familia_classes.ov.${lista(classes)})`);

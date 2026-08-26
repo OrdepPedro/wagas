@@ -97,3 +97,23 @@ test('a consulta do feed não conhece nenhuma fonte externa', async () => {
     assert.ok(!codigo.toLowerCase().includes(proibido), `consulta.ts usa ${proibido}`);
   }
 });
+
+/**
+ * "Só Remoto" é outra composição, não um filtro a mais. Se fosse acrescentado
+ * ao feed normal, sobraria só a vaga remota que por acaso registrou a cidade da
+ * pessoa — que é quase nenhuma.
+ */
+test('só-remoto tira a cidade da consulta, não soma um filtro', () => {
+  const normal = consultaDeFeed({ cargo: 'Product Manager', cidade: 'São Paulo', agora: AGORA });
+  const remoto = consultaDeFeed({
+    cargo: 'Product Manager',
+    cidade: 'São Paulo',
+    soRemoto: true,
+    agora: AGORA,
+  });
+
+  assert.ok(normal.query.includes('cidade_slug.eq.sao-paulo'));
+  assert.ok(!remoto.query.includes('cidade_slug.eq.'), 'a cidade não pode filtrar no só-remoto');
+  assert.ok(remoto.query.includes('modelo.eq.remoto'));
+  assert.ok(remoto.query.includes('pais_br.not.is.false'));
+});
