@@ -4,6 +4,10 @@ Agregador de vagas de emprego. O usuário informa cargo e cidade, e recebe um fe
 
 **Diferencial pretendido:** capturar não só vagas formais, mas posts de recrutador que anunciam oportunidade apenas em texto.
 
+⚠️ **O diferencial é o texto informal, não o LinkedIn.** LinkedIn é o meio que assumimos, e ele está sob suspeita desde o achado 27 — a SERP não enxerga o post enquanto o anúncio ainda vale. Comprar não conserta (achado 32). Qualquer canal onde recrutador anuncia em texto corrido serve à mesma promessa; Telegram é o candidato não testado (achado 33).
+
+⚠️ **Em 28/08 o post do LinkedIn foi rebaixado a fonte secundária, e isso tem um preço que precisa ficar escrito: hoje o produto não tem diferencial em operação.** A base do feed passou a ser Gupy + LinkedIn Jobs, que é agregação de vaga formal — o que outros já fazem. O texto informal continua sendo a aposta, mas por um canal ainda não testado. Enquanto o Telegram não for medido, "capturar post de recrutador" é intenção, não recurso.
+
 **Produto multiusuário.** Não é ferramenta pessoal do Pedro. Qualquer validação feita só com o perfil dele (Product Manager, Belo Horizonte) é amostra enviesada e estreita — teste com segmentos variados.
 
 ---
@@ -461,6 +465,110 @@ O ganho maior não veio da senioridade: veio de um bug que o teste pegou DENTRO 
 
 **31. Código que finge funcionar é pior que código ausente (26/08).** A memória de busca da sessão gravava cookie durante a renderização de um Server Component. O Next só permite isso em Server Action ou Route Handler, e o `try/catch` engolia o erro — o cookie nunca foi gravado e nada acusou. A escrita passou para a ação de buscar; o feed só lê. A garantia de não repetir consulta sempre foi da camada de banco (`coletas_sob_demanda`), que é a que vale para todos os usuários.
 
+**32. Nenhuma solução paga resolve a descoberta de post do LinkedIn — e o vendedor escreve isso na própria documentação (27/08).** Pesquisa de mercado motivada pelo achado 27, com a pergunta explícita "existe alternativa, paga que seja, que faça o diferencial funcionar?". Resposta: não.
+
+O Apify vende um *LinkedIn Keyword Posts Monitor*, que é exatamente o produto procurado. A documentação dele diz:
+
+> *"LinkedIn does not expose a no-auth post-search endpoint, so discovery runs through Google, with coverage depending on Google's index for linkedin.com/posts."*
+
+Descoberta por `site:linkedin.com/posts "<keyword>"`. **É o nosso dork.** Pagar por essa camada é terceirizar a consulta que já fazemos na Serper, herdando a mesma latência de indexação.
+
+| opção | o que entrega | resolve frescor? |
+|---|---|---|
+| Apify Post Monitor | descoberta via Google + fetch da página | ❌ mesmo índice, mesma latência |
+| Bright Data — dataset | 119M registros, ~$250/100K | ❌ é fotografia, não feed; `last_updated` de semanas a meses |
+| Bright Data — on-demand | coleta fresca no momento do pedido | ❌ exige a URL; a descoberta volta ao Google |
+| curl_cffi + proxy residencial | evasão de TLS/HTTP2 fingerprint | ❌ resolve o fetch, não a descoberta |
+| Voyager / cookie `li_at` | busca nativa de posts, tempo real | ✅ **e é o que a restrição 2 proíbe** |
+
+**A distinção que organiza a tabela inteira: baixar a página e saber que a página existe são problemas diferentes. Todo produto pago resolve o primeiro. O nosso é o segundo.** Só o caminho autenticado tem ✅, e tem porque o LinkedIn só expõe busca de post para quem está logado.
+
+**O que dinheiro compra de verdade:** contas descartáveis com proxy rotativo, ~$300–800/mês. É literalmente o que matou a hiQ — o summary judgment de nov/2022 cita *"hiring of crowdsourced workers to create fake profiles"*, e o desfecho foi US$ 500 mil, injunção permanente e destruição de todo o código e dado. O preço dessa opção não é mensal, é a existência do produto. **A restrição 2 não é conservadorismo: é a leitura correta do único caso julgado.**
+
+**33. O diferencial declarado confunde o meio com o fim, e existe candidato melhor no eixo que importa (27/08).** O CLAUDE.md abre dizendo que o diferencial é "post de recrutador que anuncia oportunidade apenas em texto". LinkedIn é onde assumimos que esse texto mora — não é o diferencial em si.
+
+**Telegram é a hipótese não testada mais barata que existe hoje**, e ataca exatamente o eixo onde a SERP falha:
+
+- **Latência de segundos.** É push, não índice. O problema do achado 27 desaparece por construção.
+- **MTProto é API oficial e documentada.** Não é engenharia reversa, não é DOM logado, não é endpoint interno — categoria diferente da restrição 2, que trata do LinkedIn autenticado.
+- **`t.me/s/<canal>` é HTML público, sem login, sem chave, sem conta.** Dá para medir cobertura numa tarde a custo zero.
+- Grátis, e o formato nativo do canal é justamente o texto informal.
+
+**O risco que precisa ser medido ANTES de qualquer código:** boa parte desses canais é agregador que republica vaga de portal. Se for o caso, trocamos uma fonte magra por uma redundante com a Gupy e não ganhamos nada. A pergunta mensurável é **qual fração das mensagens de um canal é vaga que não está em nenhum ATS** — dez canais, uma tarde, zero real.
+
+Isso é hipótese registrada, não decisão tomada. Nada foi implementado.
+
+**34. O parecer sobre o PDF "Indexador de Vagas do LinkedIn" (27/08) — descartado, com uma pendência preservada.** Documento externo propondo arquitetura completa (Voyager, curl_cffi, Apify, Instructor/Pydantic, Meilisearch). Veredito: descartar a arquitetura.
+
+- **Propõe o que a restrição 2 proíbe** (cookie `li_at`), e descarta pelo argumento errado — fragilidade operacional, não ToS.
+- **Ignora a restrição 1 inteira.** Proxy residencial, Apify, CapSolver, servidor de Meilisearch. Nenhuma alternativa gratuita ao lado de nenhuma.
+- **Meilisearch é otimização prematura por três ordens de grandeza.** Argumenta contra o Postgres com problemas de escala que não temos: são 192 linhas em `jobs`. Faceting lento não é o gargalo; `data_publicacao` null em 192 de 192 é. E `distinctAttribute` não conserta dedup — a nossa falha vem da extração instável de cargo pelo LLM (achado 11), e trocar de banco só move dado sujo de lugar.
+- **Instructor/Pydantic já existe em `src/classificar/`**: JSON estrito, retry, pré-filtro barato antes da inferência cara. Descrito como novidade.
+- **Referências não confiáveis.** A ref. 44, única fonte da seção jurídica inteira, é um diagnóstico do CNJ sobre devolução de crianças e adolescentes. Nada a ver. E a seção sobre hiQ usa só a metade favorável do caso, omitindo que a hiQ perdeu por quebra de contrato e foi liquidada.
+
+**O que sobreviveu:** o documento articula bem a latência de rastreio ("horas a várias semanas"), que é o achado 27 dito por terceiro. Não é confirmação independente — não traz número nem método, e erra citação. **A sonda de 1 crédito continua sendo a única forma de fechar essa conta.**
+
+**35. O Telegram foi medido, e a resposta não é "eco" nem "diferencial" — é uma terceira coisa (29/08).** 10 canais, 739 mensagens na janela de 7 dias, custo zero. `scripts/testar-telegram.ts`, classificação em `src/fontes/telegram.ts` com teste.
+
+| balde | msgs | % | o que é |
+|---|---|---|---|
+| `bot_agregador` | 299 | 40,5% | robô republicando vaga do LinkedIn |
+| `portal` | 278 | 37,6% | link para quadro de vagas ou ATS |
+| **`informal_com_cargo`** | **80** | **10,8%** | **anúncio que só existe na mensagem, com cargo** |
+| `so_imagem` | 39 | 5,3% | vaga dentro de panfleto, ilegível sem OCR |
+| `informal_sem_cargo` | 26 | 3,5% | "vagas abertas no Shopping Boulevard" |
+| `spam_curso` | 17 | 2,3% | venda de curso usando vocabulário de emprego |
+
+**O texto informal existe e é real.** 72 das 80 trazem contato direto (WhatsApp, telefone ou e-mail), com empresa e requisitos no corpo: "🍽️ Atendente — Restaurante Sabor a Mi", "Contrata-se Redator(a) de Conteúdo em BH". Fluxo estável de ~15/dia. É exatamente o que o cabeçalho deste documento promete e que a SERP não entrega.
+
+**E não é eco da Gupy.** Das 75 avaliadas (de 80; 1 sem cargo extraível, 4 com a Gupy recusando a consulta), a Gupy tem o mesmo cargo na mesma cidade em 60 (80%) — mas isso é o **limite superior** do eco, porque é família de cargo, não a mesma vaga. Na conferência por empresa, a sobreposição é **zero**: a Gupy em Manaus/BH devolve RD Saúde, Coca-Cola, Assaí, Bemol, hospitais; o Telegram informal devolve Restaurante Sabor a Mi, Selva Pet, Dunorte Pescados, garçom na Savassi. Pequeno negócio local não está em ATS. São universos disjuntos.
+
+**Achado colateral sobre a fonte carregada:** a API da Gupy **recusa consulta sob rajada**. Numa das rodadas, 13 de 79 chamadas sequenciais falharam; noutra, 4. O código já trata (`falhou` separado de "vazio"), mas o relatório não contava as falhas e o denominador encolhia em silêncio — a mesma classe de erro do achado 24, agora na medição em vez de na coleta. Corrigido. **Consequência para a trava 10:** a fonte que sustenta o caso de cargo novo sozinha tem limite de taxa não documentado.
+
+**Frescor confirmado na prática:** mensagem mais nova com 41 minutos no momento da leitura, e `t.me/s/` pagina para trás — ou seja, **entrega fluxo E acervo**, o que o Google Alerts nunca deu. O problema do achado 27 não aparece aqui.
+
+**AGORA A PARTE QUE ESTREITA A HIPÓTESE, e ela é grande.**
+
+1. **O diferencial mora em 2 canais de 10.** 70 das 80 informais vêm de `empregosmanausamoficial` e 10 de `empregosbh`. Os outros oito entregam zero. A fonte não é "o Telegram": são dois canais.
+2. **Os canais de tech são 100% robô.** `vagasfront` e `vagasbackend` somam 299 mensagens, e 233+66 são o mesmo molde "🚨Nova vaga encontrada🚨 ... verificada por IA", com 242 citando o LinkedIn na própria mensagem. **Para o perfil que o produto atende hoje — tech, São Paulo — o Telegram não traz nada que já não coletemos.** Ele serve não-tech local.
+3. **`rjempregos` é 240 de 240 republicação do portal próprio.** Canal grande, 9,4K inscritos, zero valor marginal.
+4. **Descobrir CANAL é o mesmo problema de descobrir post, um nível acima.** Não há busca pública de canais sem conta; a lista saiu de busca na web e metade estava morta ou era grupo (`t.me/s/` só abre canal). **É a mesma forma do limite do Google Alerts: funciona bem para conjunto fixo e curado, e não escala para cargo × cidade arbitrários,** que é a promessa do produto.
+5. **Viés da amostra, e ele corta contra o resultado bom:** canal achado por SEO tende a ser agregador. Canal pequeno de recrutador é sub-representado, então 10,8% é piso, não estimativa.
+
+**Erro de medição que quase inverteu a conclusão, e por isso virou teste.** A primeira rodada devolveu 47,3% de "só texto" — quatro vezes o número real. Causa: a regra de link de contato casava `whatsapp` como substring da URL, e as vagas do `rjempregos` têm slug terminado em `-whatsapp`. 240 republicações de portal entraram como anúncio informal. **O erro caiu a favor da hipótese que o teste existia para julgar**, que é o pior lado possível. Contato agora é casado por host, e o caso do slug está em `test/telegram.test.ts`.
+
+---
+
+## As dez travas — decididas em 28/08/2026
+
+Estavam paradas como "decisão não tomada" espalhadas pelo documento. Foram fechadas de uma vez; o que sobra de cada uma é execução, não escolha.
+
+**1. O post do LinkedIn é fonte secundária. A base do feed é Gupy + LinkedIn Jobs.** O achado 27 deixa de ser bloqueador: se o Google indexa o post tarde, o produto não depende mais disso para entregar feed. A sonda de 1 crédito vira curiosidade, não caminho crítico. **O que isso custa está no cabeçalho e não deve ser suavizado:** sem o post e sem o Telegram, o produto é um agregador de ATS a mais.
+
+**2. Telegram entra como medição, não como fonte.** Nada de código antes do número. Dez canais brasileiros por `t.me/s/<canal>`, e uma pergunta só: **qual fração das mensagens é vaga que a Gupy não tem.** Custo: uma tarde, zero real. Critério de morte declarado antes de medir — se a maioria for republicação de portal, o canal é eco, a hipótese morre e o produto assume que não tem diferencial de fonte.
+
+> **MEDIDO EM 29/08 — achado 35. A hipótese sobreviveu, estreitada.** 10,8% das 739 mensagens são anúncio informal com cargo, com zero sobreposição de empresa com a Gupy, fluxo de ~15/dia e frescor de minutos. Mas 70 das 80 vêm de UM canal, os canais de tech são 100% robô republicando LinkedIn, e descobrir canal novo é curadoria manual — o mesmo limite que tirou o Google Alerts de fonte principal. **Serve não-tech local; não serve o perfil tech/São Paulo do acervo atual.** A decisão de adotar como fonte de produção não está tomada.
+
+**3. Passo 4 antes do Passo 5, com critério de parada.** Melhorar o feed vem primeiro. Mas "melhorar" sem fim é como o passo não termina nunca, então o Passo 4 fecha quando as três valerem: `data_publicacao` real na maioria das linhas, zero duplicata no feed, Telegram medido. Fora dessas três, não mexe — vai para o Passo 5.
+
+**4. Uma requisição por item, em `linkedin_job` e `linkedin_post`.** É a decisão que o achado 16 registrou como "à parte, não tomada": GET anônimo em página pública vira coleta de produção. Sem cookie, sem conta, sem endpoint interno — **não é a restrição 2**, que trata do LinkedIn autenticado. Resolve quatro pendências de uma vez: `data_publicacao` real (metatag `JobPosting`), empresa nos 28% sem, modelo nos 53% null, e o corpo do post que o título reescrito pelo Google esconde.
+
+Duas condições que fazem parte da decisão:
+- **Roda só na coleta, no Actions.** A regra crítica vale igual aqui: nada de fetch no caminho request-do-usuário, mesmo sendo gratuito. Latência de N requisições é motivo tão bom quanto custo.
+- **Página caída não é página vazia** (a lição do achado 24). Falha de rede precisa ser distinguível de campo ausente, senão carimbamos "sem empresa" em cima de um soluço.
+
+**5. A mesma vaga nunca aparece duas vezes no mesmo feed.** Vira requisito de **exibição**, não só de gravação: a garantia é dada na leitura do feed, mesmo que `jobs` tenha duas linhas. Colapsar linhas no banco é destrutivo e depende de acertar a chave; colapsar na exibição é reversível e resolve o sintoma que o usuário vê. A decisão 4 barateia esta — com empresa real extraída da página, a chave `empresa + cargo` para de quebrar nos 28% sem empresa, que é a causa de boa parte das duplicatas entre fontes (achado 7). A dedup semântica continua sendo o caso de fundo, para URLs diferentes da mesma vaga.
+
+**6. Região metropolitana vira tabela determinística.** Sai do LLM. `cidade_slug` + tabela de municípios por RM, conjunto fechado como as 27 UFs. Fecha o achado 22: São Bernardo do Campo deixa de entrar ou sair do feed por sorteio.
+
+**7. Visitante usa o produto sem login, com teto de buscas.** Mecanismo: **ligar Anonymous Sign-ins no Supabase**. Não é tela de login para visitante — é sessão invisível criada no primeiro acesso, que é exatamente o que o teto precisa para existir. As alternativas sem sessão são piores e ficam registradas: cookie o visitante limpa e volta, IP corta gente inocente atrás do NAT da operadora.
+
+**8. O `intitle:` no bloco de posts fica como está.** Decorrência da 1: rotular à mão os 35 casos do achado 15 era trabalho para decidir o volume de uma fonte que acabou de ser rebaixada. Sai do caminho crítico.
+
+**9. O gasto da Serper continua manual.** O último passo de `coletar-demanda.ts` segue sendo colar em `alvos.ts` na mão. São ~118 pares na vida inteira do saldo; automatizar antes da fila estar provada esvazia crédito sem ninguém notar.
+
+**10. Mais de uma fonte é permitido — e fonte nova só entra depois de medida a sobreposição.** O schema aguenta (`fonte` já é coluna, dedup já é por chave). O que cada fonte cobra não é crédito: é normalizador próprio, modo de falha próprio e dedup contra todas as outras. **Volume que já temos não é ganho.** Risco específico de agregador: Jooble e Adzuna, que a restrição 3 autoriza, republicam vaga da Gupy — entrariam medindo redundância, não volume. ATS brasileiro direto tem chance maior de trazer acervo novo, mas nenhum foi verificado; é sonda de uma tarde, igual à do Telegram.
+
 ---
 
 ## Decisões de produto
@@ -473,6 +581,7 @@ O ganho maior não veio da senioridade: veio de um bug que o teste pegou DENTRO 
 ## Decisões de schema que não podem ser adiadas
 
 1. **Chave de dedup desde a primeira linha:** `empresa + cargo normalizado` (`chaveDedupVaga` em `src/dedupe.ts`). Sem ela o feed mostra a mesma vaga duas vezes e parece quebrado.
+   **Elevado em 28/08 (trava 5): "duas vezes no mesmo feed" é proibido, não indesejado.** A garantia passou a ser de exibição — o feed colapsa na leitura mesmo quando `jobs` tem duas linhas —, porque a chave de gravação depende da extração de cargo pelo LLM, que é instável (achado 11), e de empresa, que falta em 28% das linhas.
 2. **Data de publicação separada da data de coleta,** com a **origem** da data junto (`gupy_snippet` | `metatag` | `desconhecida`). Guardar só "quando coletei" perde o frescor para sempre.
 3. Guardar `fonte` (`linkedin_job` | `linkedin_post` | `ats_gupy`), para o feed poder facetar por origem.
 
@@ -492,24 +601,29 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 
 ## Pendências abertas
 
-- **O diferencial do produto pode não ser alcançável pela SERP** (achado 27). Post de recrutador tem meia-vida de horas e o Google não indexou um post de 5 horas. Fechar a conta custa 1 crédito e não foi feito.
-- **Visitante não existe.** O caminho está pronto (`is_anonymous` lido, teto de 3 aplicado), mas o app exige login. Para haver visitante de verdade é preciso ligar **Anonymous Sign-ins** no Supabase — decisão do Pedro, não feita.
-- **A camada Serper enfileira mas não coleta sozinha.** `coletar-demanda.ts` imprime as linhas prontas para colar em `alvos.ts`. O último passo é manual de propósito: são créditos de um saldo que não renova, e automatizar o gasto antes de a fila estar provada esvazia saldo sem ninguém notar.
-- **A Gupy virou fonte carregada, não complemento.** Ela sustenta o caso de cargo novo sozinha. Segunda fonte gratuita brasileira é a mitigação óbvia e não foi feita.
+As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez travas". O que sobrou aqui é trabalho, não escolha. **Ordenado pelo critério de parada do Passo 4 (trava 3): as três primeiras fecham o passo.**
+
+- ~~**[fecha o Passo 4] Testar o Telegram**~~ — **feito em 29/08, achado 35.** No lugar dele entram duas decisões que a medição criou, e nenhuma é óbvia:
+  - **Adotar ou não os 2 canais que produzem.** Adotar significa uma fonte que serve Manaus e BH em cargo não-tech, com ~15 vagas/dia e contato por WhatsApp — para um acervo que hoje é tech/São Paulo. É fonte para um usuário que o produto ainda não tem.
+  - **Como descobrir canal novo,** já que não há busca pública de canais. Curadoria manual é o que o Google Alerts já provou não escalar para cargo × cidade arbitrários.
+- **[fecha o Passo 4] Uma requisição por item na coleta** (trava 4). Fecha `data_publicacao`, empresa, modelo e corpo do post de uma vez. Só no Actions, nunca no request do usuário, e com falha de rede distinguível de campo ausente.
+- **[fecha o Passo 4] Garantir zero duplicata na exibição do feed** (trava 5). Colapso na leitura; a dedup semântica continua sendo o caso de fundo para URLs diferentes da mesma vaga.
+- **Ligar Anonymous Sign-ins no Supabase** (trava 7). O caminho já está pronto no código — `is_anonymous` lido, teto aplicado. Falta o botão no dashboard.
+- **Região metropolitana determinística** (trava 6, achado 22). `cidade_slug` + tabela de municípios por RM.
+- **Segunda fonte gratuita brasileira** (trava 10). A Gupy sustenta o caso de cargo novo sozinha, o que é risco de fonte única. Nenhum candidato foi verificado; a sonda mede **sobreposição com o acervo atual**, não volume.
+- **Medir se post converte — mas só no Passo 5.** Posts são 19 de 248 itens (7,7%) com a MAIOR taxa de aprovação de todas as fontes (95%): quando aparece, é vaga boa. Cliques por usuário por semana não existem porque não há deploy. Com o post rebaixado (trava 1), essa medição deixou de ser urgente: ela decide se vale reinvestir na fonte, não se o produto entrega feed. `/ir/[id]` já grava o clique.
+- **Fechar a conta do achado 27 custa 1 crédito** e continua sem ser feito. Repetir a sonda da frase exata do post e ver quando ele aparece no índice. Não é mais caminho crítico — é a diferença entre "o Google demora" e "o Google não indexa", que muda o que se escreve sobre a fonte, não o que se constrói.
 - **Telemetria escreve durante o render** (achado 25). A janela de 60s remenda o dobro; a correção estrutural é tirar a escrita do render.
 - **Deploy da tela e SMTP próprio.** `web/` roda local e o build passa, mas não está na Vercel. E o remetente padrão do Supabase limita e-mails por hora: serve para um usuário testando, não para as dez pessoas do Passo 5.
-- **`data_publicacao` continua null na prática.** O fix da regex da Gupy recupera 9 de 57 na próxima coleta; o LinkedIn não tem sinal utilizável (achado 19). Enquanto isso a janela de 7 dias é uma janela de até 14.
-- **58% das vagas sem modelo de trabalho,** e a leitura determinística recuperou 0 (achado 20). Sem modelo, a vaga não entra no balde remoto do feed. É a mesma conta da extração de empresa: uma requisição por item.
-- **Solução melhor para os posts.** O bloco funciona e generaliza, mas: o título vem reescrito pelo Google, a extração de empresa/cargo exige o corpo da página (requisição a mais por item), e o volume varia muito por cargo. Em produção, com `intitle:`, ele é a MENOR fonte — 19 itens em 248, ou 7,7% do acervo, sendo o bloco que sustenta o diferencial declarado do produto. Caminhos já descartados por medição: hashtag como filtro (achado 16). Caminho vivo: rotular à mão os 35 aprovados que o dork sem `intitle:` traz a mais (achado 15).
-- **Região metropolitana é julgamento instável do LLM.** O portão de local acertou 8 de 9 em produção (achado 22), e a única errada foi São Bernardo do Campo reprovada numa busca por São Paulo — com outras duas linhas da MESMA cidade aprovadas na mesma rodada. A saída determinística existe (`cidade_slug` + tabela de municípios por região metropolitana, conjunto fechado como as 27 UFs) e não foi feita.
+- **`data_publicacao` continua null na prática,** e enquanto isso a janela de 7 dias é uma janela de até 14. O fix da regex da Gupy recupera 9 de 57 na próxima coleta; o LinkedIn não tem sinal na SERP (achado 19), mas tem na página (trava 4).
+- **58% das vagas sem modelo de trabalho,** e a leitura determinística recuperou 0 (achado 20). Sem modelo, a vaga não entra no balde remoto do feed. Resolvido pela trava 4.
+- **30% das vagas gravadas ficaram sem empresa** e aparecem como `"não identificada"`. Ruim de mostrar no feed e impede dedup entre fontes. Resolvido pela trava 4.
 - **`GROQ_KEY` não existe.** O `classificador.yml` já a referencia e o código trata ausência sem quebrar, mas sem ela não há reserva quando a cota diária do Gemini estourar: a rodada para em vez de continuar. O id de modelo padrão do Groq (`llama-3.3-70b-versatile`) nunca foi exercitado e pode estar morto como o do Gemini estava.
 - **Repetir o harness três vezes antes de citar 95% como número.** Duas rodadas idênticas deram conjuntos diferentes de falso negativo, com `temperature: 0`.
 - **Recoletar guardando o snippet no golden set.** Hoje ele só tem título e URL, e sem snippet o bloco de posts não é avaliável — 23 dos 49 casos de post estão `indeterminado`.
-- **Decidir o que fazer com a dedup de cargo.** Dois posts da mesma vaga do Boticário viraram duas linhas em `jobs` porque o LLM extraiu o cargo diferente em cada um. Ou a chave normaliza o cargo com mais violência, ou só a dedup semântica resolve — que já é requisito de lançamento. É decisão de schema, não foi tomada.
-- **30% das vagas gravadas ficaram sem empresa** e aparecem como `"não identificada"`. Ruim de mostrar no feed e impede dedup entre fontes. Extrair da página resolveria, ao custo de uma requisição por item — a mesma conta que trava a solução dos posts.
+- **A dedup de cargo por chave continua frágil,** porque a chave depende da extração de cargo pelo LLM, que varia entre rodadas (achado 11). A trava 5 tirou o sintoma do feed; a causa segue lá, e reaparece em qualquer lugar que use `chaveDedupVaga` para outra coisa que não exibição.
 - **Classificar cargo que não seja Product Manager.** A única rodada de produção foi 100% PM. Roda o coletor nos outros alvos (~84 créditos) e classifica de novo.
-- **Desenho dos tiers** (precisão × quantidade × preço). Base de custo: ~16 créditos por par cargo×cidade.
-- **Fonte única de ATS** (Gupy). Risco registrado, não resolvido.
+- **Desenho dos tiers** (precisão × quantidade × preço). Base de custo: ~16 créditos por par cargo×cidade. Continua bloqueado por não haver dado de retenção.
 - **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de **6 meses** (vence por volta de 22/02/2027). Consumidos até 24/08: 244. Uma rodada completa custa ~84.
 - **A coleta não roda em cron, por decisão do Pedro (24/08).** Coletar todo dia sem front-end lendo o banco seria gastar saldo para ninguém. O `schedule` está comentado no workflow. Religar quando o Passo 4 existir — ou antes disso, se for medir fluxo semanal.
 - **Sem cron, o Supabase pausa por ociosidade.** O plano free suspende projeto sem atividade. Depois de algumas semanas parado, a primeira coleta vai falhar na conexão até despausar pelo dashboard. Não é bug do coletor.
@@ -523,8 +637,12 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
-| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **funcionando local, sem deploy.** Migrations 0004–0007, `web/` com Auth por link mágico, busca de qualquer cargo pela API pública da Gupy, toggle Só Remoto, teto diário, clique em `/ir/[id]` e fila de coleta paga. Falta Vercel, SMTP próprio e login de visitante |
-| 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente |
+| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **funcionando local, sem deploy.** Migrations 0004–0007, `web/` com Auth por link mágico, busca de qualquer cargo pela API pública da Gupy, toggle Só Remoto, teto diário, clique em `/ir/[id]` e fila de coleta paga |
+| 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente. Inclui Vercel, SMTP próprio e Anonymous Sign-ins |
+
+**O Passo 4 fecha com três condições, e só com elas** (trava 3, 28/08): `data_publicacao` real na maioria das linhas, zero duplicata no feed, Telegram medido. Melhoria fora dessas três é o Passo 4 não terminando nunca — o resto vai para o Passo 5.
+
+**Telegram medido em 29/08** (achado 35) — a terceira condição está cumprida. Faltam as duas de dado.
 
 **Não ajude o Pedro a pular etapas.**
 

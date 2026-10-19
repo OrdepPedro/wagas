@@ -22,7 +22,9 @@
     "backfill": "node --env-file-if-exists=.env scripts/backfill-feed.ts",
     "feed": "node --env-file-if-exists=.env scripts/consultar-feed.ts",
     "web": "npm run dev --prefix web",
-    "web:build": "npm run build --prefix web"
+    "web:build": "npm run build --prefix web",
+    "telegram": "node --env-file-if-exists=.env scripts/testar-telegram.ts",
+    "telegram:gupy": "node --env-file-if-exists=.env scripts/telegram-vs-gupy.ts"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
