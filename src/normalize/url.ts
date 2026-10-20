@@ -141,6 +141,19 @@ export function canonicalizarUrl(bruta: string): UrlCanonica | null {
     };
   }
 
+  if (host === 'infojobs.com.br' || host.endsWith('.infojobs.com.br')) {
+    // `/vaga-de-<titulo>-em-<cidade>__12110964.aspx`: o slug do título muda se o
+    // anunciante editar; o número não. Canonicaliza pelo número.
+    const id = /__(\d+)\.aspx$/i.exec(url.pathname)?.[1];
+    if (id) {
+      return {
+        url: `https://www.infojobs.com.br${limparCaminho(url.pathname)}`,
+        fonte: 'portal_infojobs',
+        fonteId: id,
+      };
+    }
+  }
+
   return {
     url: `https://${host}${limparCaminho(url.pathname)}${queryLimpa(url)}`,
     fonte: 'desconhecida',

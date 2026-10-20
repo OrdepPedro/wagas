@@ -36,7 +36,9 @@ Consequência direta na coleta: cada par cargo×cidade vira **duas consultas por
 
 2. **Nada de scraping do LinkedIn autenticado.** Extensão que lê o DOM logado, automação de sessão ou uso de endpoints internos estão descartados: violam o Termo de Uso e arriscam banir a conta do próprio usuário. Se o Pedro pedir algo assim, recuse e lembre o motivo.
 
-3. **Fontes válidas:** APIs de SERP que devolvam URL real e honrem operadores, alertas de e-mail/RSS que o próprio usuário configura, APIs abertas de agregadores (Remotive, RemoteOK, Arbeitnow, Himalayas, Jooble, Adzuna) e ATSs brasileiros públicos.
+3. **Fontes válidas:** APIs de SERP que devolvam URL real e honrem operadores, alertas de e-mail/RSS que o próprio usuário configura, APIs abertas de agregadores (Remotive, RemoteOK, Arbeitnow, Himalayas, Jooble, Adzuna), ATSs públicos (Gupy; Greenhouse, Lever e Ashby por empresa) e — **ampliado pelo Pedro em 20/10/2026** — **portais de vaga brasileiros públicos lidos pela página**.
+
+   Condições do scraping de portal, todas obrigatórias: página pública sem login nem cookie; `robots.txt` permitindo o caminho; dado lido do JSON-LD `JobPosting` que o próprio site publica, não do resto do HTML (achado 1); no máximo uma requisição por segundo; **só na coleta, nunca no request do usuário**. A restrição 2 não muda: LinkedIn autenticado continua proibido. Primeiro portal adotado: **InfoJobs** (achado 37). Hays (robots proíbe) e Catho (anti-bot) ficam fora por essas condições, não por escolha.
 
 ---
 
@@ -691,7 +693,9 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez travas". O que sobrou aqui é trabalho, não escolha. **Ordenado pelo critério de parada do Passo 4 (trava 3): as três primeiras fecham o passo.**
 
 - ~~**[fecha o Passo 4] Testar o Telegram**~~ — feito em 29/08 (achado 35) e **descartado em 19/10**.
-- **Decidir se a restrição 3 se amplia para scraping de portal público** (InfoJobs, Michael Page, Robert Half). O InfoJobs foi medido (achado 37): não é eco da Gupy e mais que dobra o não-tech em Auxiliar Administrativo e Vendedor.
+- **InfoJobs em produção (20/10).** Restrição 3 ampliada; `src/fontes/infojobs.ts` + `scripts/coletar-infojobs.ts` (`npm run infojobs`), gravando pela mesma rota da Gupy (`gupy-cache.ts`, agora parametrizada por fonte). Só na coleta. **Falta aplicar `migrations/0008_infojobs.sql`** — sem ela o `check` de `fonte` recusa a gravação. Michael Page e Robert Half passam nas mesmas condições e não foram medidos.
+  - Primeira coleta seca, Auxiliar Administrativo/SP: 278 páginas, **43 servem**; 145 outra família, 49 fora da janela, **39 cortadas por local**. Hipótese não verificada: a busca do InfoJobs por "São Paulo" inclui a região metropolitana, e o portão corta Osasco, Guarulhos e afins — seria a trava 6 cobrando. Conferir as 39 antes de mexer. Medição do achado 37 dizia 94 porque não aplicava o portão de local.
+  - Sem cron. Rodar à mão até haver uso.
 - **Teste de saúde das fontes** (achado 38). A Gupy ficou em 404 por semanas sem ninguém saber. Uma consulta conhecida por fonte, rodando sozinha, falhando alto.
 - **Trava 4 em xeque** (achado 38): medir ritmo e retentativa na página pública do LinkedIn antes de construir em cima dela.
 - **Greenhouse como fonte** (achado 36): descobrir slugs brasileiros por SERP. A sobreposição com `jobs` saiu quase nula, com amostra fraca.

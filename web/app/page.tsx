@@ -12,6 +12,7 @@ const NOME_DA_FONTE: Record<Vaga['fonte'], string> = {
   linkedin_job: 'LinkedIn',
   linkedin_post: 'post no LinkedIn',
   ats_gupy: 'Gupy',
+  portal_infojobs: 'InfoJobs',
 };
 
 const NOME_DO_MODELO: Record<'remoto' | 'hibrido' | 'presencial', string> = {

@@ -30,6 +30,38 @@ import type { VagaDaGupy } from './gupy.ts';
 
 export const CLASSIFICADOR = 'gupy-api/v1';
 
+/**
+ * O que muda de uma fonte estruturada para outra. Todo o resto — dedup, família,
+ * local por campo, as duas tabelas — é o mesmo, e precisa continuar sendo: duas
+ * gravações divergentes produzem feed que filtra diferente por fonte.
+ */
+export interface FonteDoCache {
+  fonte: 'ats_gupy' | 'portal_infojobs';
+  origemData: 'gupy_api' | 'metatag';
+  classificador: string;
+  /** Prefixo de `raw_results.combo_id`, para medir cada rota separada. */
+  comboPrefixo: string;
+  /** Valor de `coletas_sob_demanda.fonte`. */
+  coleta: string;
+}
+
+export const GUPY: FonteDoCache = {
+  fonte: 'ats_gupy',
+  origemData: 'gupy_api',
+  classificador: CLASSIFICADOR,
+  comboPrefixo: 'gupy-api',
+  coleta: 'gupy_api',
+};
+
+export const INFOJOBS: FonteDoCache = {
+  fonte: 'portal_infojobs',
+  // JSON-LD `JobPosting` da página da vaga: é o que 'metatag' descreve desde a 0001.
+  origemData: 'metatag',
+  classificador: 'infojobs-jsonld/v1',
+  comboPrefixo: 'infojobs',
+  coleta: 'infojobs',
+};
+
 export interface ResultadoDaGravacao {
   recebidas: number;
   novas: number;
@@ -65,6 +97,7 @@ function linhaRaw(
   cargoBusca: string,
   cidadeBusca: string | null,
   soRemoto: boolean,
+  origem: FonteDoCache,
 ): Record<string, unknown> {
   const { vaga } = linha;
   return {
@@ -73,27 +106,27 @@ function linhaRaw(
     url_original: vaga.url,
     titulo: vaga.cargo,
     snippet: vaga.descricao,
-    fonte: 'ats_gupy',
+    fonte: origem.fonte,
     fonte_id: vaga.fonteId,
     // Prefixo diferente do combo da SERP de propósito: é o que permite medir as
-    // duas rotas separadamente em `raw_results` depois.
-    combo_id: `gupy-api:${soRemoto ? 'remoto' : 'cidade'}`,
+    // rotas separadamente em `raw_results` depois.
+    combo_id: `${origem.comboPrefixo}:${soRemoto ? 'remoto' : 'cidade'}`,
     cargo_busca: cargoBusca,
     modelo_busca: soRemoto ? 'remoto' : 'qualquer',
     localizacao_busca: cidadeBusca,
     data_publicacao: vaga.dataPublicacao,
-    data_publicacao_origem: 'gupy_api',
+    data_publicacao_origem: origem.origemData,
     processado: true,
     classificacao: 'aprovado',
     classificacao_motivo: null,
     classificacao_estagio: 'prefiltro',
     classificado_em: new Date().toISOString(),
-    classificador: CLASSIFICADOR,
+    classificador: origem.classificador,
     payload: vaga.bruto,
   };
 }
 
-function linhaJob(linha: LinhaPronta, rawId: number | null): Record<string, unknown> {
+function linhaJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache): Record<string, unknown> {
   const { vaga } = linha;
   const local = normalizarLocal(vaga.localizacao);
 
@@ -116,16 +149,16 @@ function linhaJob(linha: LinhaPronta, rawId: number | null): Record<string, unkn
     // comentário da coluna na migration 0006.
     local_avaliado: true,
     url: linha.urlCanonica,
-    fonte: 'ats_gupy',
+    fonte: origem.fonte,
     descricao: vaga.descricao,
     data_publicacao: vaga.dataPublicacao,
-    data_publicacao_origem: 'gupy_api',
+    data_publicacao_origem: origem.origemData,
     // Explícito, ainda que igual ao default: nesta rota "agora" é mesmo a hora
     // da coleta, e deixar implícito esconderia a diferença para a rota da SERP,
     // onde o default estava errado.
     data_coleta: new Date().toISOString(),
     classificado_em: new Date().toISOString(),
-    classificador: CLASSIFICADOR,
+    classificador: origem.classificador,
     // Sem confiança: não houve estimativa. `null` é honesto, 1.0 seria inventar
     // uma probabilidade que ninguém calculou (achado 12).
     confianca: null,
@@ -136,6 +169,7 @@ export async function gravarDaGupy(
   db: SupabaseRest,
   vagas: VagaDaGupy[],
   contexto: { cargoBusca: string; cidadeBusca: string | null; soRemoto: boolean },
+  origem: FonteDoCache = GUPY,
 ): Promise<ResultadoDaGravacao> {
   const prontas = prepararLote(vagas);
   if (prontas.length === 0) {
@@ -162,7 +196,7 @@ export async function gravarDaGupy(
   // ser dada por resolvida.
   const gravadasRaw = await db.insert<{ id: number; url_hash: string }>(
     'raw_results',
-    novas.map((n) => linhaRaw(n, contexto.cargoBusca, contexto.cidadeBusca, contexto.soRemoto)),
+    novas.map((n) => linhaRaw(n, contexto.cargoBusca, contexto.cidadeBusca, contexto.soRemoto, origem)),
     { ignorarDuplicados: true, conflito: 'url_hash', retornar: true },
   );
 
@@ -170,11 +204,12 @@ export async function gravarDaGupy(
 
   const gravadasJobs = await db.insert<{ id: number }>(
     'jobs',
-    novas.map((n) => linhaJob(n, idPorHash.get(n.urlHash) ?? null)),
+    novas.map((n) => linhaJob(n, idPorHash.get(n.urlHash) ?? null, origem)),
     { ignorarDuplicados: true, conflito: 'dedup_key', retornar: true },
   );
 
-  log.info('gupy gravada no cache', {
+  log.info('fonte gravada no cache', {
+    fonte: origem.fonte,
     recebidas: vagas.length,
     novas: novas.length,
     jaNoBanco: prontas.length - novas.length,
@@ -188,6 +223,9 @@ export async function gravarDaGupy(
     vagasGravadas: gravadasJobs.length,
   };
 }
+
+/** O nome honesto agora que a gravação serve a mais de uma fonte. */
+export const gravarNoCache = gravarDaGupy;
 
 /** Chave de frescor. Normaliza o cargo para "Enfermeiro" e "enfermeiro " serem a mesma coleta. */
 export function chaveDeColeta(cargo: string, cidade: string | null) {
@@ -207,13 +245,14 @@ export async function ultimaColeta(
   cargo: string,
   cidade: string | null,
   soRemoto: boolean,
+  origem: FonteDoCache = GUPY,
 ): Promise<Date | null> {
   const chave = chaveDeColeta(cargo, cidade);
   const linhas = await db.select<EstadoDaColeta>(
     'coletas_sob_demanda',
     `select=ultima_coleta&cargo_chave=eq.${encodeURIComponent(chave.cargo_chave)}` +
       `&cidade_slug=eq.${encodeURIComponent(chave.cidade_slug)}` +
-      `&so_remoto=is.${soRemoto}&fonte=eq.gupy_api&limit=1`,
+      `&so_remoto=is.${soRemoto}&fonte=eq.${origem.coleta}&limit=1`,
   );
   const bruta = linhas[0]?.ultima_coleta;
   return bruta ? new Date(bruta) : null;
@@ -227,13 +266,14 @@ export async function registrarColeta(
   soRemoto: boolean,
   vistos: number,
   gravados: number,
+  origem: FonteDoCache = GUPY,
 ): Promise<void> {
   const chave = chaveDeColeta(cargo, cidade);
   const anterior = await db.select<{ execucoes: number }>(
     'coletas_sob_demanda',
     `select=execucoes&cargo_chave=eq.${encodeURIComponent(chave.cargo_chave)}` +
       `&cidade_slug=eq.${encodeURIComponent(chave.cidade_slug)}` +
-      `&so_remoto=is.${soRemoto}&fonte=eq.gupy_api&limit=1`,
+      `&so_remoto=is.${soRemoto}&fonte=eq.${origem.coleta}&limit=1`,
   );
 
   await db.insert(
@@ -242,7 +282,7 @@ export async function registrarColeta(
       {
         ...chave,
         so_remoto: soRemoto,
-        fonte: 'gupy_api',
+        fonte: origem.coleta,
         ultima_coleta: new Date().toISOString(),
         itens_vistos: vistos,
         itens_gravados: gravados,
