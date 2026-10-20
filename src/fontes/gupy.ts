@@ -52,7 +52,10 @@ try {
   // Node sem a API: segue com a ordem padrão.
 }
 
-const BASE = 'https://employability-portal.gupy.io/api/v1/jobs';
+// Mudou em silêncio entre 08/2026 e 10/2026: o endereço antigo
+// (`employability-portal.gupy.io/api/v1/jobs`) passou a devolver 404. Mesmo
+// payload, outro host. Achado 38 do CLAUDE.md.
+const BASE = 'https://portal.gupy.io/api/job-search/jobs';
 
 /** O portal se identifica assim; sem isso a API responde 400. */
 const CABECALHOS = {

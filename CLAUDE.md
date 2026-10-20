@@ -2,11 +2,15 @@
 
 Agregador de vagas de emprego. O usuário informa cargo e cidade, e recebe um feed de oportunidades dos últimos 7 dias.
 
-**Diferencial pretendido:** capturar não só vagas formais, mas posts de recrutador que anunciam oportunidade apenas em texto.
+**Diferencial (redefinido pelo Pedro em 19/10/2026):** achar a vaga E ter uma IA que lê a descrição e adapta o currículo do candidato àquela vaga.
 
-⚠️ **O diferencial é o texto informal, não o LinkedIn.** LinkedIn é o meio que assumimos, e ele está sob suspeita desde o achado 27 — a SERP não enxerga o post enquanto o anúncio ainda vale. Comprar não conserta (achado 32). Qualquer canal onde recrutador anuncia em texto corrido serve à mesma promessa; Telegram é o candidato não testado (achado 33).
+⚠️ **Adaptar currículo com IA, sozinho, é commodity** — Teal, Jobscan, Kickresume, LinkedIn Premium, e qualquer um cola vaga + CV no ChatGPT de graça. O defensável é o **encaixe**: vaga certa e CV adaptado no mesmo lugar, sem copiar e colar. Se o feed não for bom, o resto é um wrapper de LLM.
 
-⚠️ **Em 28/08 o post do LinkedIn foi rebaixado a fonte secundária, e isso tem um preço que precisa ficar escrito: hoje o produto não tem diferencial em operação.** A base do feed passou a ser Gupy + LinkedIn Jobs, que é agregação de vaga formal — o que outros já fazem. O texto informal continua sendo a aposta, mas por um canal ainda não testado. Enquanto o Telegram não for medido, "capturar post de recrutador" é intenção, não recurso.
+**Duas consequências que mudam o projeto:**
+1. **A descrição completa da vaga virou requisito de fonte.** Sem o corpo da vaga não há o que adaptar. Fonte que só entrega título e snippet (SERP do LinkedIn) passa a ser fonte de segunda classe.
+2. **Currículo é dado pessoal.** LGPD, consentimento e retenção entram no desenho desde o primeiro usuário, não depois.
+
+**Saíram do diferencial:** o post de recrutador do LinkedIn (rebaixado em 28/08, achado 27) e o Telegram (medido em 29/08, achado 35, **descartado pelo Pedro em 19/10**; código removido, medição preservada no commit "Mede o Telegram como fonte").
 
 **Produto multiusuário.** Não é ferramenta pessoal do Pedro. Qualquer validação feita só com o perfil dele (Product Manager, Belo Horizonte) é amostra enviesada e estreita — teste com segmentos variados.
 
@@ -537,6 +541,89 @@ Isso é hipótese registrada, não decisão tomada. Nada foi implementado.
 
 **Erro de medição que quase inverteu a conclusão, e por isso virou teste.** A primeira rodada devolveu 47,3% de "só texto" — quatro vezes o número real. Causa: a regra de link de contato casava `whatsapp` como substring da URL, e as vagas do `rjempregos` têm slug terminado em `-whatsapp`. 240 republicações de portal entraram como anúncio informal. **O erro caiu a favor da hipótese que o teste existia para julgar**, que é o pior lado possível. Contato agora é casado por host, e o caso do slug está em `test/telegram.test.ts`.
 
+**36. ATS por empresa: Greenhouse vale, Lever e Ashby quase não (19/10).** APIs oficiais, públicas, sem chave: `boards-api.greenhouse.io/v1/boards/{slug}/jobs?content=true`, `api.lever.co/v0/postings/{slug}?mode=json`, `api.ashbyhq.com/posting-api/job-board/{slug}`. `scripts/sondar-ats.ts`, 70 slugs chutados de empresas brasileiras, zero custo. Bruto em `sondar-ats-2026-10-19.json`.
+
+| plataforma | slugs vivos | vagas no Brasil | com data | descrição completa | em 7 dias |
+|---|---|---|---|---|---|
+| Greenhouse | 16 | 1.243 | 100% | 100% | 114 |
+| Ashby | 2 (Nubank está aqui) | 31 | 100% | 100% | 10 |
+| Lever | 3 | 19 | 100% | 100% | 1 |
+
+Maiores no Greenhouse: Stone 343, BTG 259, C6 156, Inter 154, XP 120, QuintoAndar 89.
+
+- **Resolve o que a SERP nunca resolveu:** data, empresa e descrição em 100%. É o dado que o currículo adaptado exige.
+- **É acervo, não fluxo:** só 9% caiu na janela de 7 dias.
+- **Segmento estreito:** fintech/tech de SP. Complementa a Gupy, que é magra em tech (achado 9).
+- **Descoberta de slug é manual.** Escala com uma busca `site:boards.greenhouse.io` pela Serper, uma vez só.
+- **O filtro de Brasil da sonda é grosseiro:** Arco aparece com 424 vagas e 0 no Brasil, quase certamente a regex falhando no formato de local. Os números de Brasil são piso.
+- **Não medido:** sobreposição com `jobs` (trava 10). Consultorias e fintechs também anunciam no LinkedIn Jobs.
+
+**37. Dez portais brasileiros sondados — três servem (19/10).** Critério: vaga pública sem login, robots.txt permitindo, e JSON-LD `JobPosting` na página da vaga (data + empresa + descrição).
+
+| site | veredito |
+|---|---|
+| **InfoJobs** | ✅ portal generalista, busca por cargo×cidade na URL, `datePosted` com hora |
+| **Michael Page** | ✅ consultoria, `/job-detail/` liberado, `JobPosting` completo |
+| **Robert Half** | ✅ consultoria, sem robots.txt, `JobPosting` completo |
+| Hays | ❌ robots.txt proíbe `/Job/Detail/*` |
+| Catho | ❌ 403 anti-bot |
+| Solides | ⏸️ SPA, uma empresa por subdomínio; API do front não encontrada |
+| GeekHunter, Revelo | ❌ marketplace de talentos — a empresa procura o candidato, sem vaga pública |
+| Talenses, Produtive | ❌ sem vaga no HTML |
+| Recrutei, Abler, Pandapé | ❌ API exige token da empresa, plano pago ou não existe |
+
+**A lista mistura dois tipos de coisa:** portal de vaga e banco de currículo. Só o primeiro é indexável.
+
+⚠️ **InfoJobs, Michael Page e Robert Half são scraping de HTML, não API.** A restrição 3 autoriza "ATSs brasileiros públicos" e agregadores com API aberta; portal brasileiro não está lá. **Adotar qualquer um dos três é decisão de ampliar a restrição 3, não tomada.** E quebra quando o site mudar o layout.
+
+**Volume do InfoJobs, 1ª rodada — PISO, não medida.** A paginação estava errada (o parâmetro é `Page` maiúsculo, no fim da URL; `page` minúsculo é ignorado em silêncio) e só a 1ª página foi lida:
+
+| cargo × cidade | lidas | em 7 dias |
+|---|---|---|
+| Auxiliar Administrativo, SP | 20 | 20 |
+| Analista de Dados, SP | 20 | 17 |
+| Enfermeiro, SP | 20 | 17 |
+| Vendedor, BH | 20 | 13 |
+| Product Manager, SP / BH | 9 / 6 | 1 / 1 |
+| Front-end, SP | 7 | 0 |
+
+Não-tech: a 1ª página inteira está na janela, então o volume real é maior. Tech/produto: o InfoJobs não serve. **Greenhouse (tech) e InfoJobs (não-tech) se complementam.** 15–30% das páginas vieram sem `datePosted` legível — não separei ausência de dado de falha do parser.
+
+**Rodada completa, janela de 7 dias inteira (20/10).** `scripts/medir-infojobs.ts` → `infojobs-2026-10-20.json`; filtro de família em `scripts/infojobs-familia.ts`, sem requisição nova. A 1ª rodada acima ficou como registro do erro de paginação.
+
+| cargo × cidade | InfoJobs bruto | InfoJobs na família | Gupy na família | mesma empresa | mesma vaga |
+|---|---|---|---|---|---|
+| Auxiliar Administrativo, SP | 267 | **94** | 20 | 2 | 1 |
+| Analista de Dados, SP | 123 | **4** | 15 | 0 | 0 |
+| Enfermeiro, SP | 22 | **14** | 25 | 0 | 0 |
+| Vendedor, BH | 73 | **42** | 26 | 0 | 0 |
+| Product Manager, SP | 1 | **1** | 6 | 0 | 0 |
+
+- **Não é eco da Gupy.** Uma vaga em comum em 486. Universos quase disjuntos: Gupy é empresa média/grande com ATS; InfoJobs é anúncio direto e agência de RH. Mesmo padrão do achado 35, por outra fonte.
+- **A busca do InfoJobs é frouxa, e o bruto engana por uma ordem de grandeza.** "Analista de dados" devolveu 123 e só 4 são da família — o resto é Analista Fiscal, de Suporte, Contábil. **O ganho real está em Auxiliar Administrativo (94 contra 20) e Vendedor (42 contra 26).** Em Dados e Enfermeiro a Gupy entrega mais.
+- **O filtro pode estar cortando vaga boa:** "Consultor de Vendas" saiu da família de Vendedor. É recall do `familia.ts` aparecendo numa fonte nova — não medido.
+- **Mesma empresa depende do nome bater.** "Empresa confidencial" e agência não casam com nada, o que subestima a sobreposição. Não explica um zero tão consistente.
+- **Vendedor BH: 57 de 156 páginas sem `datePosted` legível (37%).** Não separei ausência de dado de falha do parser.
+
+**Quadro de fontes que sai disso:** não-tech = Gupy + InfoJobs (se complementam); tech/fintech = Greenhouse; LinkedIn Jobs = descoberta, com descrição instável (achado 38).
+
+**38. Revalidação das premissas, 20/10 — a Gupy estava quebrada em silêncio.** Primeira checagem depois de sete semanas parado.
+
+| peça | estado |
+|---|---|
+| **API da Gupy** | ❌ → ✅ `employability-portal.gupy.io/api/v1/jobs` passou a devolver **404**. O portal agora chama `portal.gupy.io/api/job-search/jobs`, mesmo payload. Trocada uma linha em `src/fontes/gupy.ts`; 240 testes passam |
+| Serper + dork de produção `linkedin_job` com `qdr:w` | ✅ 10 vagas reais, 1 crédito |
+| `gemini-3.5-flash-lite` | ✅ 200 |
+| Supabase | ✅ despausado; `jobs` com 294 linhas (121 Gupy, 155 LinkedIn Jobs, 18 posts) |
+| build do `web/` | ✅ |
+| página pública da vaga do LinkedIn (trava 4) | ⚠️ **instável** |
+
+**A falha da Gupy é o achado 24 cumprido.** "Pode mudar sem aviso: tudo degrada para lista vazia." Degradou — e o tratamento de "fonte caída" fez o que devia, que é não quebrar nada e não avisar ninguém. **Cargo novo teria recebido feed vazio, indistinguível de "não há vaga".** Falta um teste de saúde das fontes que rode sozinho e grite.
+
+**Trava 4 sob suspeita.** Oito GETs anônimos em `linkedin.com/jobs/view`, espaçados de 8s: **1** entregou `JobPosting` completo (data com hora, empresa, descrição de ~1.900 caracteres), **5** voltaram 200 numa variante SEM o `JobPosting`, **2** voltaram 429. A página tem o dado; o LinkedIn raciona e varia a resposta ao visitante anônimo. **Para o currículo adaptado, a descrição do LinkedIn Jobs não está garantida.** Saídas: tratá-lo como fonte de descoberta (título + link), ou medir ritmo e retentativa antes de decidir. Login e cookie continuam fora (restrição 2).
+
+**Greenhouse × `jobs`:** das 294 linhas, só 2 são de empresas que estão no Greenhouse (Stone e RD Station, ambas via LinkedIn Jobs), e nenhuma das duas vagas existe hoje lá. Aponta para empresas novas, não eco — conta fraca: `jobs` é de agosto, de 6 cargos, e 28% do LinkedIn sem empresa.
+
 ---
 
 ## As dez travas — decididas em 28/08/2026
@@ -603,9 +690,12 @@ Sempre distinguir **problema de produto** de **problema de infraestrutura**.
 
 As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez travas". O que sobrou aqui é trabalho, não escolha. **Ordenado pelo critério de parada do Passo 4 (trava 3): as três primeiras fecham o passo.**
 
-- ~~**[fecha o Passo 4] Testar o Telegram**~~ — **feito em 29/08, achado 35.** No lugar dele entram duas decisões que a medição criou, e nenhuma é óbvia:
-  - **Adotar ou não os 2 canais que produzem.** Adotar significa uma fonte que serve Manaus e BH em cargo não-tech, com ~15 vagas/dia e contato por WhatsApp — para um acervo que hoje é tech/São Paulo. É fonte para um usuário que o produto ainda não tem.
-  - **Como descobrir canal novo,** já que não há busca pública de canais. Curadoria manual é o que o Google Alerts já provou não escalar para cargo × cidade arbitrários.
+- ~~**[fecha o Passo 4] Testar o Telegram**~~ — feito em 29/08 (achado 35) e **descartado em 19/10**.
+- **Decidir se a restrição 3 se amplia para scraping de portal público** (InfoJobs, Michael Page, Robert Half). O InfoJobs foi medido (achado 37): não é eco da Gupy e mais que dobra o não-tech em Auxiliar Administrativo e Vendedor.
+- **Teste de saúde das fontes** (achado 38). A Gupy ficou em 404 por semanas sem ninguém saber. Uma consulta conhecida por fonte, rodando sozinha, falhando alto.
+- **Trava 4 em xeque** (achado 38): medir ritmo e retentativa na página pública do LinkedIn antes de construir em cima dela.
+- **Greenhouse como fonte** (achado 36): descobrir slugs brasileiros por SERP. A sobreposição com `jobs` saiu quase nula, com amostra fraca.
+- **Desenhar o currículo adaptado:** onde o CV mora, consentimento LGPD, retenção, e qual métrica mede o diferencial (CV gerado → candidatura, além de clique em "ver vaga").
 - **[fecha o Passo 4] Uma requisição por item na coleta** (trava 4). Fecha `data_publicacao`, empresa, modelo e corpo do post de uma vez. Só no Actions, nunca no request do usuário, e com falha de rede distinguível de campo ausente.
 - **[fecha o Passo 4] Garantir zero duplicata na exibição do feed** (trava 5). Colapso na leitura; a dedup semântica continua sendo o caso de fundo para URLs diferentes da mesma vaga.
 - **Ligar Anonymous Sign-ins no Supabase** (trava 7). O caminho já está pronto no código — `is_anonymous` lido, teto aplicado. Falta o botão no dashboard.
