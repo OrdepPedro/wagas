@@ -39,13 +39,21 @@ const BASE = 'https://www.infojobs.com.br';
 const CABECALHOS = { 'user-agent': 'Mozilla/5.0', accept: 'text/html' } as const;
 
 /**
- * Slug de busca. "Auxiliar Administrativo" + "São Paulo" →
- * `/vagas-de-emprego-auxiliar+administrativo-em-sao-paulo.aspx`.
+ * Slug de busca. "Auxiliar Administrativo" + "São Paulo" + "SP" →
+ * `/vagas-de-emprego-auxiliar+administrativo-em-sao-paulo,-sp.aspx`.
  * Sem cidade, busca o Brasil inteiro.
+ *
+ * **A UF não é opcional.** Sem ela o site não filtra cidade e falha em
+ * silêncio de dois jeitos: `belo-horizonte` devolve o Brasil inteiro (16.256
+ * vagas contra 779) e `sao-paulo` devolve o ESTADO (7.252 contra 3.252).
+ * Medido em 20/10, depois de uma coleta ler 592 páginas para gravar 12.
  */
-export function urlDeBusca(cargo: string, cidade: string | null, pagina: number): string {
+export function urlDeBusca(cargo: string, cidade: string | null, uf: string | null, pagina: number): string {
+  if (cidade && !/^[a-z]{2}$/i.test(uf ?? '')) {
+    throw new Error(`InfoJobs: cidade "${cidade}" sem UF — a busca viraria nacional ou estadual`);
+  }
   const termo = cargo.trim().toLowerCase().replace(/\s+/g, '+');
-  const local = cidade ? `-em-${slugCidade(cidade)}` : '';
+  const local = cidade ? `-em-${slugCidade(cidade)},-${uf!.toLowerCase()}` : '';
   // `Page` maiúsculo e por último: com `page` o site devolve a página 1 sempre.
   return `${BASE}/vagas-de-emprego-${encodeURI(termo)}${local}.aspx?campo=griddate&orden=desc&Page=${pagina}`;
 }
@@ -142,6 +150,8 @@ export interface PedidoNoInfojobs {
   cargo: string;
   /** Ausente = Brasil inteiro. */
   cidade?: string | null;
+  /** Sigla. Obrigatória quando há cidade — ver `urlDeBusca`. */
+  uf?: string | null;
   janelaDias?: number;
   /** Teto de páginas de listagem (20 vagas cada). */
   maxPaginas?: number;
@@ -202,7 +212,7 @@ export async function buscarNoInfojobs(pedido: PedidoNoInfojobs): Promise<Respos
   };
 
   paginas: for (let pagina = 1; pagina <= maxPaginas; pagina++) {
-    const listagem = await html(urlDeBusca(termo, pedido.cidade ?? null, pagina));
+    const listagem = await html(urlDeBusca(termo, pedido.cidade ?? null, pedido.uf ?? null, pagina));
     if (listagem === null) {
       // Só é queda se nada veio. Falhar na página 7 depois de seis boas é fim de
       // varredura com o que já se tem, não fonte fora do ar.

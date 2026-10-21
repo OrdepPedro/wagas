@@ -52,8 +52,15 @@ function fetchFalso(paginas: Record<number, string>, vagas: Record<string, strin
 }
 
 test('a paginação usa `Page` maiúsculo e por último — `page` é ignorado pelo site', () => {
-  const u = urlDeBusca('Auxiliar Administrativo', 'São Paulo', 3);
-  assert.equal(u, 'https://www.infojobs.com.br/vagas-de-emprego-auxiliar+administrativo-em-sao-paulo.aspx?campo=griddate&orden=desc&Page=3');
+  const u = urlDeBusca('Auxiliar Administrativo', 'São Paulo', 'SP', 3);
+  assert.equal(u, 'https://www.infojobs.com.br/vagas-de-emprego-auxiliar+administrativo-em-sao-paulo,-sp.aspx?campo=griddate&orden=desc&Page=3');
+});
+
+test('cidade sem UF é recusada — o site trocaria a cidade pelo estado ou pelo Brasil, em silêncio', () => {
+  // `sao-paulo` devolve o estado (7.252), `belo-horizonte` devolve o Brasil (16.256).
+  assert.throws(() => urlDeBusca('Vendedor', 'Belo Horizonte', null, 1), /sem UF/);
+  assert.throws(() => urlDeBusca('Vendedor', 'Belo Horizonte', 'Minas Gerais', 1), /sem UF/);
+  assert.match(urlDeBusca('Vendedor', null, null, 1), /vagas-de-emprego-vendedor\.aspx/);
 });
 
 test('a data sem fuso é horário de Brasília, não UTC', () => {
@@ -112,7 +119,7 @@ test('filtra família, janela e local — e conta cada corte', async () => {
   };
   const r = await buscarNoInfojobs({
     cargo: 'Analista de Dados',
-    cidade: 'São Paulo',
+    cidade: 'São Paulo', uf: 'SP',
     agora: AGORA,
     intervaloMs: 0,
     buscar: fetchFalso({ 1: listagem([1, 2, 3, 4, 5]) }, vagas),
@@ -134,20 +141,20 @@ test('para depois de 5 vagas seguidas fora da janela, sem abrir a página seguin
     return base(url);
   }) as unknown as typeof fetch;
 
-  const r = await buscarNoInfojobs({ cargo: 'Analista de Dados', cidade: 'São Paulo', agora: AGORA, intervaloMs: 0, buscar });
+  const r = await buscarNoInfojobs({ cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0, buscar });
   assert.equal(r.foraDaJanela, 5);
   assert.equal(listagensPedidas, 1);
 });
 
 test('fonte caída não é fonte vazia', async () => {
   const caida = await buscarNoInfojobs({
-    cargo: 'Analista de Dados', cidade: 'São Paulo', agora: AGORA, intervaloMs: 0,
+    cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0,
     buscar: fetchFalso({}, {}),
   });
   assert.equal(caida.falhou, true);
 
   const vazia = await buscarNoInfojobs({
-    cargo: 'Analista de Dados', cidade: 'São Paulo', agora: AGORA, intervaloMs: 0,
+    cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0,
     buscar: fetchFalso({ 1: '<html>nenhuma vaga</html>' }, {}),
   });
   assert.equal(vazia.falhou, false);

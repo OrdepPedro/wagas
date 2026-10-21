@@ -576,7 +576,7 @@ Maiores no Greenhouse: Stone 343, BTG 259, C6 156, Inter 154, XP 120, QuintoAnda
 
 **A lista mistura dois tipos de coisa:** portal de vaga e banco de currículo. Só o primeiro é indexável.
 
-⚠️ **InfoJobs, Michael Page e Robert Half são scraping de HTML, não API.** A restrição 3 autoriza "ATSs brasileiros públicos" e agregadores com API aberta; portal brasileiro não está lá. **Adotar qualquer um dos três é decisão de ampliar a restrição 3, não tomada.** E quebra quando o site mudar o layout.
+⚠️ **InfoJobs, Michael Page e Robert Half são scraping de HTML, não API.** A restrição 3 autoriza "ATSs brasileiros públicos" e agregadores com API aberta; portal brasileiro não está lá. ~~Adotar qualquer um dos três é decisão de ampliar a restrição 3, não tomada.~~ **Tomada em 20/10: restrição 3 ampliada, InfoJobs adotado.** E quebra quando o site mudar o layout.
 
 **Volume do InfoJobs, 1ª rodada — PISO, não medida.** A paginação estava errada (o parâmetro é `Page` maiúsculo, no fim da URL; `page` minúsculo é ignorado em silêncio) e só a 1ª página foi lida:
 
