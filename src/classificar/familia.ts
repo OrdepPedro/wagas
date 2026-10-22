@@ -384,3 +384,139 @@ export function senioridadeDoTitulo(titulo: string): string | null {
   const escolhido = encontrados.find((t) => !ROMANO.test(t)) ?? encontrados[0];
   return escolhido ? (CANONICA[escolhido] ?? null) : null;
 }
+
+/**
+ * As mesmas duas condições de `cargoBateNoTitulo`, em forma de chave gravável.
+ *
+ * O feed precisa filtrar por família DENTRO do Postgres — a regra do CLAUDE.md
+ * é que o filtro roda sobre o cache, e filtrar em memória no servidor só
+ * funciona enquanto o acervo couber numa página. `cargo_normalizado` não serve:
+ * as 197 linhas gravadas têm 15+ valores distintos para 6 cargos (`senior
+ * product manager`, `growth product manager`, `product manager jr`), e igualdade
+ * devolveria quase nada.
+ *
+ * A tradução é literal, não uma aproximação:
+ *
+ *   condição 1 (todo domínio do buscado está no título)  ->  tokens @> :dominio
+ *   condição 2 (ao menos uma função da mesma classe)     ->  classes && :classes
+ *
+ * `tokensDeFamilia` guarda as duas formas de cada token (plural e singular),
+ * exatamente como `cargoBateNoTitulo` monta o conjunto do título; a busca
+ * consulta pela forma singular. Sem isso o `@>` erraria em "vendas"/"venda".
+ */
+export function tokensDeFamilia(titulo: string): string[] {
+  const nucleo = decompor(titulo);
+  const todos = [
+    ...nucleo.dominio,
+    ...nucleo.funcoes.map((f) => f.token),
+    ...nucleo.senioridade,
+  ];
+
+  const conjunto = new Set<string>();
+  for (const token of todos) {
+    for (const forma of chaves(token)) conjunto.add(forma);
+  }
+  return [...conjunto];
+}
+
+/** Classes de função presentes no título. Vazio quando não há função reconhecida. */
+export function classesDeFamilia(titulo: string): ClasseFuncao[] {
+  return [...new Set(decompor(titulo).funcoes.map((f) => f.classe))];
+}
+
+export interface FiltroDeFamilia {
+  /** Tokens que o título PRECISA conter. Forma singular, para casar com `tokensDeFamilia`. */
+  dominio: string[];
+  /** Classes aceitas. Vazio significa "não restringe por função". */
+  classes: ClasseFuncao[];
+}
+
+/** Traduz o cargo digitado pelo usuário nos dois arrays do `WHERE`. */
+export function filtroDeFamilia(cargoBuscado: string): FiltroDeFamilia {
+  const alvo = decompor(cargoBuscado);
+  return {
+    dominio: [...new Set(alvo.dominio.map((t) => semPlural(t)))],
+    classes: [...new Set(alvo.funcoes.map((f) => f.classe))],
+  };
+}
+
+/**
+ * Flexões de gênero em título de vaga em pt-BR, para a chave de agrupamento.
+ *
+ * Lista curta e por SUFIXO, não por palavra: "vendedora"->"vendedor",
+ * "enfermeira"->"enfermeiro". O que ela deliberadamente NÃO faz é trocar `-a`
+ * por `-o` no geral — "analista", "motorista" e "dentista" viram lixo com essa
+ * regra, e são cargos comuns.
+ */
+const FEMININO: Array<[RegExp, string]> = [
+  [/eira$/, 'eiro'],
+  [/ora$/, 'or'],
+  [/aria$/, 'ario'],
+  [/ica$/, 'ico'],
+];
+
+function semGenero(token: string): string {
+  if (token.length < 5) return token;
+  for (const [de, para] of FEMININO) {
+    if (de.test(token)) return token.replace(de, para);
+  }
+  return token;
+}
+
+/**
+ * Chave de agrupamento da DEMANDA. Não é a regra de casamento.
+ *
+ * Existe por um defeito medido no primeiro uso real: o usuário digitou
+ * "Enfermagem", "Enfermeira" e "Enfermeiro" na mesma sessão, e a fila de
+ * priorização mostrou três pedidos de uma pessoa cada — uma necessidade
+ * fragmentada em três sinais fracos. Como é essa fila que decide onde gastar
+ * crédito da Serper, contar errado aqui gasta errado lá.
+ *
+ * Ela é mais agressiva que `cargoBateNoTitulo` de propósito, e isso é seguro
+ * porque ninguém é aprovado ou reprovado por ela: no máximo dois pedidos
+ * parecidos viram um só na fila.
+ *
+ * O que ela NÃO resolve: "enfermagem" continua separado de "enfermeiro". São
+ * derivações diferentes — a área e a profissão — e colapsar isso exigiria
+ * léxico, que é justamente o que o CLAUDE.md proíbe para regra de cargo.
+ */
+export function chaveDeFamilia(cargo: string): string {
+  const nucleo = decompor(cargo);
+  const classes = [...new Set(nucleo.funcoes.map((f) => f.classe))].sort();
+
+  let dominio = [...new Set(nucleo.dominio.map((t) => semGenero(semPlural(t))))].sort();
+
+  // Profissão que é só função ("Vendedor", "Designer") sai de `decompor` com
+  // domínio vazio, e a chave viraria a CLASSE inteira — "Vendedor", "SDR" e
+  // "Representante" no mesmo balde. Para a fila isso é agressivo demais: são
+  // dorks diferentes e coletas diferentes. Nesse caso a própria função vira o
+  // domínio.
+  if (dominio.length === 0) {
+    dominio = [...new Set(nucleo.funcoes.map((f) => semGenero(semPlural(f.token))))].sort();
+  }
+
+  return `${dominio.join('-')}|${classes.join('-')}`;
+}
+
+/**
+ * O cargo sem os termos de senioridade, preservando a ordem das palavras.
+ *
+ * Existe para a consulta a fontes que casam por SUBSTRING, como a API da Gupy.
+ * Medido: `jobName="Senior UX Designer"` devolve 3 itens e nenhum dentro da
+ * janela; `jobName="UX Designer"` devolve 7. A senioridade estreita a busca na
+ * ORIGEM, antes de `cargoBateNoTitulo` ter o que filtrar — e o casamento já
+ * ignora senioridade de propósito, então mandá-la para a fonte é pedir menos
+ * pelo mesmo resultado.
+ *
+ * Preserva a ordem porque casamento por substring depende dela: "administrativo
+ * auxiliar" não casa "Auxiliar Administrativo".
+ */
+export function semSenioridade(cargo: string): string {
+  // Opera sobre o texto ORIGINAL, não sobre `tokenizar`. Aquele aplica as
+  // variantes lexicais (`dados` -> `data`, `produtos` -> `product`), que servem
+  // para COMPARAR e destroem uma busca por substring: "Analista de Dados"
+  // viraria "analista de data" e deixaria de casar com o próprio cargo.
+  const palavras = cargo.split(/\s+/).filter((p) => p !== '');
+  const restantes = palavras.filter((p) => !SENIORIDADES.has(normalizarTexto(p)));
+  return (restantes.length > 0 ? restantes : palavras).join(' ').trim();
+}

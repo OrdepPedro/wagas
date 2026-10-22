@@ -20,6 +20,14 @@ export interface Candidato {
   cargoBusca: string;
   localizacaoBusca: string | null;
   dataPublicacao: string | null;
+  /** Procedência da data. Data sem procedência não é verificável no feed. */
+  dataPublicacaoOrigem?: string | null;
+  /**
+   * Quando o COLETOR viu este item. Precisa viajar até `jobs`: sem ela a linha
+   * recebe `default now()` e uma reclassificação carimba o acervo inteiro como
+   * "coletado agora" — o que renova a janela de 7 dias em silêncio.
+   */
+  dataColeta?: string | null;
 }
 
 export type Veredito = 'aprovado' | 'rejeitado' | 'erro';

@@ -18,7 +18,13 @@
     "typecheck": "tsc --noEmit",
     "paridade": "node --env-file-if-exists=.env scripts/paridade.ts",
     "passo1": "node --env-file-if-exists=.env scripts/comparar-passo1.ts",
-    "alertas": "node --env-file-if-exists=.env scripts/medir-alertas.ts"
+    "alertas": "node --env-file-if-exists=.env scripts/medir-alertas.ts",
+    "backfill": "node --env-file-if-exists=.env scripts/backfill-feed.ts",
+    "feed": "node --env-file-if-exists=.env scripts/consultar-feed.ts",
+    "web": "npm run dev --prefix web",
+    "web:build": "npm run build --prefix web",
+    "infojobs": "node --env-file-if-exists=.env scripts/coletar-infojobs.ts",
+    "diaria": "node --env-file-if-exists=.env scripts/coleta-diaria.ts"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

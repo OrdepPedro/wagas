@@ -14,6 +14,8 @@ import { log } from '../logger.ts';
 export interface OpcoesInsert {
   /** Ignora linhas que colidem com a constraint em `conflito` em vez de falhar. */
   ignorarDuplicados?: boolean;
+  /** ATUALIZA a linha que colide, em vez de ignorá-la. Upsert de verdade. */
+  mesclarDuplicados?: boolean;
   conflito?: string;
   /** Devolve as linhas efetivamente gravadas (útil para contar inserções reais). */
   retornar?: boolean;
@@ -88,7 +90,8 @@ export class SupabaseRest {
     if (linhas.length === 0) return [];
 
     const prefer: string[] = [];
-    if (opts.ignorarDuplicados) prefer.push('resolution=ignore-duplicates');
+    if (opts.mesclarDuplicados) prefer.push('resolution=merge-duplicates');
+    else if (opts.ignorarDuplicados) prefer.push('resolution=ignore-duplicates');
     prefer.push(opts.retornar ? 'return=representation' : 'return=minimal');
 
     const params = opts.conflito ? `?on_conflict=${encodeURIComponent(opts.conflito)}` : '';
@@ -112,6 +115,19 @@ export class SupabaseRest {
       method: 'PATCH',
       headers: this.#cabecalhos({ prefer: 'return=minimal' }),
       body: JSON.stringify(campos),
+    });
+  }
+
+  /**
+   * DELETE com filtro em `query`, obrigatório pelo mesmo motivo do `update`:
+   * PostgREST sem `where` apaga a tabela inteira, e aqui isso seria o acervo
+   * classificado. Só a reclassificação usa este método.
+   */
+  async remove(tabela: string, query: string): Promise<void> {
+    if (query.trim() === '') throw new Error(`delete em ${tabela} sem filtro`);
+    await this.#requisicao(`/rest/v1/${tabela}?${query}`, {
+      method: 'DELETE',
+      headers: this.#cabecalhos({ prefer: 'return=minimal' }),
     });
   }
 

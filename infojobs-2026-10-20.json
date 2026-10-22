@@ -1,0 +1,2110 @@
+[
+  {
+    "cargo": "auxiliar administrativo",
+    "cidade": "sao-paulo,-sp",
+    "totalAnunciado": "1.714",
+    "ultimos7dias": 267,
+    "verificadas": 331,
+    "fora": 56,
+    "semData": 8,
+    "falhas": 0,
+    "comEmpresa": 267,
+    "descricaoLonga": 256,
+    "terminouJanela": true,
+    "gupy7dias": 20,
+    "gupyFalhou": false,
+    "sobreposicaoEmpresa": 2,
+    "sobreposicaoVaga": 1,
+    "exemplosMesmaVaga": [
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Pacaembu Autopeças"
+      }
+    ],
+    "empresasInfojobs": [
+      "Empresa confidencial",
+      "GS RECRUTAMENTO & CONSULTORIA",
+      "MOBCAM NEWS SLU LTDA",
+      "Veste",
+      "SWH",
+      "VA hidalgo Itri Ltda",
+      "ESCOLA LF TREINAMENTOS LTDA - ME",
+      "Hospital Sepaco",
+      "RH BRASIL",
+      "Luandre",
+      "EssilorLuxottica",
+      "G4S"
+    ],
+    "vagasInfojobs": [
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Servente de Pedreiro",
+        "empresa": "GS RECRUTAMENTO & CONSULTORIA"
+      },
+      {
+        "titulo": "Ajudante de Obras",
+        "empresa": "GS RECRUTAMENTO & CONSULTORIA"
+      },
+      {
+        "titulo": "Assistente de Logística",
+        "empresa": "MOBCAM NEWS SLU LTDA"
+      },
+      {
+        "titulo": "Auxiliar de Logística",
+        "empresa": "MOBCAM NEWS SLU LTDA"
+      },
+      {
+        "titulo": "Assistente de Vendas",
+        "empresa": "Veste"
+      },
+      {
+        "titulo": "Auxiliar Financeiro",
+        "empresa": "SWH"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "VA hidalgo Itri Ltda"
+      },
+      {
+        "titulo": "Estagiário Administrativo",
+        "empresa": "ESCOLA LF TREINAMENTOS LTDA - ME"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Hospital Sepaco"
+      },
+      {
+        "titulo": "Auxiliar de Escritório",
+        "empresa": "RH BRASIL"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Luandre"
+      },
+      {
+        "titulo": "Auditor de Vendas",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Supervisor de Recrutamento e Seleção",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Vendedor de Loja de Shopping",
+        "empresa": "EssilorLuxottica"
+      },
+      {
+        "titulo": "Auxiliar de Escritório",
+        "empresa": "G4S"
+      },
+      {
+        "titulo": "Auxiliar de Escritório",
+        "empresa": "QD CONTÁBIL DO BRASIL"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "ATS Terceirização"
+      },
+      {
+        "titulo": "Assistente de Operações Técnicas",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Laudo . Com"
+      },
+      {
+        "titulo": "Estagiário de Departamento Pessoal",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "STAREX REMOÇÕES E SERVIÇOS MÉDICOS LTDA"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "HEMOCENTRO SÃO LUCAS"
+      },
+      {
+        "titulo": "Estagiário",
+        "empresa": "AUTO POSTO KARAVELI"
+      },
+      {
+        "titulo": "Estagiário",
+        "empresa": "Planet Empreendimentos Imobiliarios"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar Administrativo Comercial",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "A AME"
+      },
+      {
+        "titulo": "Auxiliar de Loja",
+        "empresa": "Calvin Klein"
+      },
+      {
+        "titulo": "Auxiliar de Escritório",
+        "empresa": "Result consultoria e recursos humanos LTDA"
+      },
+      {
+        "titulo": "Operador de TeleAtendimento",
+        "empresa": "Konecta"
+      },
+      {
+        "titulo": "Jovem Aprendiz (Construção Civil)",
+        "empresa": "Construtora Tenda"
+      },
+      {
+        "titulo": "Recepcionista Academia",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Grupo Side"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "AT & Santos consultoria e serviços LTDA"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "J. Martini Educacional"
+      },
+      {
+        "titulo": "Auxiliar de Expedição",
+        "empresa": "Del Mundo Sorvetes"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Grupo NotreDame Intermédica"
+      },
+      {
+        "titulo": "Operador(a) de Caixa/ Fiscal de Caixa- Petz Ricardo Jafet",
+        "empresa": "Petz - O seu Pet Center de Estimação"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Bml Monitoramento Patrimonial Ltda"
+      },
+      {
+        "titulo": "Aprendiz Bancário",
+        "empresa": "RENAPSI"
+      },
+      {
+        "titulo": "Assistente de Recrutamento e Seleção",
+        "empresa": "3P BRASIL - CONSULTORIA E PROJETOS DE ESTRUTURACAO DE PARCERIAS PUBLICO-PRIVADAS E PARTICIPACOES S.A"
+      },
+      {
+        "titulo": "ESTAGIO SUPERIOR - ADM/LOGISTICA",
+        "empresa": "Newset"
+      },
+      {
+        "titulo": "OPERADOR COMERCIAL  FECHAMENTO DE MATRICULA -TARDE",
+        "empresa": "Actionline"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Grupo Carrera"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Hospital Sírio-Libanês"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "Cora Residencial Brasil Senior Living"
+      },
+      {
+        "titulo": "Auxiliar de E-commerce",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar Administrativo - SAC (Hospitalar)",
+        "empresa": "Rede Santa Catarina"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Enterpriserh"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "Hospital Sírio-Libanês"
+      },
+      {
+        "titulo": "Auxiliar Contábil",
+        "empresa": "Work On"
+      },
+      {
+        "titulo": "Analista de Departamento Pessoal",
+        "empresa": "Penso Tecnologia"
+      },
+      {
+        "titulo": "Secretária Executiva",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Funchal Negócios"
+      },
+      {
+        "titulo": "Analista de Benefícios",
+        "empresa": "Rede Santa Catarina"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Grupo Brasanitas"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "ABALO INDUSTRIA E COMERCIO DE COSMETICOS"
+      },
+      {
+        "titulo": "Recreacionista",
+        "empresa": "Grupo JOBZ"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "All Net"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Yamakawa Imoveis"
+      },
+      {
+        "titulo": "Advogado - Recém formado - OAB Ativa",
+        "empresa": "Tibério Construtora"
+      },
+      {
+        "titulo": "Analista Jurídico",
+        "empresa": "Enfok"
+      },
+      {
+        "titulo": "Técnico de Segurança do Trabalho",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Assistente de Inteligência de Mercado",
+        "empresa": "Enfok"
+      },
+      {
+        "titulo": "Assistente de Ouvidoria Jr.",
+        "empresa": "Verisure Brasil"
+      },
+      {
+        "titulo": "Auxiliar de Coordenação Pedagógica",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Assistente de Recrutamento e Seleção",
+        "empresa": "Colsan"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Achapa"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "SORTER CURVE"
+      },
+      {
+        "titulo": "Assistente de Comunicação e Marketing",
+        "empresa": "Enfok"
+      },
+      {
+        "titulo": "Assistente de Call Center",
+        "empresa": "Positivo S+"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Grupo Bimbo"
+      },
+      {
+        "titulo": "Estagiário Administrativo",
+        "empresa": "PROJETOS E CULTURA"
+      },
+      {
+        "titulo": "Auxiliar de Facilities",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "ARTCLEAN SERVICOS DE APOIO EMPRESARIAL"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar de RH",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Auxiliar Administrativo Financeiro",
+        "empresa": "STT"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista Administrativo",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "PROFISSIONAL RH MAO DE OBRA TEMPORARIA LTDA."
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Spot Promo"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "Soalnge Sales HeadHunter"
+      },
+      {
+        "titulo": "Auxiliar de Serviços Gerais",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar Comercial",
+        "empresa": "BRASS LUNA COMERCIO DE AÇOS E METAIS"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Mendes Moraes"
+      },
+      {
+        "titulo": "Supervisor Jurídico",
+        "empresa": "Salgado Junior Sociedade de Advogados"
+      },
+      {
+        "titulo": "Instrutor de Treinamento",
+        "empresa": "AeC - Centro de Contatos"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "Life Recursos Humanos"
+      },
+      {
+        "titulo": "Encarregado de Loja (REGIÃO CENTRAL/SP)",
+        "empresa": "REDE INTEGRADA DE LOJAS DE CONVENIENCIA E PROXIMIDADE S.A."
+      },
+      {
+        "titulo": "Técnico de Edificações",
+        "empresa": "Wengamen Solutions"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Rede Oba Hortifruti"
+      },
+      {
+        "titulo": "Assistente Fiscal",
+        "empresa": "TORRES GESTAO ADMINISTRATIVO FINANCEIRA"
+      },
+      {
+        "titulo": "Assistente Administrativo Operacional",
+        "empresa": "AR Apoio Administrativo e comercial"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "Delly's"
+      },
+      {
+        "titulo": "Auxiliar de Compras",
+        "empresa": "Tricostyl Modas"
+      },
+      {
+        "titulo": "Analista de Controladoria Pleno",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "LABORATORIO DRONSFIELD"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "PRONUTRI PREMIUM"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "Grupo Brasanitas"
+      },
+      {
+        "titulo": "Atendente Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Estagiário(a) Capacitação - São Paulo/SP",
+        "empresa": "Grupo ADCOS"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "ACONTRANS"
+      },
+      {
+        "titulo": "Auxiliar Administrativo Financeiro",
+        "empresa": "ACONTRANS"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Gerson & Grey"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "A3 Consultoria em RH"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "RHF TALENTOS SÃO PAULO/ CASA VERDE - SP"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Instituto Via de Acesso"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Grupo SRM"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "MSA RH"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Grupo Albatroz"
+      },
+      {
+        "titulo": "Assistente de RH",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Operador de Cobrança",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Auxiliar de Serviços Gerais",
+        "empresa": "Perfil Apoio e Serviços Ltda"
+      },
+      {
+        "titulo": "Estagiário de Direito",
+        "empresa": "ABRE - EMPREGOS E ESTÁGIOS"
+      },
+      {
+        "titulo": "Auxiliar Administrativo Fiscal",
+        "empresa": "TESTIN TECNOLOGIA"
+      },
+      {
+        "titulo": "Analista de Recursos Humanos",
+        "empresa": "TRACE LAYOUT"
+      },
+      {
+        "titulo": "Assistente de Coleta",
+        "empresa": "Gi Group"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "DCAS Serviços LTDA"
+      },
+      {
+        "titulo": "Assistente Financeiro",
+        "empresa": "Elog Operações Logísticas"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Nstech"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Blitz Recursos Humanos"
+      },
+      {
+        "titulo": "Auxiliar Administrativo Operacional",
+        "empresa": "Rome Help Serviços e Comércio LTDA ME"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Qualidade",
+        "empresa": "Rede Santa Catarina"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "FACTO ASSESSORIA E SERVICOS"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Clínicas Inteligentes"
+      },
+      {
+        "titulo": "Estagiário de Trade Marketing",
+        "empresa": "GM promo"
+      },
+      {
+        "titulo": "Auxiliar de RH",
+        "empresa": "Grupo Allport Serviços"
+      },
+      {
+        "titulo": "Auxiliar de Vendas Internas",
+        "empresa": "SWH"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "E-SOCIAL GESTAO EM SERVICOS PUBLICOS"
+      },
+      {
+        "titulo": "OPERADOR COMERCIAL  FECHAMENTO DE MATRICULA - MANHÃ E  TARDE",
+        "empresa": "Actionline"
+      },
+      {
+        "titulo": "Repositor",
+        "empresa": "RIGOR SERVICOS ADMINISTRATIVOS"
+      },
+      {
+        "titulo": "Limpeza",
+        "empresa": "RIGOR SERVICOS ADMINISTRATIVOS"
+      },
+      {
+        "titulo": "Balconista de Peixaria",
+        "empresa": "RIGOR SERVICOS ADMINISTRATIVOS"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Ama Serviços Ltda"
+      },
+      {
+        "titulo": "Auxiliar de Recursos Humanos",
+        "empresa": "LUCHE TECNOLOGIA EM INSTALACOES ELETRICAS LTDA"
+      },
+      {
+        "titulo": "Enfermeiro do Trabalho",
+        "empresa": "Nestlé"
+      },
+      {
+        "titulo": "Auxiliar Comercial",
+        "empresa": "Grupo Crowe Macro"
+      },
+      {
+        "titulo": "Analista de Contas Médicas I - Temporária",
+        "empresa": "AC Camargo Cancer Center"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "MEDI HOUSE"
+      },
+      {
+        "titulo": "AGENTE DE TELEATENDIMENTO | SAC | PRODUTO BANCÁRIO",
+        "empresa": "Concentrix"
+      },
+      {
+        "titulo": "Auxiliar de Manutenção",
+        "empresa": "GRUPO GR"
+      },
+      {
+        "titulo": "Auxiliar de Contabilidade",
+        "empresa": "Ourominas"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar Financeiro",
+        "empresa": "EXPERHT"
+      },
+      {
+        "titulo": "Auxiliar Administrativo de Marketing",
+        "empresa": "Fórmula Ativa Farmácia de Manipulação SP"
+      },
+      {
+        "titulo": "Assistente Financeiro",
+        "empresa": "D M C PROMOÇÕES E PUBLICIDADE"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "A S CHECKONN COM INTELIGENCIA DE DADOS LTDA"
+      },
+      {
+        "titulo": "Auxiliar de Recursos Humanos",
+        "empresa": "EXPERHT"
+      },
+      {
+        "titulo": "Auxiliar Administrativo Financeiro",
+        "empresa": "Fórmula Ativa Farmácia de Manipulação SP"
+      },
+      {
+        "titulo": "Programa Aprendiz Administrativo (Athena Banco) - 4h",
+        "empresa": "Instituto Via de Acesso"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "RENAPSI"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "KATEL COMERCIO E ASSESSORIA EM TELEFONIA LTDA"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar de Logística",
+        "empresa": "Atec Medical Soluções Hospitalares LTDA"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "Grupo Megavig"
+      },
+      {
+        "titulo": "Estagiário de Administração",
+        "empresa": "Fundação Mudes"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Grupo Souza Lima"
+      },
+      {
+        "titulo": "Estagiário",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Estagiário de RH",
+        "empresa": "APPTA SERVICOS"
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "Base Facilities"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "Rede Santa Catarina"
+      },
+      {
+        "titulo": "Assistente de Sala de Exames - Tatuapé",
+        "empresa": "dr. consulta"
+      },
+      {
+        "titulo": "Auxiliar de Recrutamento e Seleção",
+        "empresa": "Viva Serviços"
+      },
+      {
+        "titulo": "Assistente Administrativo Financeiro",
+        "empresa": "FBB Adm. Corretora de Seguros Ltda"
+      },
+      {
+        "titulo": "Recepcionista Bilíngue",
+        "empresa": "Grant Thornton Brasil"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar de Crédito e Cobrança",
+        "empresa": "Pacaembu Autopeças"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "JK Transmissão de Câmbios Automáticos e Serviços Automotivos LTDA"
+      },
+      {
+        "titulo": "Assistente de Atendimento",
+        "empresa": "Hospital Sepaco"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Optek"
+      },
+      {
+        "titulo": "Analista Administrativo",
+        "empresa": "CARPE DIEM CONSULTORIA"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Consultoria Sognare"
+      },
+      {
+        "titulo": "Assistente de Departamento Pessoal",
+        "empresa": "SOUZA SANTOS CONSULTORIA"
+      },
+      {
+        "titulo": "SUPORTE AO CLIENTE | VAGA INCLUSIVA PCD",
+        "empresa": "Grupo Services"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "EB Corporate"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "AFIXCODE"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Fundação Butantan"
+      },
+      {
+        "titulo": "Analista Administrativo de Vendas",
+        "empresa": "Green Recursos Humanos Ltda."
+      },
+      {
+        "titulo": "Auxiliar de Limpeza",
+        "empresa": "Paineiras Soluções Profissionais"
+      },
+      {
+        "titulo": "Auxiliar Administrativo Recepcionista",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista Comercial Pleno",
+        "empresa": "Gree do Brasil"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Jobcenter"
+      },
+      {
+        "titulo": "Assistente de Call Center Relacionamento com o Cliente",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Recepcionista Assistente Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Corporativo | Analista de Manutenção",
+        "empresa": "Grupo Habib's"
+      },
+      {
+        "titulo": "Jovem Aprendiz - 4h | Área Jurídica | São Paulo-SP",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Auxiliar de Escritório",
+        "empresa": "Grupo Maktura"
+      },
+      {
+        "titulo": "Coordenador de Marketing",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Chefe de Cozinha",
+        "empresa": "A Life Entertainment Group S.A"
+      },
+      {
+        "titulo": "AUXILIAR ADMINISTRATIVO | TRAFEGO",
+        "empresa": "Tonanni Construções"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "HITO CONSULTORIA"
+      },
+      {
+        "titulo": "Aprendiz de Auxiliar Administrativo",
+        "empresa": "HITO CONSULTORIA"
+      },
+      {
+        "titulo": "Estagiário de Administração",
+        "empresa": "HKP GESTAO EMPRESARIAL LTDA"
+      },
+      {
+        "titulo": "Nutricionista Clínico",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Secretária Administrativa - Clinica Odontológica",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Atendente Comercial",
+        "empresa": "nani sound"
+      },
+      {
+        "titulo": "Estagiário de Recursos Humanos",
+        "empresa": "HKP GESTAO EMPRESARIAL LTDA"
+      },
+      {
+        "titulo": "Analista de Operações de RH Júnior |  Região central de São Paulo | T2 - Temporária",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Clínica paulista de fisiatria"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Centro de Integração Empresa Escola - CIEE"
+      },
+      {
+        "titulo": "Assistente Comercial de Vendas",
+        "empresa": "CHROMA"
+      },
+      {
+        "titulo": "AUX.LOJA",
+        "empresa": "Niazi Chohfi"
+      },
+      {
+        "titulo": "Analista Comercial Pleno",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "Instituto Via de Acesso"
+      },
+      {
+        "titulo": "Customer Success",
+        "empresa": "Locagora São Paulo II LTDA"
+      },
+      {
+        "titulo": "Estágio em Administração — Operações e Recuperação de Crédito",
+        "empresa": "Flex Empresarial"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Pacaembu Autopeças"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "Big Tires Pneus e Acess. de Veiculos Ltda"
+      },
+      {
+        "titulo": "Recreacionista Escolar",
+        "empresa": "HKP GESTAO EMPRESARIAL LTDA"
+      },
+      {
+        "titulo": "Estagiário Administrativo",
+        "empresa": "EVOESTAGIOS"
+      },
+      {
+        "titulo": "Estagiário Administrativo",
+        "empresa": "TERRA DUO COMERCIO E SERVICOS EMPRESARIAIS LTDA"
+      },
+      {
+        "titulo": "Atendente de Locação",
+        "empresa": "MOVIDA Locação de Veículos LTDA."
+      },
+      {
+        "titulo": "Analista de Obras (Volante)",
+        "empresa": "GS BUSINESS"
+      },
+      {
+        "titulo": "Auxiliar administrativo-Pré  atendimento - SDR- Também destinada para PCD",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar de Seleção",
+        "empresa": "REAL PARCERIA"
+      },
+      {
+        "titulo": "Estágio Estudante Ensino Médio/Superior - Lapa",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Auxiliar Conferente",
+        "empresa": "MENDES TALENT TERCEIRIZACAO E RECURSOS HUMANOS EIRELI"
+      },
+      {
+        "titulo": "Auxiliar de Loja",
+        "empresa": "King Star Colchões"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "YOUBPOTECH"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Lojas Renascer"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Roda Muk Transportes e Locações LTDA"
+      },
+      {
+        "titulo": "ESPECIALISTA DE ATENDIMENTO SAC|MODA | VAGA INCLUSIVA PCD",
+        "empresa": "Concentrix"
+      },
+      {
+        "titulo": "AUXILIAR ROUPARIA - EXCLUSIVO PCD",
+        "empresa": "Grupo NotreDame Intermédica"
+      },
+      {
+        "titulo": "Auxiliar de Faturamento",
+        "empresa": "SENADOR EMPREGOS"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "Unifisa"
+      },
+      {
+        "titulo": "Auxiliar de Departamento Pessoal",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "FOCCO SERVICOS TERCEIRIZADOS"
+      },
+      {
+        "titulo": "Aprendiz ",
+        "empresa": "Atacadista Roldão"
+      },
+      {
+        "titulo": "Encarregado de Mercearia",
+        "empresa": "RHF Talentos Cotia – Granja Viana/SP"
+      },
+      {
+        "titulo": "Auxiliar de Agendamento",
+        "empresa": "HCloe"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Consultor Vendedor",
+        "empresa": "VETIVER PERFUMARIA E COSMETICOS LTDA - EPP"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Administradora Umuarama Ltda"
+      },
+      {
+        "titulo": "Recepcionista",
+        "empresa": "Potency RH"
+      },
+      {
+        "titulo": "Auxiliar Financeiro",
+        "empresa": "Consórcio - Obra Metrô - Estação São Joaquim - SP"
+      },
+      {
+        "titulo": "Analista Administrativo",
+        "empresa": "Adecco"
+      },
+      {
+        "titulo": "Assistente de Manutenção",
+        "empresa": "Cobasi"
+      },
+      {
+        "titulo": "Analista de SAC",
+        "empresa": "Multilaser"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "GOES & MALAMAN SEGUROS"
+      },
+      {
+        "titulo": "Auxiliar de Tesouraria",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Panasonic"
+      },
+      {
+        "titulo": "Auxiliar de Escritório",
+        "empresa": "KD DISTRIBUIDORA"
+      },
+      {
+        "titulo": "Atendente Administrativo",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "RENAPSI"
+      },
+      {
+        "titulo": "Auxiliar de Compras",
+        "empresa": "HequilÍbrio"
+      },
+      {
+        "titulo": "Jovem Aprendiz Administrativo",
+        "empresa": "Grupo São Cristovão Saúde"
+      },
+      {
+        "titulo": "Agente Administrativo",
+        "empresa": "Santa Marcelina Saúde"
+      },
+      {
+        "titulo": "Jovem Aprendiz",
+        "empresa": "Grupo Trigo"
+      },
+      {
+        "titulo": "Escriturário Administrativo",
+        "empresa": "Santa Marcelina Saúde"
+      },
+      {
+        "titulo": "Assistente Administrativo Operacional",
+        "empresa": "Smollan"
+      },
+      {
+        "titulo": "Analista RH Pleno (Previdência Privada) | Corporativo",
+        "empresa": "Grupo Carrefour Brasil"
+      },
+      {
+        "titulo": "Auxiliar de Expedição",
+        "empresa": "Zeiss Vision Brasil"
+      },
+      {
+        "titulo": "Operador de Loja Pleno",
+        "empresa": "Rede Oba Hortifruti"
+      },
+      {
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "OFICINA DA INFORMATICA"
+      },
+      {
+        "titulo": "Auxiliar de Serviços Gerais",
+        "empresa": "Manpower"
+      }
+    ]
+  },
+  {
+    "cargo": "analista de dados",
+    "cidade": "sao-paulo,-sp",
+    "totalAnunciado": "965",
+    "ultimos7dias": 123,
+    "verificadas": 165,
+    "fora": 34,
+    "semData": 8,
+    "falhas": 0,
+    "comEmpresa": 123,
+    "descricaoLonga": 123,
+    "terminouJanela": true,
+    "gupy7dias": 15,
+    "gupyFalhou": false,
+    "sobreposicaoEmpresa": 0,
+    "sobreposicaoVaga": 0,
+    "exemplosMesmaVaga": [],
+    "empresasInfojobs": [
+      "Konecta",
+      "Allied Tecnologia",
+      "ENTES SOLUÇÕES EMPRESARIAIS LTDA",
+      "Rio Novo Soluções Urbanas",
+      "ILHASERVICE TECNOLOGIA",
+      "Cabrera Associados Consultoria Contábil",
+      "Funchal Negócios",
+      "Life Recursos Humanos",
+      "Rede Santa Catarina",
+      "Empresa confidencial",
+      "Eletromidia",
+      "Manpower"
+    ],
+    "vagasInfojobs": [
+      {
+        "titulo": "Analista de Suporte de TI",
+        "empresa": "Konecta"
+      },
+      {
+        "titulo": "Analista de Preços PL",
+        "empresa": "Allied Tecnologia"
+      },
+      {
+        "titulo": "ANALISTA DE CUSTOMER SUCCESS JR",
+        "empresa": "ENTES SOLUÇÕES EMPRESARIAIS LTDA"
+      },
+      {
+        "titulo": "Analista Contábil Sênior",
+        "empresa": "Rio Novo Soluções Urbanas"
+      },
+      {
+        "titulo": "Analista de Projetos de TI",
+        "empresa": "ILHASERVICE TECNOLOGIA"
+      },
+      {
+        "titulo": "Analista Fiscal",
+        "empresa": "Cabrera Associados Consultoria Contábil"
+      },
+      {
+        "titulo": "Analista de Crédito Imobiliário",
+        "empresa": "Funchal Negócios"
+      },
+      {
+        "titulo": "Analista de Testes",
+        "empresa": "Life Recursos Humanos"
+      },
+      {
+        "titulo": "Analista de Tecnologia da Informação PL | Sistema MV",
+        "empresa": "Rede Santa Catarina"
+      },
+      {
+        "titulo": "ANALISTA DE DADOS",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Implantação",
+        "empresa": "Eletromidia"
+      },
+      {
+        "titulo": "Gerente Call Center",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Operador(a) De Dados",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Analista Contábil",
+        "empresa": "Confirp Contabilidade"
+      },
+      {
+        "titulo": "Analista de Mídia",
+        "empresa": "BM VAGAS"
+      },
+      {
+        "titulo": "Agente de Negócios",
+        "empresa": "Willisa Recursos Humanos"
+      },
+      {
+        "titulo": "PLANEJADOR DE DIGITAL PERFORMANCE",
+        "empresa": "BM VAGAS"
+      },
+      {
+        "titulo": "Telemarketing - Prevenção à Fraude",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista Comercial Senior",
+        "empresa": "Daki"
+      },
+      {
+        "titulo": "Analista de Logística",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Pesquisador(a) Sênior de UX",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Analista de Custos",
+        "empresa": "Grupo Carrera"
+      },
+      {
+        "titulo": "Analista de TI",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de SOC Pleno",
+        "empresa": "MAVRHY SERVICOS EM RECURSOS HUMANOS LTDA"
+      },
+      {
+        "titulo": "Assistente de Recrutamento e Seleção",
+        "empresa": "3P BRASIL - CONSULTORIA E PROJETOS DE ESTRUTURACAO DE PARCERIAS PUBLICO-PRIVADAS E PARTICIPACOES S.A"
+      },
+      {
+        "titulo": "Analista de Sistemas",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de BI",
+        "empresa": "Grupo GPS"
+      },
+      {
+        "titulo": "Analista Jr. – Processos, Automação & Performance",
+        "empresa": "ACTIVE TECNOLOGIA"
+      },
+      {
+        "titulo": "ANALISTA DE BI PLENO SP",
+        "empresa": "Pedroso Consultoria RH"
+      },
+      {
+        "titulo": "Auditor Interno",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Inteligência de Mercado",
+        "empresa": "Benassi SP"
+      },
+      {
+        "titulo": "Analista de BI",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de RH",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Analista de Marketing de Canais",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Analista de Contas",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Analista de Benefícios",
+        "empresa": "Rede Santa Catarina"
+      },
+      {
+        "titulo": "Analista Comercial",
+        "empresa": "Labi Saúde"
+      },
+      {
+        "titulo": "ANALISTA DE PLANEJAMENTO E GESTAO JR",
+        "empresa": "CAOA"
+      },
+      {
+        "titulo": "Analista de Planejamento Financeiro",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista /Supervisor de Suprimentos",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Categoria",
+        "empresa": "SOFTYS"
+      },
+      {
+        "titulo": "Analista de Logística",
+        "empresa": "Adecco"
+      },
+      {
+        "titulo": "Técnico de Suporte ",
+        "empresa": "Penso Tecnologia"
+      },
+      {
+        "titulo": "Analista de Cadastro Pleno",
+        "empresa": "Panco"
+      },
+      {
+        "titulo": "Analista Repasses Medicos Jr",
+        "empresa": "HCor"
+      },
+      {
+        "titulo": "Analista de Customer Service Júnior",
+        "empresa": "TotalPass"
+      },
+      {
+        "titulo": "Analista de Controladoria",
+        "empresa": "Leader & Talent"
+      },
+      {
+        "titulo": "Analista de Faturamento",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Analista de Expansão",
+        "empresa": "Sukiya"
+      },
+      {
+        "titulo": "Analista Mainframe",
+        "empresa": "3AM IT Services"
+      },
+      {
+        "titulo": "Analista Administrativo",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Analista Financeiro/Contábil - Pleno",
+        "empresa": "Abaco Consulting"
+      },
+      {
+        "titulo": "Analista de Planejamento",
+        "empresa": "FBS Construtora"
+      },
+      {
+        "titulo": "Técnico de Medição",
+        "empresa": "FBS Construtora"
+      },
+      {
+        "titulo": "Analista de Facilities Sênior",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de BI",
+        "empresa": "EVER Trade Marketing"
+      },
+      {
+        "titulo": "Comprador",
+        "empresa": "TOKYO SP 110"
+      },
+      {
+        "titulo": "Analista de Relacionamento Sênior",
+        "empresa": "REINVENT CONSULTORIA & RH"
+      },
+      {
+        "titulo": "Analista de Prevenção de Perdas Pleno",
+        "empresa": "SBF COMERCIO DE PRODUTOS ESPORTIVOS S.A."
+      },
+      {
+        "titulo": "Especialista de Marketplace",
+        "empresa": "Adecco"
+      },
+      {
+        "titulo": "Coordenador de E-commerce",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista Contábil",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Analista Digital",
+        "empresa": "Preçolandia"
+      },
+      {
+        "titulo": "Analista de Recursos Humanos",
+        "empresa": "TRACE LAYOUT"
+      },
+      {
+        "titulo": "Analista de Suporte Técnico",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Contabilidade",
+        "empresa": "Grupo Profarma"
+      },
+      {
+        "titulo": "Analista de Performance",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Marketing",
+        "empresa": "Supermercado Violeta"
+      },
+      {
+        "titulo": "Analista de Qualidade",
+        "empresa": "Gi Group"
+      },
+      {
+        "titulo": "ANALISTA DE CADASTRO E ANÚNCIOS (MARKETPLACES) – JÚNIOR",
+        "empresa": "Emana & Co"
+      },
+      {
+        "titulo": "ANALISTA DE CONTROLADORIA -  SÃO PAULO/SP",
+        "empresa": "RH Teste Genoma LTDA"
+      },
+      {
+        "titulo": "Analista Financeiro",
+        "empresa": "Genter Serviços"
+      },
+      {
+        "titulo": "Analista de Implantação",
+        "empresa": "FIELDCORP"
+      },
+      {
+        "titulo": "Analista de Comércio Internacional",
+        "empresa": "Willisa Recursos Humanos"
+      },
+      {
+        "titulo": "Analista de Contabilidade",
+        "empresa": "Timbre"
+      },
+      {
+        "titulo": "Banco de Talentos",
+        "empresa": "Planem Engenharia e Eletricidade"
+      },
+      {
+        "titulo": "Analista Comercial",
+        "empresa": "Ateliê Bambini"
+      },
+      {
+        "titulo": "Coordenador Fiscal",
+        "empresa": "RECRUTYJET CONSULTORIA EM RECURSOS HUMANOS"
+      },
+      {
+        "titulo": "Supervisor de Campo",
+        "empresa": "Soul Trade Marketing"
+      },
+      {
+        "titulo": "ESTAGIÁRIO - PROMOTOR ESPECIALISTA [SEGMENTO PET] - ZONA LESTE",
+        "empresa": "Casa Trade Marketing"
+      },
+      {
+        "titulo": "Analista de MIS",
+        "empresa": "tel telematica"
+      },
+      {
+        "titulo": "Analista Administrativo",
+        "empresa": "CARPE DIEM CONSULTORIA"
+      },
+      {
+        "titulo": "Analista Financeiro",
+        "empresa": "Supreo"
+      },
+      {
+        "titulo": "Analista de Logística",
+        "empresa": "PJC Recursos Humanos"
+      },
+      {
+        "titulo": "Técnico de Informática",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Analista Fiscal",
+        "empresa": "Interplayers"
+      },
+      {
+        "titulo": "Analista Comercial Pleno",
+        "empresa": "Gree do Brasil"
+      },
+      {
+        "titulo": "Corporativo | Analista de Manutenção",
+        "empresa": "Grupo Habib's"
+      },
+      {
+        "titulo": "Analista de Customer Service PL",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Suporte Pleno",
+        "empresa": "nk store"
+      },
+      {
+        "titulo": "Analista de Dados I",
+        "empresa": "3AM IT Services"
+      },
+      {
+        "titulo": "Analista de Operações de RH Júnior |  Região central de São Paulo | T2 - Temporária",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Técnico de Segurança do Trabalho | Foco em Higiene Ocupacional",
+        "empresa": "Leadec Serviços Industriais do Brasil"
+      },
+      {
+        "titulo": "Analista de Pessoal ",
+        "empresa": "Santa Lolla"
+      },
+      {
+        "titulo": "Analista de TI",
+        "empresa": "Grupo Ráscal Restaurantes"
+      },
+      {
+        "titulo": "Coordenador de Suprimentos",
+        "empresa": "Cora Residencial Brasil Senior Living"
+      },
+      {
+        "titulo": "Analista de Pricing",
+        "empresa": "yapp do brasil"
+      },
+      {
+        "titulo": "Analistade de Dados e Automação",
+        "empresa": "LP Guizilim"
+      },
+      {
+        "titulo": "Analista de Processos",
+        "empresa": "Ânima Educação"
+      },
+      {
+        "titulo": "Analista de E-commerce",
+        "empresa": "peça certa"
+      },
+      {
+        "titulo": "Analista de Implantação",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista de Benefícios",
+        "empresa": "NetSource"
+      },
+      {
+        "titulo": "Analista de Marketing Digital",
+        "empresa": "Adecco"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "RHF Talentos Sudeste SP Zona Sul"
+      },
+      {
+        "titulo": "Representante de Envios I (Logística)  Escala 5x2 - VAGA EFETIVA",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Representante de Envios I (Logística)  Escala 5x2 - Vaga efetiva",
+        "empresa": "Randstad"
+      },
+      {
+        "titulo": "Analista de Frota Jr - Manutenção",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista RH Pleno (Previdência Privada) | Corporativo",
+        "empresa": "Grupo Carrefour Brasil"
+      },
+      {
+        "titulo": "Analista de Risco e Fraude JR",
+        "empresa": "Infracommerce"
+      },
+      {
+        "titulo": "Analista de Dados Computacional",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Analista Técnico",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Analista de Automação de Processos",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Analista de RH",
+        "empresa": "Umana Brasil"
+      },
+      {
+        "titulo": "Analista Fiscal",
+        "empresa": "bpartner consultoria"
+      },
+      {
+        "titulo": "Analista de Segurança da Informação",
+        "empresa": "HIT Communications"
+      },
+      {
+        "titulo": "Analista de Transportes",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Analista Financeiro",
+        "empresa": "LEMON CONSULTORIA"
+      },
+      {
+        "titulo": "Product Manager (AI Focus)",
+        "empresa": "Huntin"
+      },
+      {
+        "titulo": "Coordenador de Cadastro",
+        "empresa": "Grupo Profarma"
+      },
+      {
+        "titulo": "Técnico de Eletrotécnica",
+        "empresa": "Tem Talentos"
+      },
+      {
+        "titulo": "Analista de Marketing",
+        "empresa": "BEST RH CONSULTORIA E RECURSOS HUMANOS LTDA"
+      },
+      {
+        "titulo": "Gestor Financeiro",
+        "empresa": "ATIVA IMPORTADORA"
+      },
+      {
+        "titulo": "Advogado Trabalhista",
+        "empresa": "LUCIANA MEIRELLES RODRIGUES"
+      }
+    ]
+  },
+  {
+    "cargo": "enfermeiro",
+    "cidade": "sao-paulo,-sp",
+    "totalAnunciado": "121",
+    "ultimos7dias": 22,
+    "verificadas": 32,
+    "fora": 10,
+    "semData": 0,
+    "falhas": 0,
+    "comEmpresa": 22,
+    "descricaoLonga": 22,
+    "terminouJanela": true,
+    "gupy7dias": 25,
+    "gupyFalhou": false,
+    "sobreposicaoEmpresa": 0,
+    "sobreposicaoVaga": 0,
+    "exemplosMesmaVaga": [],
+    "empresasInfojobs": [
+      "Hospital Sepaco",
+      "Santa Marcelina Saúde",
+      "Global Empregos",
+      "Ânima Educação",
+      "Empresa confidencial",
+      "RHF Talentos - Vale do Ribeira/SP",
+      "Bioqualynet",
+      "Nestlé",
+      "Rede Santa Catarina",
+      "Grupo São Cristovão Saúde",
+      "3778 SAUDE CORPORATIVA E CORRETORA DE SEGUROS LTDA",
+      "RHF Florianópolis /Coqueiros-SC"
+    ],
+    "vagasInfojobs": [
+      {
+        "titulo": "Enfermeiro",
+        "empresa": "Hospital Sepaco"
+      },
+      {
+        "titulo": "Banco de Talentos: Enfermeiro para o Hospital Geral de Guaianases",
+        "empresa": "Santa Marcelina Saúde"
+      },
+      {
+        "titulo": "Enfermeiro PL",
+        "empresa": "Hospital Sepaco"
+      },
+      {
+        "titulo": "Enfermeiro da Família (Temporário), Santo Amaro, SP",
+        "empresa": "Global Empregos"
+      },
+      {
+        "titulo": "Preceptor(a) - Enfermagem - UAM - Vila Olímpia",
+        "empresa": "Ânima Educação"
+      },
+      {
+        "titulo": "Auxiliar de Enfermagem",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Instrumentador de Cirurgia",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Técnico de Segurança do Trabalho",
+        "empresa": "RHF Talentos - Vale do Ribeira/SP"
+      },
+      {
+        "titulo": "Enfermeiro do Trabalho",
+        "empresa": "Bioqualynet"
+      },
+      {
+        "titulo": "Banco de talentos: Enfermeiro Externo para o Hospital Santa Marcelina de Itaquera",
+        "empresa": "Santa Marcelina Saúde"
+      },
+      {
+        "titulo": "Enfermeiro do Trabalho",
+        "empresa": "Nestlé"
+      },
+      {
+        "titulo": "Enfermeiro",
+        "empresa": "Rede Santa Catarina"
+      },
+      {
+        "titulo": "Auxiliar de Enfermagem",
+        "empresa": "Grupo São Cristovão Saúde"
+      },
+      {
+        "titulo": "Enfermeiro do Trabalho",
+        "empresa": "3778 SAUDE CORPORATIVA E CORRETORA DE SEGUROS LTDA"
+      },
+      {
+        "titulo": "Enfermeiro",
+        "empresa": "RHF Florianópolis /Coqueiros-SC"
+      },
+      {
+        "titulo": "Enfermeiro - Qualidade Hospitalar",
+        "empresa": "Fundação Adib Jatene"
+      },
+      {
+        "titulo": "Enfermeiro Assistencial",
+        "empresa": "CIES"
+      },
+      {
+        "titulo": "Enfermeiro do Trabalho",
+        "empresa": "Bencorp saúde"
+      },
+      {
+        "titulo": "Técnico de Enfermagem",
+        "empresa": "CARPE DIEM CONSULTORIA"
+      },
+      {
+        "titulo": "Enfermeira Obstetra  Folguista Diuno (Temporário) - Vila Mariana, SP",
+        "empresa": "Global Empregos"
+      },
+      {
+        "titulo": "Farmacêutico",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Enfermeiro",
+        "empresa": "dr. consulta"
+      }
+    ]
+  },
+  {
+    "cargo": "vendedor",
+    "cidade": "belo-horizonte,-mg",
+    "totalAnunciado": "782",
+    "ultimos7dias": 73,
+    "verificadas": 156,
+    "fora": 26,
+    "semData": 57,
+    "falhas": 0,
+    "comEmpresa": 73,
+    "descricaoLonga": 70,
+    "terminouJanela": true,
+    "gupy7dias": 26,
+    "gupyFalhou": false,
+    "sobreposicaoEmpresa": 0,
+    "sobreposicaoVaga": 0,
+    "exemplosMesmaVaga": [],
+    "empresasInfojobs": [
+      "yapp do brasil",
+      "Consultoria Acerta",
+      "Petz - O seu Pet Center de Estimação",
+      "Manpower",
+      "Refrigeração Dufrio",
+      "Drogaria Araujo",
+      "Alô Bebê",
+      "Empresa confidencial",
+      "RV CORRETORA DE IMOVEIS LTDA",
+      "AlmavivA Experience",
+      "Mércuri Capital",
+      "HR4 Human Resources"
+    ],
+    "vagasInfojobs": [
+      {
+        "titulo": "Vendedor Externo",
+        "empresa": "yapp do brasil"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "Consultoria Acerta"
+      },
+      {
+        "titulo": "Atendente de Clientes",
+        "empresa": "Petz - O seu Pet Center de Estimação"
+      },
+      {
+        "titulo": "Atendente de Loja",
+        "empresa": "Manpower"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "Refrigeração Dufrio"
+      },
+      {
+        "titulo": "Vendedor Responsável",
+        "empresa": "Drogaria Araujo"
+      },
+      {
+        "titulo": "Atendente de Telemarketing Receptivo",
+        "empresa": "Drogaria Araujo"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "Alô Bebê"
+      },
+      {
+        "titulo": "VENDEDOR",
+        "empresa": "Drogaria Araujo"
+      },
+      {
+        "titulo": "Vendedor Interno",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Consultor Imobiliário",
+        "empresa": "RV CORRETORA DE IMOVEIS LTDA"
+      },
+      {
+        "titulo": "VENDEDOR(A) EXTERNO (PAP) - BELO HORIZONTE/MG",
+        "empresa": "AlmavivA Experience"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Mércuri Capital"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "HR4 Human Resources"
+      },
+      {
+        "titulo": "VENDEDOR(A) DE LOJA - MINAS GERAIS (VAGA EXCLUSIVA PARA PESSOAS COM DEFICIÊNCIA)",
+        "empresa": "comm"
+      },
+      {
+        "titulo": "Atendente de Telemarketing Backoffice",
+        "empresa": "AeC - Centro de Contatos"
+      },
+      {
+        "titulo": "Operador de Call Center",
+        "empresa": "AeC - Centro de Contatos"
+      },
+      {
+        "titulo": "Atendente de Telemarketing",
+        "empresa": "AeC - Centro de Contatos"
+      },
+      {
+        "titulo": "Atendente de Call Center",
+        "empresa": "AeC - Centro de Contatos"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Cobasi"
+      },
+      {
+        "titulo": "Vendedor de Loja",
+        "empresa": "Bôhho"
+      },
+      {
+        "titulo": "Vendedor de Loja",
+        "empresa": "Democrata Shopping Cidade"
+      },
+      {
+        "titulo": "Auxiliar de Loja - Extra Natal",
+        "empresa": "PERSONALE"
+      },
+      {
+        "titulo": "Vendedor Decorador - Ponteio Lar Shopping (Belo Horizonte)",
+        "empresa": "Tok&Stok"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Umana Brasil"
+      },
+      {
+        "titulo": "Consultor Comercial",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "BM VAGAS"
+      },
+      {
+        "titulo": "Vendedor Externo",
+        "empresa": "REDE VISTORIAS FRANCHISING LTDA - ME"
+      },
+      {
+        "titulo": "Vendedor(a) | Casa Belvedere (MG)",
+        "empresa": "Ricardo Almeida"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Adecco"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "SELECT RH"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Academia Alternativa"
+      },
+      {
+        "titulo": "Vendedor(a) | Belo Horizonte (MG)",
+        "empresa": "Ricardo Almeida"
+      },
+      {
+        "titulo": "Vendedor Externo",
+        "empresa": "Ir Representações"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Bel Cosméticos"
+      },
+      {
+        "titulo": "Auxiliar de Loja",
+        "empresa": "PERSONALE"
+      },
+      {
+        "titulo": "Vendedor Interno",
+        "empresa": "Refrijet"
+      },
+      {
+        "titulo": "Representante Comercial",
+        "empresa": "ZAZ Vendas"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Drogaria Araujo"
+      },
+      {
+        "titulo": "Vendedor de Autopeças",
+        "empresa": "Via Mondo Automóveis e Peças LTDA"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Cacau Show Diamond Mall"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "Luandre"
+      },
+      {
+        "titulo": "VENDEDOR(A) DE ELETRÔNICOS - SAM'S CLUB PAMPULHA",
+        "empresa": "Grupo Carrefour Brasil"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Grupo Carrefour Brasil"
+      },
+      {
+        "titulo": "Vendedor Telemarketing Receptivo (Noturno - Centro BH)",
+        "empresa": "Drogaria Araujo"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Go Green"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "Cia. do Terno"
+      },
+      {
+        "titulo": "Vendedor (a) | Boulevard Shopping | Belo Horizonte",
+        "empresa": "KIKO MILANO"
+      },
+      {
+        "titulo": "Vendedor (a) | Pátio Savassi | Belo Horizonte",
+        "empresa": "KIKO MILANO"
+      },
+      {
+        "titulo": "Vendedor Responsável",
+        "empresa": "KIKO MILANO"
+      },
+      {
+        "titulo": "Representante Comercial",
+        "empresa": "Martins Uniformes"
+      },
+      {
+        "titulo": "Vendedor Interno",
+        "empresa": "Pimenta e Associados"
+      },
+      {
+        "titulo": "Assistente Comercial",
+        "empresa": "SELECT RH"
+      },
+      {
+        "titulo": "Vendedor Externo",
+        "empresa": "Embutidos dois irmaos"
+      },
+      {
+        "titulo": "Operador Comercial",
+        "empresa": "Grupo Carrefour Brasil"
+      },
+      {
+        "titulo": "Promotor de Merchandising",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Nestlé"
+      },
+      {
+        "titulo": "Assistente Administrativo",
+        "empresa": "AG3 Solutions"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Mazzini"
+      },
+      {
+        "titulo": "VENDEDOR(A) INTERNO  - JOGOS DE LAZER E FITNESS - BELO HORIZONTE #1264",
+        "empresa": "RHF TALENTOS CASCAVEL - CENTRO PR"
+      },
+      {
+        "titulo": "Consultor Comercial",
+        "empresa": "IAatende Ltda"
+      },
+      {
+        "titulo": "Consultor de Vendas",
+        "empresa": "Pop Trade Marketing"
+      },
+      {
+        "titulo": "Operador de Loja",
+        "empresa": "Timbre"
+      },
+      {
+        "titulo": "VENDEDOR(A) INTERNO(A) | WHATSAPP E RELACIONAMENTO",
+        "empresa": "Empresa confidencial"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "MRV Engenharia"
+      },
+      {
+        "titulo": "Operador Comercial",
+        "empresa": "Mazzini"
+      },
+      {
+        "titulo": "Vendedor Interno",
+        "empresa": "PRO7 RECRUTAMENTO E SELECAO LTDA"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "RHF TALENTOS UNIDADE CONTAGEM - MG"
+      },
+      {
+        "titulo": "Vendedor de Loja",
+        "empresa": "Interação - Soluções Inteligentes"
+      },
+      {
+        "titulo": "Vendedor",
+        "empresa": "Ponto da Lingerie"
+      },
+      {
+        "titulo": "Vendedor/Consultor Comercial para Franquia de Escola de Oratória",
+        "empresa": "DCN SOLUCOES EM RH"
+      },
+      {
+        "titulo": "Vendedora - Minas Shopping",
+        "empresa": "Ponto da Lingerie"
+      }
+    ]
+  },
+  {
+    "cargo": "product manager",
+    "cidade": "sao-paulo,-sp",
+    "totalAnunciado": "?",
+    "ultimos7dias": 1,
+    "verificadas": 9,
+    "fora": 4,
+    "semData": 4,
+    "falhas": 0,
+    "comEmpresa": 1,
+    "descricaoLonga": 1,
+    "terminouJanela": false,
+    "gupy7dias": 6,
+    "gupyFalhou": false,
+    "sobreposicaoEmpresa": 0,
+    "sobreposicaoVaga": 0,
+    "exemplosMesmaVaga": [],
+    "empresasInfojobs": [
+      "Huntin"
+    ],
+    "vagasInfojobs": [
+      {
+        "titulo": "Product Manager (AI Focus)",
+        "empresa": "Huntin"
+      }
+    ]
+  }
+]

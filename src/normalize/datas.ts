@@ -65,9 +65,17 @@ export function paraIso(bruto: string | undefined): string | null {
   return new Date(ms).toISOString();
 }
 
-/** "Publicada em 12/08/2026" → 2026-08-12T00:00:00-03:00 (meia-noite de Brasília). */
+/**
+ * "Publicada em 12/08/2026" → 2026-08-12T00:00:00-03:00 (meia-noite de Brasília).
+ *
+ * Os dois-pontos são opcionais e não são detalhe: a Gupy escreve
+ * "Publicada em: 21/08/2026", e a versão anterior desta regex exigia `\s+`
+ * depois de "em". Resultado medido em produção — 9 dos 57 snippets da Gupy
+ * traziam data e os 9 foram perdidos, deixando `data_publicacao` null em 197
+ * de 197 linhas. Era o único sinal de data estruturado que o produto tinha.
+ */
 export function dataDoSnippetGupy(snippet: string): string | null {
-  const m = /publicad[ao]\s+em\s+(\d{1,2})\/(\d{1,2})\/(\d{4})/i.exec(snippet);
+  const m = /publicad[ao]\s+em:?\s*(\d{1,2})\/(\d{1,2})\/(\d{4})/i.exec(snippet);
   if (!m) return null;
   const [, dia, mes, ano] = m;
   if (!dia || !mes || !ano) return null;

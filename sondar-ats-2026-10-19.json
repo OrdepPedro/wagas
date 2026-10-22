@@ -1,0 +1,113 @@
+{
+  "greenhouse": {
+    "slugsVivos": 16,
+    "porSlug": {
+      "quintoandar": {
+        "total": 107,
+        "br": 89
+      },
+      "stone": {
+        "total": 366,
+        "br": 343
+      },
+      "vtex": {
+        "total": 31,
+        "br": 19
+      },
+      "wildlifestudios": {
+        "total": 16,
+        "br": 16
+      },
+      "ebanx": {
+        "total": 40,
+        "br": 24
+      },
+      "inter": {
+        "total": 161,
+        "br": 154
+      },
+      "c6bank": {
+        "total": 157,
+        "br": 156
+      },
+      "gympass": {
+        "total": 89,
+        "br": 44
+      },
+      "rdstation": {
+        "total": 4,
+        "br": 4
+      },
+      "jusbrasil": {
+        "total": 17,
+        "br": 5
+      },
+      "blip": {
+        "total": 2,
+        "br": 0
+      },
+      "xpinc": {
+        "total": 142,
+        "br": 120
+      },
+      "btgpactual": {
+        "total": 267,
+        "br": 259
+      },
+      "bancopan": {
+        "total": 13,
+        "br": 10
+      },
+      "flash": {
+        "total": 2,
+        "br": 0
+      },
+      "arco": {
+        "total": 424,
+        "br": 0
+      }
+    },
+    "vagasBr": 1243,
+    "comData": "100%",
+    "descricaoMais500": "100%",
+    "ultimos7dias": 114
+  },
+  "lever": {
+    "slugsVivos": 3,
+    "porSlug": {
+      "neon": {
+        "total": 9,
+        "br": 0
+      },
+      "zippi": {
+        "total": 5,
+        "br": 5
+      },
+      "swile": {
+        "total": 30,
+        "br": 14
+      }
+    },
+    "vagasBr": 19,
+    "comData": "100%",
+    "descricaoMais500": "100%",
+    "ultimos7dias": 1
+  },
+  "ashby": {
+    "slugsVivos": 2,
+    "porSlug": {
+      "nubank": {
+        "total": 98,
+        "br": 31
+      },
+      "neon": {
+        "total": 4,
+        "br": 0
+      }
+    },
+    "vagasBr": 31,
+    "comData": "100%",
+    "descricaoMais500": "100%",
+    "ultimos7dias": 10
+  }
+}
