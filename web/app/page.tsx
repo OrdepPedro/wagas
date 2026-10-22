@@ -37,6 +37,18 @@ function textoDaData(vaga: Vaga): string {
   return `vista em ${formatar(vaga.data_referencia)}`;
 }
 
+/**
+ * "Efetivo – CLT - Período Integral" vira "CLT"; "Prestador de Serviços (PJ) -
+ * Período Integral" vira "PJ". O resto aparece como a fonte escreveu, sem a
+ * jornada. A etiqueta existe para a pessoa ver "PJ" ANTES de clicar — decidir o
+ * que é vaga de verdade é dela, não do parser (achado 39).
+ */
+function textoDoContrato(bruto: string): string {
+  if (/\bCLT\b/i.test(bruto)) return 'CLT';
+  if (/\bPJ\b/.test(bruto)) return 'PJ';
+  return bruto.split(/\s+-\s+/)[0]!.trim();
+}
+
 function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) {
   const naCidade = vaga.cidade_slug === cidadeSlug;
 
@@ -65,6 +77,7 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
         )}
         {naCidade ? <span className="etiqueta">na sua cidade</span> : null}
         {vaga.senioridade ? <span className="etiqueta">{vaga.senioridade}</span> : null}
+        {vaga.tipo_contrato ? <span className="etiqueta">{textoDoContrato(vaga.tipo_contrato)}</span> : null}
         <span className="etiqueta">{NOME_DA_FONTE[vaga.fonte]}</span>
         <span className="etiqueta">{textoDaData(vaga)}</span>
       </div>

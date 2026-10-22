@@ -115,7 +115,7 @@ function linhaRaw(
     modelo_busca: soRemoto ? 'remoto' : 'qualquer',
     localizacao_busca: cidadeBusca,
     data_publicacao: vaga.dataPublicacao,
-    data_publicacao_origem: origem.origemData,
+    data_publicacao_origem: vaga.origemData ?? origem.origemData,
     processado: true,
     classificacao: 'aprovado',
     classificacao_motivo: null,
@@ -152,7 +152,10 @@ function linhaJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache
     fonte: origem.fonte,
     descricao: vaga.descricao,
     data_publicacao: vaga.dataPublicacao,
-    data_publicacao_origem: origem.origemData,
+    data_publicacao_origem: vaga.origemData ?? origem.origemData,
+    // Só entra na linha quando a fonte informa: a Gupy grava sem a coluna, e
+    // assim continua funcionando num banco ainda sem a migration 0009.
+    ...(vaga.tipoContrato ? { tipo_contrato: vaga.tipoContrato } : {}),
     // Explícito, ainda que igual ao default: nesta rota "agora" é mesmo a hora
     // da coleta, e deixar implícito esconderia a diferença para a rota da SERP,
     // onde o default estava errado.

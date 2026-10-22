@@ -40,6 +40,8 @@ Consequência direta na coleta: cada par cargo×cidade vira **duas consultas por
 
    Condições do scraping de portal, todas obrigatórias: página pública sem login nem cookie; `robots.txt` permitindo o caminho; dado lido do JSON-LD `JobPosting` que o próprio site publica, não do resto do HTML (achado 1); no máximo uma requisição por segundo; **só na coleta, nunca no request do usuário**. A restrição 2 não muda: LinkedIn autenticado continua proibido. Primeiro portal adotado: **InfoJobs** (achado 37). Hays (robots proíbe) e Catho (anti-bot) ficam fora por essas condições, não por escolha.
 
+   **Exceção decidida pelo Pedro em 22/10 (achado 39):** quando a página não publica `JobPosting`, vale ler o HTML **do bloco da própria vaga**, delimitado por um marcador fixo antes da lateral de outras vagas (no InfoJobs, `id="divSimilarVacancies"`). Sem o marcador, a página é recusada. A data lida assim só tem precisão de dia e é gravada com origem `pagina_html`, nunca `metatag`.
+
 ---
 
 ## A PSE morreu — 22/08/2026
@@ -626,6 +628,25 @@ Não-tech: a 1ª página inteira está na janela, então o volume real é maior.
 
 **Greenhouse × `jobs`:** das 294 linhas, só 2 são de empresas que estão no Greenhouse (Stone e RD Station, ambas via LinkedIn Jobs), e nenhuma das duas vagas existe hoje lá. Aponta para empresas novas, não eco — conta fraca: `jobs` é de agosto, de 6 cargos, e 28% do LinkedIn sem empresa.
 
+**39. As vagas "em Todo Brasil" do InfoJobs: metade é remota de verdade, e a outra metade não tem cidade (22/10).** Elas não trazem `JobPosting` — o InfoJobs omite o bloco quando a vaga não tem endereço —, e o coletor as descartava todas: 55 de 147 páginas em Vendedor/BH.
+
+Amostra de 21, de 8 buscas, lendo o campo de modelo da própria vaga:
+
+| modelo | vagas | destino |
+|---|---|---|
+| Home office | 12 | ✅ remoto do Brasil, entra em qualquer feed |
+| Presencial | 8 | ❌ "Operador de Loja Carrefour - Uberlândia": cidade só no título, sem feed onde caber |
+| selo PCD lido como modelo | 1 | erro de parser, corrigido — o modelo sai do ÍCONE (`#user-home`, `#buildings`), não do primeiro campo do estilo |
+
+- **"Todo Brasil" não é sinônimo de remoto.** Só o campo de modelo separa.
+- **A qualidade das remotas surpreendeu para cima.** Só 3 de 12 eram comissão pura, todas da mesma empresa. **7 de 12 eram tech** (Back-End, Front-end Sênior, Full Stack, QA, SEO) — o InfoJobs quase não tem tech na busca por cidade, mas tem no balde remoto, que é justamente onde o produto é mais fraco.
+- **Tipo de contrato vem em 21 de 21** ("Efetivo – CLT", "Prestador de Serviços (PJ)"). Virou `jobs.tipo_contrato` (migration 0009) e etiqueta no cartão — a pessoa vê "PJ" antes de clicar, em vez de o parser decidir o que é vaga de verdade.
+- **Data sem ano nem hora** ("Hoje", "Ontem", "20 out"). Ano inferido para trás quando cairia no futuro; meio-dia de Brasília.
+
+**Em produção, coleta seca de 22/10:** Vendedor/BH foi de **36 para 65** aproveitadas — 34 remotas lidas do bloco, 13 presenciais "Todo Brasil" contadas e descartadas, `semJobPosting` de 55 para 1. Desenvolvedor/SP: 2 remotas em 7.
+
+**O que fica de olho:** 34 remotas de Vendedor entram no feed de Vendedor de TODA cidade. Se o balde for dominado por comissão/PJ, ele suja todos os feeds de uma vez. Amostra de 21 não decide isso.
+
 ---
 
 ## As dez travas — decididas em 28/08/2026
@@ -696,6 +717,14 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 - **InfoJobs em produção (20/10).** Restrição 3 ampliada; `src/fontes/infojobs.ts` + `scripts/coletar-infojobs.ts` (`npm run infojobs`), gravando pela mesma rota da Gupy (`gupy-cache.ts`, agora parametrizada por fonte). Só na coleta. **Falta aplicar `migrations/0008_infojobs.sql`** — sem ela o `check` de `fonte` recusa a gravação. Michael Page e Robert Half passam nas mesmas condições e não foram medidos.
   - Primeira coleta seca, Auxiliar Administrativo/SP: 278 páginas, **43 servem**; 145 outra família, 49 fora da janela, **39 cortadas por local**. Hipótese não verificada: a busca do InfoJobs por "São Paulo" inclui a região metropolitana, e o portão corta Osasco, Guarulhos e afins — seria a trava 6 cobrando. Conferir as 39 antes de mexer. Medição do achado 37 dizia 94 porque não aplicava o portão de local.
   - Sem cron. Rodar à mão até haver uso.
+- **Revisão da janela de 7 dias, 21/10 — recomendações guardadas, nada implementado.**
+  - O filtro de 7 dias POR FONTE está bom onde há data: Gupy e InfoJobs ordenam por publicação (verificado em 21/10, inclusive no endpoint novo da Gupy). LinkedIn Jobs e posts não têm data — `qdr:w` filtra índice, não publicação (achado 19).
+  - **O que quebra a janela é a falta de coleta contínua.** Em 21/10 o feed servia 79 de 373 linhas: todo o resto expirou porque nada coleta todo dia.
+  - **Recomendado, em ordem:** (1) agendamento diário no Actions para Gupy + InfoJobs nos pares que já tiveram demanda; (2) pré-carga antes de abrir ao público — cargos mais buscados × capitais, ~50 pares cabem numa madrugada; (3) Greenhouse coletado inteiro por empresa (cobre tech em qualquer busca, ~50 requisições/dia); (4) depois, par novo dispara coleta do InfoJobs em segundo plano, com aviso na tela.
+  - **Decidido pelo Pedro em 22/10: o LinkedIn Jobs continua no feed**, mesmo sem data real (janela efetiva de até 14 dias para ele, dita no cartão como "vista em").
+  - ~~Vagas "em Todo Brasil" do InfoJobs~~ — **decidido em 22/10: entram, só as de home office** (achado 39). **Aplicar `migrations/0009_contrato_e_pagina_html.sql` antes de rodar o `web/`** — o feed passou a ler `tipo_contrato`, e sem a coluna a consulta falha.
+  - **Bug corrigido em 21/10 (`f6985be`):** busca do InfoJobs sem UF virava estadual (`sao-paulo`) ou nacional (`belo-horizonte`). As "39 cortadas por local" eram o estado inteiro, não região metropolitana.
+  - **Buraco que nenhuma das quatro fecha:** tech fora das capitais.
 - **Teste de saúde das fontes** (achado 38). A Gupy ficou em 404 por semanas sem ninguém saber. Uma consulta conhecida por fonte, rodando sozinha, falhando alto.
 - **Trava 4 em xeque** (achado 38): medir ritmo e retentativa na página pública do LinkedIn antes de construir em cima dela.
 - **Greenhouse como fonte** (achado 36): descobrir slugs brasileiros por SERP. A sobreposição com `jobs` saiu quase nula, com amostra fraca.

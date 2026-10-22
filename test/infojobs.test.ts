@@ -1,7 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  blocoDaVaga,
   buscarNoInfojobs,
+  dataRelativa,
+  modeloDoBloco,
+  vagaRemotaDoBloco,
   dataDoInfojobs,
   jobPostingDaPagina,
   linksDaListagem,
@@ -144,6 +148,86 @@ test('para depois de 5 vagas seguidas fora da janela, sem abrir a página seguin
   const r = await buscarNoInfojobs({ cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0, buscar });
   assert.equal(r.foraDaJanela, 5);
   assert.equal(listagensPedidas, 1);
+});
+
+/**
+ * Página "em Todo Brasil" sem JobPosting, no formato real (22/10/2026): bloco da
+ * vaga, depois `divSimilarVacancies` com OUTRA vaga na lateral.
+ */
+function paginaTodoBrasil(opc: { icone?: string; data?: string; extraIcone?: string; semSeparador?: boolean } = {}): string {
+  const icone = opc.icone ?? 'user-home';
+  const lateral = opc.semSeparador
+    ? ''
+    : `<div id="divSimilarVacancies" class="col"><h3>Outras vagas similares</h3>
+       <div class="text-medium small font-weight-bold mb-4"><svg class="icon icon-buildings"><use xlink:href="#buildings" /></svg> Presencial</div>
+       <div class="caption text-medium text-nowrap text-right mb-8"> 1 jan </div>
+       <h2 class="font-weight-bolder mb-4 js_vacancyHeaderTitle">VAGA DA LATERAL</h2></div>`;
+  return `<html><body>
+    <h2 class="font-weight-bolder mb-4 js_vacancyHeaderTitle">Desenvolvedor(A) Back-End</h2>
+    <a href="https://www.infojobs.com.br/empresa-x.aspx" title="EMPREGGA TECNOLOGIA Trabalhe Conosco">EMPREGGA</a>
+    <div class="text-medium mb-4"> Todo Brasil </div>
+    ${opc.extraIcone ?? ''}
+    <div class="text-medium small font-weight-bold mb-4"> <svg class="icon icon-${icone} icon-size-14"> <use xlink:href="#${icone}" /> </svg> ${icone === 'user-home' ? 'Home office' : 'Presencial'} </div>
+    <div class="caption text-medium text-nowrap text-right mb-8"> ${opc.data ?? 'Ontem'} </div>
+    <p class="mb-16 text-break white-space-pre-line">Vaga 100% remota &amp; PJ. Node.js e Postgres.</p>
+    <p><span class="font-weight-bold">Tipo de contrato e Jornada:</span> Prestador de Servi&#xE7;os (PJ) - Per&#xED;odo Integral</p>
+    ${lateral}
+  </body></html>`;
+}
+const URL_REMOTA = 'https://www.infojobs.com.br/vaga-de-desenvolvedora-back-end-em-__12136000.aspx';
+
+test('data do bloco: Hoje, Ontem e "20 out", com o ano inferido para trás', () => {
+  const agora = new Date('2026-10-22T18:00:00Z'); // 15h em Brasília
+  assert.equal(dataRelativa('Hoje', agora), '2026-10-22T15:00:00.000Z');
+  assert.equal(dataRelativa('Ontem', agora), '2026-10-21T15:00:00.000Z');
+  assert.equal(dataRelativa('20 out', agora), '2026-10-20T15:00:00.000Z');
+  // Lido em 2 de janeiro, "28 dez" é do ano anterior, não do futuro.
+  assert.equal(dataRelativa('28 dez', new Date('2027-01-02T12:00:00Z')), '2026-12-28T15:00:00.000Z');
+  assert.equal(dataRelativa('há pouco', agora), null);
+});
+
+test('"Todo Brasil" com home office vira vaga remota, lida só do bloco da vaga', () => {
+  const bloco = blocoDaVaga(paginaTodoBrasil())!;
+  const v = vagaRemotaDoBloco(bloco, URL_REMOTA, AGORA)!;
+  assert.equal(v.cargo, 'Desenvolvedor(A) Back-End');
+  assert.equal(v.empresa, 'EMPREGGA TECNOLOGIA');
+  assert.equal(v.modelo, 'remoto');
+  assert.equal(v.localizacao, 'Todo Brasil');
+  assert.equal(v.tipoContrato, 'Prestador de Serviços (PJ) - Período Integral');
+  assert.equal(v.origemData, 'pagina_html');
+  assert.equal(v.descricao, 'Vaga 100% remota & PJ. Node.js e Postgres.');
+  // Nada da lateral entra: nem o título, nem a data "1 jan", nem o "Presencial".
+  assert.doesNotMatch(bloco, /VAGA DA LATERAL/);
+});
+
+test('"Todo Brasil" presencial fica fora — não tem cidade para cair em feed nenhum', () => {
+  const bloco = blocoDaVaga(paginaTodoBrasil({ icone: 'buildings' }))!;
+  assert.equal(modeloDoBloco(bloco), 'presencial');
+  assert.equal(vagaRemotaDoBloco(bloco, URL_REMOTA, AGORA), null);
+});
+
+test('o selo de PCD não é confundido com o modelo de trabalho', () => {
+  const pcd = '<div class="text-medium small font-weight-bold mb-4"><svg class="icon icon-disability"><use xlink:href="#disability" /></svg> PCD</div>';
+  const bloco = blocoDaVaga(paginaTodoBrasil({ extraIcone: pcd }))!;
+  assert.equal(modeloDoBloco(bloco), 'remoto');
+});
+
+test('sem o marcador da lateral a página é recusada — não dá para saber onde a vaga acaba', () => {
+  assert.equal(blocoDaVaga(paginaTodoBrasil({ semSeparador: true })), null);
+});
+
+test('a busca aproveita a remota sem JobPosting e conta a presencial "Todo Brasil" à parte', async () => {
+  const r = await buscarNoInfojobs({
+    cargo: 'Desenvolvedor Back-End', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0,
+    buscar: fetchFalso({ 1: listagem([1, 2]) }, {
+      '1': paginaTodoBrasil(),
+      '2': paginaTodoBrasil({ icone: 'buildings' }),
+    }),
+  });
+  assert.deepEqual(r.vagas.map((v) => v.fonteId), ['1']);
+  assert.equal(r.remotasDoBloco, 1);
+  assert.equal(r.todoBrasilPresencial, 1);
+  assert.equal(r.semJobPosting, 0);
 });
 
 test('fonte caída não é fonte vazia', async () => {

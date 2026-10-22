@@ -38,6 +38,7 @@ export interface Vaga {
   data_referencia: string;
   local_avaliado: boolean;
   confianca: number | null;
+  tipo_contrato: string | null;
 }
 
 export interface ResultadoDoFeed {

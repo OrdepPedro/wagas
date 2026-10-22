@@ -92,6 +92,10 @@ export interface VagaDaGupy {
   dataPublicacao: string;
   descricao: string | null;
   bruto: unknown;
+  /** Como a fonte declara o contrato. Só o InfoJobs informa hoje. */
+  tipoContrato?: string | null;
+  /** Sobrepõe a origem de data da fonte, quando a vaga veio por outro caminho. */
+  origemData?: 'pagina_html';
 }
 
 const MODELOS: Record<string, Modelo> = {

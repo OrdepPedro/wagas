@@ -146,6 +146,120 @@ export function normalizarJobPosting(jp: Record<string, any>, url: string): Vaga
   };
 }
 
+// ---------------------------------------------------------------------------
+// Bloco da vaga no HTML — só quando não há `JobPosting` (achado 39)
+// ---------------------------------------------------------------------------
+
+/**
+ * O HTML da vaga até o início das "Outras vagas similares". Tudo depois disso
+ * é a lateral com OUTRAS vagas — ler de lá é o achado 1 neste site. Sem o
+ * marcador, não há como saber onde a vaga termina, e a página é recusada.
+ */
+export function blocoDaVaga(html: string): string | null {
+  const corte = html.indexOf('id="divSimilarVacancies"');
+  return corte > 0 ? html.slice(0, corte) : null;
+}
+
+function textoHtml(s: string): string {
+  return s
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCodePoint(parseInt(h, 16)))
+    .replace(/&#(\d+);/g, (_, d) => String.fromCodePoint(Number(d)))
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/** "Efetivo – CLT - Período Integral", "Prestador de Serviços (PJ) - …". */
+export function contratoDoBloco(bloco: string): string | null {
+  const m = /Tipo de contrato e Jornada:\s*<\/span>([^<]+)</.exec(bloco);
+  return m ? textoHtml(m[1]!) || null : null;
+}
+
+/**
+ * Modelo pelo ícone do campo, não pelo texto: o mesmo `div` de estilo também
+ * carrega o selo de vaga PCD, e ler "o primeiro ícone" pegou esse selo na
+ * medição de 22/10.
+ */
+export function modeloDoBloco(bloco: string): 'remoto' | 'presencial' | 'hibrido' | null {
+  if (/xlink:href="#user-home"/.test(bloco)) return 'remoto';
+  if (/xlink:href="#[a-z-]*hibrid[a-z-]*"/.test(bloco) || />\s*H[ií]brido\s*</.test(bloco)) return 'hibrido';
+  if (/xlink:href="#buildings"/.test(bloco)) return 'presencial';
+  return null;
+}
+
+const MESES: Record<string, number> = {
+  jan: 0, fev: 1, mar: 2, abr: 3, mai: 4, jun: 5, jul: 6, ago: 7, set: 8, out: 9, nov: 10, dez: 11,
+};
+
+/**
+ * "Hoje", "Ontem" e "20 out" viram data. Precisão de DIA, sem hora — por isso
+ * a origem gravada é `pagina_html`, não `metatag`. Sem ano: a data cai no ano
+ * corrente, e se isso a puser no futuro (ler "28 dez" em 2 de janeiro), é do
+ * ano anterior. Meio-dia de Brasília, para o dia não escorregar com o fuso.
+ */
+export function dataRelativa(texto: string, agora: Date): string | null {
+  const t = texto.trim().toLowerCase();
+  const brt = new Date(agora.getTime() - 3 * 3600 * 1000); // relógio de Brasília
+  let ano = brt.getUTCFullYear();
+  let mes = brt.getUTCMonth();
+  let dia = brt.getUTCDate();
+
+  if (t === 'ontem') {
+    const d = new Date(Date.UTC(ano, mes, dia - 1));
+    ano = d.getUTCFullYear(); mes = d.getUTCMonth(); dia = d.getUTCDate();
+  } else if (t !== 'hoje') {
+    const m = /^(\d{1,2})\s+([a-zç]{3})/.exec(t);
+    const mesLido = m ? MESES[m[2]!] : undefined;
+    if (!m || mesLido === undefined) return null;
+    dia = Number(m[1]);
+    mes = mesLido;
+    if (Date.UTC(ano, mes, dia) > Date.UTC(brt.getUTCFullYear(), brt.getUTCMonth(), brt.getUTCDate())) ano--;
+  }
+  const ms = Date.UTC(ano, mes, dia, 15); // 12h em Brasília
+  return new Date(Math.min(ms, agora.getTime())).toISOString();
+}
+
+/**
+ * Vaga remota "em Todo Brasil", lida do bloco da vaga. **Só entra com o ícone
+ * de home office**: "Todo Brasil" também marca vaga presencial sem cidade
+ * cadastrada ("Operador de Loja Carrefour - Uberlândia"), e essa não tem feed
+ * onde caber. Medido em 22/10: 12 home office, 8 presenciais em 21.
+ */
+export function vagaRemotaDoBloco(bloco: string, url: string, agora: Date): VagaDoInfojobs | null {
+  if (modeloDoBloco(bloco) !== 'remoto') return null;
+
+  const titulo = /js_vacancyHeaderTitle">([\s\S]*?)<\/h2>/.exec(bloco);
+  const data = /caption text-medium text-nowrap text-right mb-8">\s*([^<]+?)\s*</.exec(bloco);
+  const fonteId = /__(\d+)\.aspx/i.exec(url)?.[1];
+  const cargo = titulo ? textoHtml(titulo[1]!) : '';
+  const dataPublicacao = data ? dataRelativa(data[1]!, agora) : null;
+  if (!cargo || !dataPublicacao || !fonteId) return null;
+
+  const empresa =
+    /title="([^"]+?) Trabalhe Conosco"/.exec(bloco)?.[1] ??
+    (/Empresa confidencial/i.test(bloco) ? 'Empresa confidencial' : null);
+  const descricao = /<p class="[^"]*white-space-pre-line[^"]*">([\s\S]*?)<\/p>/.exec(bloco);
+
+  return {
+    fonteId,
+    url,
+    cargo,
+    empresa: empresa ? textoHtml(empresa) : 'não identificada',
+    localizacao: 'Todo Brasil',
+    cidadeSlug: null,
+    uf: null,
+    modelo: 'remoto',
+    dataPublicacao,
+    descricao: descricao ? textoHtml(descricao[1]!) || null : null,
+    bruto: { origem: 'bloco_html', titulo: cargo, data: data![1] },
+    tipoContrato: contratoDoBloco(bloco),
+    origemData: 'pagina_html',
+  };
+}
+
 export interface PedidoNoInfojobs {
   cargo: string;
   /** Ausente = Brasil inteiro. */
@@ -167,8 +281,12 @@ export interface RespostaDoInfojobs {
   vistos: number;
   foraDaJanela: number;
   outraFamilia: number;
-  /** Página sem `JobPosting` legível — ausência de dado ou layout novo. */
+  /** Página sem `JobPosting` e sem vaga remota legível no bloco — descartada. */
   semJobPosting: number;
+  /** Vagas "em Todo Brasil" com home office, lidas do bloco da vaga (achado 39). */
+  remotasDoBloco: number;
+  /** "Todo Brasil" presencial: sem cidade, não cabe em feed nenhum. */
+  todoBrasilPresencial: number;
   /** Cidade diferente e não remota. */
   localNaoServe: number;
   /** A listagem não respondeu. Distinto de "não tem vaga" (achado 24). */
@@ -194,6 +312,8 @@ export async function buscarNoInfojobs(pedido: PedidoNoInfojobs): Promise<Respos
     foraDaJanela: 0,
     outraFamilia: 0,
     semJobPosting: 0,
+    remotasDoBloco: 0,
+    todoBrasilPresencial: 0,
     localNaoServe: 0,
     falhou: false,
   };
@@ -231,9 +351,19 @@ export async function buscarNoInfojobs(pedido: PedidoNoInfojobs): Promise<Respos
       r.vistos++;
 
       const jp = jobPostingDaPagina(pagVaga);
-      const vaga = jp ? normalizarJobPosting(jp, url) : null;
+      const bloco = blocoDaVaga(pagVaga);
+      let vaga = jp ? normalizarJobPosting(jp, url) : null;
+      if (vaga) {
+        // O contrato não está no JobPosting; vem do bloco da própria vaga.
+        if (bloco) vaga.tipoContrato = contratoDoBloco(bloco);
+      } else if (bloco) {
+        // Sem JobPosting: o InfoJobs omite o bloco para vaga sem endereço.
+        vaga = vagaRemotaDoBloco(bloco, url, agora);
+        if (vaga) r.remotasDoBloco++;
+        else if (modeloDoBloco(bloco) === 'presencial') r.todoBrasilPresencial++;
+      }
       if (!vaga) {
-        r.semJobPosting++;
+        if (!jp && !(bloco && modeloDoBloco(bloco) === 'presencial')) r.semJobPosting++;
         continue;
       }
 
@@ -268,6 +398,8 @@ export async function buscarNoInfojobs(pedido: PedidoNoInfojobs): Promise<Respos
     foraDaJanela: r.foraDaJanela,
     outraFamilia: r.outraFamilia,
     semJobPosting: r.semJobPosting,
+    remotasDoBloco: r.remotasDoBloco,
+    todoBrasilPresencial: r.todoBrasilPresencial,
     localNaoServe: r.localNaoServe,
     falhou: r.falhou,
   });

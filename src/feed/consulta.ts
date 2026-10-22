@@ -73,6 +73,7 @@ export const COLUNAS_DO_FEED = [
   'data_referencia',
   'local_avaliado',
   'confianca',
+  'tipo_contrato',
 ].join(',');
 
 /**
