@@ -1,0 +1,65 @@
+name: coleta-diaria
+
+# Gupy + InfoJobs, todo dia, para a pré-carga (src/config/pre-carga.ts) e para
+# os pares que alguém buscou nos últimos 30 dias. Sem custo: as duas fontes são
+# gratuitas. A Serper fica de fora — o crédito é finito (trava 9).
+#
+# A janela de 7 dias depende disto. Sem coleta contínua, em 21/10 o feed
+# servia 79 de 373 linhas: o resto tinha expirado.
+#
+# Se uma fonte falhar na maioria das consultas, o job falha e o GitHub manda
+# e-mail. É o teste de saúde que faltou quando a Gupy ficou em 404 (achado 38).
+on:
+  schedule:
+    - cron: '0 7 * * *'   # 04h de Brasília: o InfoJobs leva horas, e termina antes do dia começar
+  workflow_dispatch:
+    inputs:
+      seco:
+        description: 'Monta a lista e mede, sem gravar'
+        type: boolean
+        default: false
+      so_gupy:
+        description: 'Pula o InfoJobs (rápido)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: coleta-diaria
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    # Teto do Actions é 6h. O script para o InfoJobs em ORCAMENTO_MINUTOS e
+    # sobra margem para a Gupy, a gravação e o encerramento.
+    timeout-minutes: 340
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Testes
+        run: npm test
+
+      - name: Coletar
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ORCAMENTO_MINUTOS: '300'
+          LOG_LEVEL: warn
+          # Entradas do disparo manual entram por env, nunca interpoladas no
+          # corpo do script — ${{ }} dentro de `run` é injeção de comando.
+          SECO: ${{ inputs.seco }}
+          SO_GUPY: ${{ inputs.so_gupy }}
+        run: |
+          set -euo pipefail
+          args=()
+          if [ "${SECO:-false}" = "true" ]; then args+=(--seco); fi
+          if [ "${SO_GUPY:-false}" = "true" ]; then args+=(--so-gupy); fi
+          node scripts/coleta-diaria.ts ${args[@]+"${args[@]}"}
