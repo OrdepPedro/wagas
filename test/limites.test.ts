@@ -15,6 +15,12 @@ test('voltar ao mesmo feed não consome o teto', () => {
   assert.deepEqual(r, { usadas: 1, estourou: false });
 });
 
+test('a busca atual já conta, mesmo antes de ser gravada', () => {
+  assert.deepEqual(contarPares([], chaveDoPar('Vendedor', 'bh'), 3), { usadas: 1, estourou: false });
+  const cheio = [linha('A', 'sp'), linha('B', 'sp'), linha('C', 'sp')];
+  assert.deepEqual(contarPares(cheio, chaveDoPar('D', 'sp'), 3), { usadas: 3, estourou: true });
+});
+
 test('par novo depois do teto estoura', () => {
   const hoje = [linha('A', 'sp'), linha('B', 'sp'), linha('C', 'sp')];
   assert.equal(contarPares(hoje, chaveDoPar('D', 'sp'), 3).estourou, true);
@@ -28,4 +34,5 @@ test('par já buscado hoje nunca estoura, mesmo com o teto cheio', () => {
 test('mesma função em outra cidade é outro par', () => {
   const hoje = [linha('A', 'sp'), linha('A', 'rio-de-janeiro')];
   assert.equal(contarPares(hoje, chaveDoPar('A', 'sp'), 3).usadas, 2);
+  assert.equal(contarPares(hoje, chaveDoPar('A', 'bh'), 3).usadas, 3);
 });
