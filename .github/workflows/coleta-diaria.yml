@@ -47,6 +47,15 @@ jobs:
       - name: Testes
         run: npm test
 
+      # LGPD: visitante anônimo sem acesso há 30 dias é apagado (migration 0010).
+      # Antes da coleta, que leva horas; falhar aqui não derruba a coleta.
+      - name: Limpar visitantes
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: node scripts/limpar-visitantes.ts
+
       - name: Coletar
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

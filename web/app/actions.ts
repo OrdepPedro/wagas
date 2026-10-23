@@ -77,6 +77,11 @@ export async function definirBusca(
   redirect('/');
 }
 
+/** Atalho das buscas salvas do visitante: mesma ação, sem estado de formulário. */
+export async function voltarParaBusca(form: FormData): Promise<void> {
+  await definirBusca({}, form);
+}
+
 export async function sair(): Promise<void> {
   const supabase = await clienteDoServidor();
   await supabase.auth.signOut();

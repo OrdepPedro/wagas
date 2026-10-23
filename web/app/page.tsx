@@ -1,9 +1,11 @@
 import { carregarFeed, JANELA_DIAS, type Vaga } from '../lib/feed.ts';
 import { registrarBusca } from '../lib/feed.ts';
-import { estadoDoLimite } from '../lib/limites.ts';
+import { estadoDoLimite, LIMITE_GRATUITO, type EstadoDoLimite } from '../lib/limites.ts';
 import { lerPerfil } from '../lib/perfil.ts';
+import { chaveDoPar } from '../lib/pares-do-dia.ts';
+import { slugCidade } from '../../src/normalize/local.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
-import { sair } from './actions.ts';
+import { sair, voltarParaBusca } from './actions.ts';
 import { FormularioDeBusca, FormularioDeEntrada } from './formularios.tsx';
 
 export const dynamic = 'force-dynamic';
@@ -127,22 +129,33 @@ function FeedVazio({
   );
 }
 
+const formatarDia = (d: Date) =>
+  d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: 'America/Sao_Paulo' });
+
 /**
- * Teto diário estourado.
+ * Teto estourado.
  *
  * Não some com o feed: o acervo que a pessoa já tem continua visível. O que o
  * teto impede é DISPARAR trabalho novo — varredura na fonte externa e, mais
  * adiante, coleta paga. Esconder o que já existe seria punir sem motivo.
  */
-function LimiteEstourado({ teto, visitante }: { teto: number; visitante: boolean }) {
+function LimiteEstourado({ limite }: { limite: EstadoDoLimite }) {
+  const { teto, visitante, vagas } = limite;
+  const proxima = vagas
+    .map((v) => v.liberaEm)
+    .filter((d): d is Date => d !== null)
+    .sort((a, b) => a.getTime() - b.getTime())[0];
+
   return (
     <div className="caixa aviso" style={{ marginBottom: 24 }}>
       <p>
-        Você já fez {teto} {teto === 1 ? 'busca' : 'buscas'} hoje.
+        {visitante
+          ? `Você já usou as ${teto} buscas de visitante. Estas vagas são só do que já estava no nosso acervo.`
+          : `Você já fez ${teto} ${teto === 1 ? 'busca' : 'buscas'} hoje.`}
       </p>
       <p className="fraco" style={{ margin: 0 }}>
         {visitante
-          ? 'Entrar com e-mail aumenta o limite. O contador zera à meia-noite.'
+          ? `${proxima ? `Uma busca libera em ${formatarDia(proxima)}. ` : ''}Entrar com e-mail libera ${LIMITE_GRATUITO} buscas por dia.`
           : 'O contador zera à meia-noite. Recarregar o feed não conta — só trocar de cargo ou cidade.'}
       </p>
       {visitante ? (
@@ -151,6 +164,51 @@ function LimiteEstourado({ teto, visitante }: { teto: number; visitante: boolean
         </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * As buscas salvas do visitante, como atalho. Voltar a uma delas não gasta
+ * nada — é o que faz "2 buscas por 7 dias" ser uma oferta e não uma prisão.
+ */
+function BuscasSalvas({ limite, cargo, cidade }: { limite: EstadoDoLimite; cargo: string; cidade: string }) {
+  if (!limite.visitante || limite.vagas.length === 0) return null;
+  const atual = chaveDoPar(cargo, slugCidade(cidade));
+
+  return (
+    <div className="salvas">
+      <p className="fraco">
+        Suas buscas salvas ({limite.vagas.length} de {limite.teto}):
+      </p>
+      <ul>
+        {limite.vagas.map((v) => {
+          const eAtual = v.chave === atual;
+          return (
+            <li key={v.chave}>
+              <form action={voltarParaBusca}>
+                <input type="hidden" name="cargo" value={v.cargo} />
+                <input type="hidden" name="cidade" value={v.cidade} />
+                <button type="submit" className={eAtual ? 'salva atual' : 'salva'} disabled={eAtual}>
+                  {v.cargo} · {v.cidade}
+                </button>
+              </form>
+              {v.liberaEm ? <small className="fraco">libera em {formatarDia(v.liberaEm)}</small> : null}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+/** O que guardamos do visitante, dito na tela (LGPD: transparência). */
+function AvisoDePrivacidade() {
+  return (
+    <p className="fraco privacidade">
+      Sem cadastro, guardamos só um identificador anônimo, os cargos e cidades que você buscou e as
+      vagas que você abriu. Se você ficar 30 dias sem voltar, o identificador é apagado e o histórico
+      fica sem ligação com você.
+    </p>
   );
 }
 
@@ -181,7 +239,8 @@ async function Feed({
   if (vagas.length === 0) {
     return (
       <>
-        {limite.estourou ? <LimiteEstourado teto={limite.teto} visitante={visitante} /> : null}
+        <BuscasSalvas limite={limite} cargo={cargo} cidade={cidade} />
+        {limite.estourou ? <LimiteEstourado limite={limite} /> : null}
         <FeedVazio cargo={cargo} cidade={cidade} soRemoto={soRemoto} />
       </>
     );
@@ -189,7 +248,8 @@ async function Feed({
 
   return (
     <>
-      {limite.estourou ? <LimiteEstourado teto={limite.teto} visitante={visitante} /> : null}
+      <BuscasSalvas limite={limite} cargo={cargo} cidade={cidade} />
+      {limite.estourou ? <LimiteEstourado limite={limite} /> : null}
       <p className="resumo">
         {vagas.length} {vagas.length === 1 ? 'vaga' : 'vagas'} —{' '}
         {soRemoto
@@ -205,8 +265,10 @@ async function Feed({
       <div className="rodape">
         <p className="limite">
           {limite.restantes} de {limite.teto}{' '}
-          {limite.teto === 1 ? 'busca restante' : 'buscas restantes'} hoje.
+          {limite.teto === 1 ? 'busca restante' : 'buscas restantes'}
+          {visitante ? ' — cada busca de visitante vale 7 dias.' : ' hoje.'}
         </p>
+        {visitante ? <AvisoDePrivacidade /> : null}
       </div>
     </>
   );
