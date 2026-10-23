@@ -21,7 +21,8 @@ function casaNoPostgres(cargoBuscado: string, tituloDaVaga: string): boolean {
   const classesDaVaga = classesDeFamilia(tituloDaVaga);
 
   const contem = dominio.every((t) => tokens.has(t)); // familia_tokens @> dominio
-  const cruza = classes.length === 0 || classesDaVaga.length === 0 // familia_classes && classes
+  const cruza = classes.length === 0 // familia_classes && classes
+    || (classesDaVaga.length === 0 && dominio.length > 0)
     || classesDaVaga.some((c) => classes.includes(c));
   return contem && cruza;
 }
@@ -40,6 +41,13 @@ test('o filtro do Postgres decide igual ao casamento em TypeScript', () => {
     ['Enfermeiro', 'Enfermeiro III - Internação'],
     ['Enfermeiro', 'Auxiliar Administrativo'],
     ['Desenvolvedor Front-end', 'Desenvolvedor Front-end React - Pleno'],
+    // Busca só de função: a função é a única âncora.
+    ['Desenvolvedor', 'Zelador'],
+    ['Desenvolvedor', 'Recepcionista'],
+    ['Desenvolvedor', 'Agente Comercial - Home Office'],
+    ['Desenvolvedor', 'Analista Desenvolvedor Java PL'],
+    ['Desenvolvedor', 'Pessoa Desenvolvedora .NET Especialista I'],
+    ['Analista', 'Barista'],
   ];
 
   for (const [busca, titulo] of casos) {
