@@ -37,11 +37,11 @@ const db = new SupabaseRest(config.supabaseUrl, config.supabaseServiceKey);
 const agora = new Date();
 
 const [buscas, ufs] = await Promise.all([
-  db.select<BuscaRegistrada>(
+  db.selectTodos<BuscaRegistrada>(
     'buscas',
-    `select=user_id,cargo,cidade,cidade_slug,criado_em&criado_em=gte.${new Date(agora.getTime() - 30 * 864e5).toISOString()}&limit=10000`,
+    `select=user_id,cargo,cidade,cidade_slug,criado_em&criado_em=gte.${new Date(agora.getTime() - 30 * 864e5).toISOString()}&order=id`,
   ),
-  db.select<{ cidade_slug: string | null; uf: string | null }>('jobs', 'select=cidade_slug,uf&uf=not.is.null&limit=10000'),
+  db.selectTodos<{ cidade_slug: string | null; uf: string | null }>('jobs', 'select=cidade_slug,uf&uf=not.is.null&order=id'),
 ]);
 
 const pares = montarPares({

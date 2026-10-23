@@ -91,6 +91,22 @@ export class SupabaseRest {
     return Array.isArray(dados) ? (dados as T[]) : [];
   }
 
+  /**
+   * Todas as linhas, em páginas. O PostgREST do Supabase devolve no máximo
+   * 1.000 linhas por consulta e IGNORA um `limit` maior, em silêncio. Foi isso
+   * que fez uma medição de 23/10 ler 1.000 de 1.645 linhas e reportar 65% de
+   * descarte onde havia 31%. `query` não deve trazer `limit` nem `offset`, e
+   * deve trazer `order`, ou a paginação pode repetir ou pular linhas.
+   */
+  async selectTodos<T>(tabela: string, query: string, pagina = 1000): Promise<T[]> {
+    const saida: T[] = [];
+    for (let offset = 0; ; offset += pagina) {
+      const lote = await this.select<T>(tabela, `${query}&limit=${pagina}&offset=${offset}`);
+      saida.push(...lote);
+      if (lote.length < pagina) return saida;
+    }
+  }
+
   async insert<T>(
     tabela: string,
     linhas: Array<Record<string, unknown>>,
