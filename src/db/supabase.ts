@@ -52,13 +52,22 @@ export class SupabaseRest {
     };
   }
 
-  async #requisicao(caminho: string, init: RequestInit): Promise<unknown> {
+  async #requisicao(caminho: string, init: RequestInit, tentativa = 1): Promise<unknown> {
     const resposta = await this.#fetch(`${this.#url}${caminho}`, {
       ...init,
       signal: AbortSignal.timeout(30_000),
     });
 
     const texto = await resposta.text();
+    // "JWT issued at future": o token que o Supabase gera a partir da chave
+    // `sb_secret_` saiu com relógio alguns segundos adiantado. Derrubou a
+    // primeira execução da coleta diária no Actions (22/10) e passou sozinho na
+    // seguinte. Esperar e repetir resolve; qualquer outro 401 é chave errada e
+    // falha na hora.
+    if (resposta.status === 401 && texto.includes('PGRST303') && tentativa < 3) {
+      await new Promise((ok) => setTimeout(ok, 3000 * tentativa));
+      return this.#requisicao(caminho, init, tentativa + 1);
+    }
     if (!resposta.ok) {
       throw new SupabaseErro(
         `Supabase ${resposta.status} em ${caminho}: ${texto.slice(0, 400)}`,
