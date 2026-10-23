@@ -7,6 +7,7 @@ import { slugCidade } from '../../src/normalize/local.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
 import { sair, voltarParaBusca } from './actions.ts';
 import { FormularioDeBusca, FormularioDeEntrada } from './formularios.tsx';
+import { Landing } from './landing.tsx';
 
 export const dynamic = 'force-dynamic';
 
@@ -277,41 +278,13 @@ async function Feed({
 export default async function Pagina() {
   const usuario = await usuarioAtual();
 
-  if (!usuario) {
-    return (
-      <>
-        <div className="cabecalho">
-          <div>
-            <h1>wagas</h1>
-            <p className="fraco" style={{ margin: 0 }}>
-              Vagas dos últimos {JANELA_DIAS} dias para o seu cargo e a sua cidade — inclusive as
-              que só existem como post de recrutador.
-            </p>
-          </div>
-        </div>
-        <FormularioDeEntrada />
-      </>
-    );
-  }
+  // Sem sessão só acontece se os logins anônimos estiverem desligados no
+  // Supabase: aí a landing pede e-mail no lugar da busca.
+  if (!usuario) return <Landing formulario={<FormularioDeEntrada />} />;
 
   const perfil = await lerPerfil(usuario.id);
 
-  if (!perfil) {
-    return (
-      <>
-        <div className="cabecalho">
-          <div>
-            <h1>O que você procura?</h1>
-            <p className="fraco" style={{ margin: 0 }}>
-              Cargo e cidade. O feed junta o que é presencial ou híbrido na sua cidade com o que é
-              remoto em todo o Brasil.
-            </p>
-          </div>
-        </div>
-        <FormularioDeBusca />
-      </>
-    );
-  }
+  if (!perfil) return <Landing />;
 
   return (
     <>

@@ -1,28 +1,63 @@
+/*
+ * Paleta: branco e azul. O azul é o acento de ação e de confiança; o resto é
+ * neutro frio, para a vaga ser o que chama atenção.
+ *
+ * Tema: segue o sistema, a menos que a pessoa escolha no botão do cabeçalho —
+ * aí `data-theme` no <html> manda. O escuro é declarado duas vezes de propósito:
+ * uma para o sistema (quando não há escolha clara) e uma para a escolha.
+ */
 :root {
-  --fundo: #fbfbfa;
+  color-scheme: light;
+  --fundo: #f6f8fc;
   --superficie: #ffffff;
-  --borda: #e6e4e0;
-  --texto: #1c1b19;
-  --texto-fraco: #6b6862;
-  --acento: #1a5c3a;
-  --acento-fraco: #eaf3ee;
+  --superficie-2: #eef3fb;
+  --borda: #dfe6f1;
+  --texto: #0f1b2d;
+  --texto-fraco: #5a6a80;
+  --acento: #1d4ed8;
+  --acento-forte: #1e40af;
+  --acento-fraco: #e8efff;
+  --sobre-acento: #ffffff;
   --alerta: #8a5a00;
   --alerta-fraco: #fdf4e3;
+  --sombra: 0 1px 2px rgba(15, 27, 45, 0.04), 0 8px 24px rgba(29, 78, 216, 0.08);
   --raio: 10px;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
-    --fundo: #17181a;
-    --superficie: #1f2124;
-    --borda: #32353a;
-    --texto: #ececea;
-    --texto-fraco: #9b9a96;
-    --acento: #6ecf9d;
-    --acento-fraco: #1c2b23;
-    --alerta: #e0b063;
-    --alerta-fraco: #2b2418;
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --fundo: #0a1120;
+    --superficie: #111b2e;
+    --superficie-2: #0e1a30;
+    --borda: #23324d;
+    --texto: #e7edf7;
+    --texto-fraco: #94a3b8;
+    --acento: #6ea8ff;
+    --acento-forte: #93bdff;
+    --acento-fraco: #15264a;
+    --sobre-acento: #0a1120;
+    --alerta: #e8b765;
+    --alerta-fraco: #2a2416;
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   }
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --fundo: #0a1120;
+  --superficie: #111b2e;
+  --superficie-2: #0e1a30;
+  --borda: #23324d;
+  --texto: #e7edf7;
+  --texto-fraco: #94a3b8;
+  --acento: #6ea8ff;
+  --acento-forte: #93bdff;
+  --acento-fraco: #15264a;
+  --sobre-acento: #0a1120;
+  --alerta: #e8b765;
+  --alerta-fraco: #2a2416;
+  --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 * {
@@ -41,7 +76,13 @@ body {
 main {
   max-width: 720px;
   margin: 0 auto;
-  padding: 32px 20px 80px;
+  padding: 32px 16px 80px;
+}
+
+/* A landing respira mais que o feed. */
+main:has(> .landing) {
+  max-width: 1040px;
+  padding-top: 0;
 }
 
 h1 {
@@ -90,6 +131,11 @@ input[type='email'] {
   border-radius: var(--raio);
 }
 
+input[type='text']:focus,
+input[type='email']:focus {
+  border-color: var(--acento);
+}
+
 input:focus-visible,
 button:focus-visible,
 a:focus-visible {
@@ -104,8 +150,13 @@ button {
   border-radius: var(--raio);
   border: 1px solid transparent;
   background: var(--acento);
-  color: var(--fundo);
+  color: var(--sobre-acento);
   cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--acento-forte);
 }
 
 button:disabled {
@@ -113,7 +164,8 @@ button:disabled {
   cursor: progress;
 }
 
-button.discreto {
+button.discreto,
+button.discreto:hover:not(:disabled) {
   background: none;
   border-color: var(--borda);
   color: var(--texto-fraco);
@@ -303,7 +355,8 @@ ul.vagas {
   margin: 0;
 }
 
-button.salva {
+button.salva,
+button.salva:hover:not(:disabled) {
   font-size: 0.8125rem;
   padding: 4px 12px;
   border-radius: 999px;
@@ -328,4 +381,252 @@ button.salva.atual {
   font-size: 0.75rem;
   margin: 8px 0 0;
   max-width: 60ch;
+}
+
+/* --- cabeçalho --- */
+
+.topo {
+  border-bottom: 1px solid var(--borda);
+  background: var(--superficie);
+}
+
+.topo-interno {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 1.0625rem;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+}
+
+.marca-icone {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--acento);
+  color: var(--sobre-acento);
+  font-size: 0.9375rem;
+  line-height: 1;
+}
+
+button.tema,
+button.tema:hover:not(:disabled) {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  background: transparent;
+  color: var(--texto-fraco);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+}
+
+button.tema:hover:not(:disabled) {
+  color: var(--acento);
+  border-color: var(--acento);
+}
+
+/* --- landing --- */
+
+.landing h2 {
+  font-size: 1.375rem;
+  letter-spacing: -0.015em;
+  margin: 0 0 20px;
+}
+
+.landing h3 {
+  font-size: 1rem;
+  margin: 0 0 4px;
+}
+
+.hero {
+  text-align: center;
+  padding: 56px 0 48px;
+  margin: 0 -16px;
+  padding-left: 16px;
+  padding-right: 16px;
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 0%, var(--acento-fraco), transparent 70%);
+}
+
+.selo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--acento);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 20px;
+}
+
+.ponto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--acento);
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+  margin: 0 auto 16px;
+}
+
+.hero-sub {
+  font-size: 1.0625rem;
+  color: var(--texto-fraco);
+  max-width: 56ch;
+  margin: 0 auto 32px;
+}
+
+.hero-busca {
+  max-width: 820px;
+  margin: 0 auto;
+  text-align: left;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  box-shadow: var(--sombra);
+  padding: 20px;
+}
+
+.form-hero .campos {
+  margin-bottom: 14px;
+}
+
+.form-hero input[type='text'] {
+  padding: 12px 14px;
+  font-size: 1rem;
+}
+
+.form-hero button[type='submit'] {
+  width: 100%;
+  padding: 12px 22px;
+  font-size: 1rem;
+}
+
+.form-hero .opcao {
+  margin-bottom: 14px;
+}
+
+/* No desktop, cargo + cidade + botão numa linha só. */
+@media (min-width: 760px) {
+  .form-hero {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 12px;
+    align-items: end;
+  }
+
+  .form-hero .campos {
+    margin-bottom: 0;
+  }
+
+  .form-hero button[type='submit'] {
+    width: auto;
+    grid-column: 2;
+    grid-row: 1;
+    height: 48px;
+  }
+
+  .form-hero .opcao,
+  .form-hero .erro {
+    grid-column: 1 / -1;
+    margin: 14px 0 0;
+  }
+}
+
+.garantias {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+  font-size: 0.875rem;
+  color: var(--texto-fraco);
+}
+
+.garantias li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.como,
+.confianca {
+  padding: 48px 0 8px;
+  border-top: 1px solid var(--borda);
+}
+
+.como ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 24px;
+}
+
+@media (min-width: 760px) {
+  .como ol,
+  .cartoes {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.como li {
+  display: flex;
+  gap: 14px;
+}
+
+.como p,
+.cartao p {
+  color: var(--texto-fraco);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.passo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--acento-fraco);
+  color: var(--acento);
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.cartoes {
+  display: grid;
+  gap: 16px;
+}
+
+.cartao {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 20px;
 }
