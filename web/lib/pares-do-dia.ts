@@ -1,5 +1,5 @@
 /**
- * A regra do teto diário, sem Next nem Supabase, para a suíte da raiz testar.
+ * A regra do teto de buscas, sem Next nem Supabase, para a suíte da raiz testar.
  */
 
 /** Um par cargo × cidade, na mesma forma em que `buscas` grava. */
@@ -7,26 +7,79 @@ export function chaveDoPar(cargo: string, cidadeSlug: string): string {
   return `${cargo.trim().toLowerCase()}|${cidadeSlug}`;
 }
 
+export interface LinhaDeBusca {
+  cargo: string;
+  cidade: string;
+  cidade_slug: string;
+  criado_em: string;
+}
+
+export interface Vaga {
+  chave: string;
+  cargo: string;
+  cidade: string;
+  inicio: Date;
+  /** Quando a vaga libera. `null` = só na virada do dia (usuário com e-mail). */
+  liberaEm: Date | null;
+}
+
+export interface Ocupacao {
+  /** Vagas ativas agora, a da busca atual incluída quando ela ocupou uma. */
+  vagas: Vaga[];
+  estourou: boolean;
+}
+
 /**
- * Quanto do teto as linhas de hoje consumiram, e se a busca atual estoura.
+ * Quais pares ocupam vaga no teto agora, e se a busca atual cabe.
  *
- * Conta PARES distintos, não linhas. A versão anterior contava linhas, e
- * `buscas` só colapsa repetição de menos de um minuto — então quem voltava ao
- * mesmo feed três vezes numa manhã esgotava o teto do visitante sem trocar de
- * cargo. O que custa trabalho é par novo; o mesmo par já está no cache.
+ * Cada par novo ocupa uma vaga por `duracaoMs` a partir da PRIMEIRA busca dele;
+ * voltar ao mesmo par dentro desse prazo não gasta nada nem estende o prazo.
+ * Visitante: 2 vagas de 7 dias. Com e-mail: 10 vagas que valem até a virada do
+ * dia (`duracaoMs = Infinity`, com as linhas já filtradas pelo dia).
  *
- * Pela mesma razão, um par que já foi buscado hoje nunca estoura: refazê-lo
- * não dispara nada que a primeira vez não tenha disparado.
+ * Simula em ordem, e não só conta pares distintos, por causa de um furo: a
+ * busca negada TAMBÉM é gravada em `buscas` (é telemetria da demanda). Contando
+ * pares, a 3ª busca negada virava "par já buscado" na visita seguinte e
+ * passava a disparar coleta. Aqui uma busca negada nunca ocupa vaga.
  */
-export function contarPares(
-  linhas: readonly { cargo: string; cidade_slug: string }[],
-  parAtual: string,
+export function ocuparVagas(
+  linhas: readonly LinhaDeBusca[],
+  atual: { cargo: string; cidade: string; cidadeSlug: string },
   teto: number,
-): { usadas: number; estourou: boolean } {
-  const pares = new Set(linhas.map((l) => chaveDoPar(l.cargo, l.cidade_slug)));
-  const novo = !pares.has(parAtual);
-  const estourou = novo && pares.size >= teto;
-  // A busca atual ainda não está em `buscas` (é gravada depois do feed), mas já
-  // conta: sem isso a 1ª busca do dia mostrava "3 de 3 restantes".
-  return { usadas: pares.size + (novo && !estourou ? 1 : 0), estourou };
+  duracaoMs: number,
+  agora: Date,
+): Ocupacao {
+  const vagas = new Map<string, Vaga>();
+  const ativasEm = (t: number) =>
+    [...vagas.values()].filter((v) => v.liberaEm === null || v.liberaEm.getTime() > t);
+
+  const tentar = (chave: string, cargo: string, cidade: string, t: number): boolean => {
+    const existente = vagas.get(chave);
+    if (existente && (existente.liberaEm === null || existente.liberaEm.getTime() > t)) return true;
+    if (ativasEm(t).filter((v) => v.chave !== chave).length >= teto) return false;
+    vagas.set(chave, {
+      chave,
+      cargo,
+      cidade,
+      inicio: new Date(t),
+      liberaEm: Number.isFinite(duracaoMs) ? new Date(t + duracaoMs) : null,
+    });
+    return true;
+  };
+
+  const ordenadas = [...linhas].sort((a, b) => a.criado_em.localeCompare(b.criado_em));
+  for (const l of ordenadas) {
+    tentar(chaveDoPar(l.cargo, l.cidade_slug), l.cargo.trim(), l.cidade.trim(), Date.parse(l.criado_em));
+  }
+
+  const coube = tentar(
+    chaveDoPar(atual.cargo, atual.cidadeSlug),
+    atual.cargo.trim(),
+    atual.cidade.trim(),
+    agora.getTime(),
+  );
+  return {
+    vagas: ativasEm(agora.getTime()).sort((a, b) => a.inicio.getTime() - b.inicio.getTime()),
+    estourou: !coube,
+  };
 }

@@ -24,7 +24,8 @@
     "web": "npm run dev --prefix web",
     "web:build": "npm run build --prefix web",
     "infojobs": "node --env-file-if-exists=.env scripts/coletar-infojobs.ts",
-    "diaria": "node --env-file-if-exists=.env scripts/coleta-diaria.ts"
+    "diaria": "node --env-file-if-exists=.env scripts/coleta-diaria.ts",
+    "limpar-visitantes": "node --env-file-if-exists=.env scripts/limpar-visitantes.ts"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

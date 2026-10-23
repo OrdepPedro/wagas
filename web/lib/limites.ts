@@ -1,5 +1,9 @@
 /**
- * Teto diário de buscas.
+ * Teto de buscas.
+ *
+ * Visitante: 2 buscas salvas, cada uma valendo 7 dias — a mesma janela do feed.
+ * Dentro do prazo ele volta e troca entre as duas sem gastar nada; passado o
+ * prazo, a vaga libera. Com e-mail: 10 pares por dia (Brasília).
  *
  * Existe por dois motivos que puxam para o mesmo lado. O primeiro é o desenho
  * de tiers: o gratuito precisa ter um limite para o pago ter o que oferecer. O
@@ -17,9 +21,11 @@
  */
 import { slugCidade } from '../../src/normalize/local.ts';
 import { clienteDoServidor } from './supabase.ts';
-import { chaveDoPar, contarPares } from './pares-do-dia.ts';
+import { ocuparVagas, type Vaga } from './pares-do-dia.ts';
 
-export const LIMITE_VISITANTE = numero('LIMITE_DIARIO_VISITANTE', 3);
+export const LIMITE_VISITANTE = numero('LIMITE_VISITANTE', 2);
+/** Quanto vale uma busca salva do visitante: a janela do feed. */
+export const VALIDADE_VISITANTE_MS = 7 * 24 * 60 * 60 * 1000;
 export const LIMITE_GRATUITO = numero('LIMITE_DIARIO_GRATUITO', 10);
 
 function numero(nome: string, padrao: number): number {
@@ -47,10 +53,12 @@ export interface EstadoDoLimite {
   restantes: number;
   estourou: boolean;
   visitante: boolean;
+  /** Buscas salvas ativas, a atual incluída quando ocupou vaga. */
+  vagas: Vaga[];
 }
 
 /**
- * Quantas buscas o usuário já fez hoje.
+ * Quanto do teto está ocupado, e se a busca atual cabe.
  *
  * Erro de leitura devolve "não estourou". Bloquear alguém por causa de uma
  * falha de rede na contagem é o pior dos dois erros possíveis aqui.
@@ -62,29 +70,38 @@ export async function estadoDoLimite(
   cidade: string,
 ): Promise<EstadoDoLimite> {
   const teto = visitante ? LIMITE_VISITANTE : LIMITE_GRATUITO;
+  const agora = new Date();
+  // Visitante olha para trás o dobro da validade: uma vaga aberta há 6 dias
+  // ainda está ativa, e a simulação precisa ver a busca que a abriu.
+  const desde = visitante
+    ? new Date(agora.getTime() - 2 * VALIDADE_VISITANTE_MS).toISOString()
+    : inicioDoDiaBrasilia(agora);
 
   try {
     const supabase = await clienteDoServidor();
     const { data, error } = await supabase
       .from('buscas')
-      .select('cargo, cidade_slug')
+      .select('cargo, cidade, cidade_slug, criado_em')
       .eq('user_id', userId)
-      .gte('criado_em', inicioDoDiaBrasilia());
+      .gte('criado_em', desde);
     if (error) throw error;
 
-    const { usadas, estourou } = contarPares(
+    const { vagas, estourou } = ocuparVagas(
       data ?? [],
-      chaveDoPar(cargo, slugCidade(cidade)),
+      { cargo, cidade, cidadeSlug: slugCidade(cidade) },
       teto,
+      visitante ? VALIDADE_VISITANTE_MS : Infinity,
+      agora,
     );
     return {
-      usadas,
+      usadas: vagas.length,
       teto,
-      restantes: Math.max(teto - usadas, 0),
+      restantes: Math.max(teto - vagas.length, 0),
       estourou,
       visitante,
+      vagas,
     };
   } catch {
-    return { usadas: 0, teto, restantes: teto, estourou: false, visitante };
+    return { usadas: 0, teto, restantes: teto, estourou: false, visitante, vagas: [] };
   }
 }
