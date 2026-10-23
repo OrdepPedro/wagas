@@ -56,7 +56,7 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
     <li className="vaga">
       {/* O clique passa por /ir/[id] para ser contado antes de sair. É a
           métrica do produto: clique em "ver vaga" por usuário por semana. */}
-      <a className="titulo" href={`/ir/${vaga.id}`} rel="noreferrer">
+      <a className="titulo" href={`/ir/${vaga.id}`} target="_blank" rel="noopener noreferrer">
         {vaga.cargo}
       </a>
       <p className="empresa">
@@ -145,6 +145,11 @@ function LimiteEstourado({ teto, visitante }: { teto: number; visitante: boolean
           ? 'Entrar com e-mail aumenta o limite. O contador zera à meia-noite.'
           : 'O contador zera à meia-noite. Recarregar o feed não conta — só trocar de cargo ou cidade.'}
       </p>
+      {visitante ? (
+        <div style={{ marginTop: 16 }}>
+          <FormularioDeEntrada />
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -162,7 +167,7 @@ async function Feed({
   userId: string;
   visitante: boolean;
 }) {
-  const limite = await estadoDoLimite(userId, visitante);
+  const limite = await estadoDoLimite(userId, visitante, cargo, cidade);
 
   // ORDEM QUE IMPORTA: o teto é consultado ANTES de `carregarFeed`, porque é
   // ela que dispara a coleta na fonte externa. Checar depois gastaria a
@@ -256,11 +261,15 @@ export default async function Pagina() {
             últimos {JANELA_DIAS} dias
           </p>
         </div>
-        <form action={sair}>
-          <button type="submit" className="discreto">
-            Sair
-          </button>
-        </form>
+        {/* Visitante não tem "Sair": sair apagaria a sessão anônima, o proxy
+            criaria outra no próximo acesso, e o teto zeraria com um clique. */}
+        {usuario.visitante ? null : (
+          <form action={sair}>
+            <button type="submit" className="discreto">
+              Sair
+            </button>
+          </form>
+        )}
       </div>
 
       {/* A busca é a ação principal do produto, então fica no topo e aberta.

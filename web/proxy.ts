@@ -37,8 +37,33 @@ export default async function proxy(requisicao: NextRequest) {
     },
   });
 
-  await supabase.auth.getUser();
+  const { data } = await supabase.auth.getUser();
+
+  // Visitante sem sessão ganha uma sessão anônima, invisível (trava 7). É ela
+  // que dá ao teto diário um `user_id` para contar. Aqui e não na página porque
+  // Server Component não grava cookie (achado 31).
+  //
+  // Só em navegação de documento para `/`: prefetch, `/ir/...` e o callback do
+  // link mágico não podem criar usuário — cada um viraria uma conta anônima a
+  // mais por visita, e o callback trocaria a sessão que está chegando.
+  if (!data.user && deveCriarVisitante(requisicao)) {
+    await supabase.auth.signInAnonymously();
+  }
+
   return resposta;
+}
+
+function deveCriarVisitante(requisicao: NextRequest): boolean {
+  if (requisicao.method !== 'GET') return false;
+  if (requisicao.nextUrl.pathname !== '/') return false;
+  const h = requisicao.headers;
+  if (h.get('next-router-prefetch') || h.get('purpose') === 'prefetch') return false;
+  if (h.get('sec-purpose')?.includes('prefetch')) return false;
+  // Robô de busca e pré-visualização de link não são visitantes.
+  if (/bot|crawl|spider|preview|facebookexternalhit|whatsapp/i.test(h.get('user-agent') ?? '')) {
+    return false;
+  }
+  return true;
 }
 
 export const config = {
