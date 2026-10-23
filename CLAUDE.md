@@ -647,6 +647,21 @@ Amostra de 21, de 8 buscas, lendo o campo de modelo da própria vaga:
 
 **O que fica de olho:** 34 remotas de Vendedor entram no feed de Vendedor de TODA cidade. Se o balde for dominado por comissão/PJ, ele suja todos os feeds de uma vez. Amostra de 21 não decide isso.
 
+**40. A dedup na gravação escondia a perda; a duplicata real era outra (23/10).** A medição da trava 5 deu **zero duplicatas** no feed — por construção: `jobs.dedup_key` (empresa + cargo) é única, então toda repetição era DESCARTADA no insert. O problema estava no que ia embora.
+
+- **31% das vagas aprovadas de Gupy + InfoJobs não viravam linha de `jobs`** (515 de 1.645). Entre elas, a mesma rede em outra cidade: "Vendedor(a) de Loja" de BH descartada porque havia a de SP — quem buscava em BH nunca via.
+- ⚠️ **Eu reportei 65% antes.** O script leu 1.000 linhas de cada tabela: **o PostgREST do Supabase devolve no máximo 1.000 linhas e ignora `limit` maior, em silêncio.** `SupabaseRest.selectTodos` pagina; a coleta diária e os scripts de medição passaram a usá-lo.
+
+**E a duplicata que o usuário veria era outra:** a MESMA fonte publicando o mesmo anúncio dezenas de vezes. O McDonald's tinha 29 anúncios de "Atendente de Restaurante (Tijuca - Rio de Janeiro/RJ)", cada um com id, título e texto idênticos. **138 de 140 grupos repetidos tinham descrição idêntica.** Lojas diferentes não caem aí: a rede põe o bairro no título.
+
+**O que mudou:**
+1. **Gravação:** para Gupy e InfoJobs, `dedup_key = <fonte>:<id na fonte>`. A gravação também completa em `jobs` o que estava em `raw_results` sem linha — **autocura**: a primeira coleta recuperou 489 vagas sem apagar nada. Descarte: 31% → **1%** (o resto o InfoJobs recupera na próxima coleta).
+2. **Exibição** (`src/feed/colapsar.ts`), a trava 5 de fato: (a) mesmo título exato + mesma descrição + mesmo lugar na mesma fonte = um cartão, com "N anúncios iguais"; (b) mesma empresa + cargo + lugar em fontes diferentes = um cartão, ficando a versão com data real e descrição mais longa.
+
+Efeito medido: Atendente/Rio, 224 linhas → **99 cartões**, sem esconder vaga distinta; Auxiliar Administrativo/SP, 134 → 133. O feed passou a pedir 3× o que mostra, porque com folga pequena o Rio encolhia para 42 com vaga sobrando no banco.
+
+**O que NÃO está medido:** a regra (b) nunca disparou em dado real — 0 grupos entre fontes, porque as linhas do LinkedIn Jobs de agosto já expiraram e só Gupy + InfoJobs estão na janela, e essas duas quase não se sobrepõem (achado 37). Ela está coberta por teste, não por produção.
+
 ---
 
 ## As dez travas — decididas em 28/08/2026
@@ -731,7 +746,7 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 - **Greenhouse como fonte** (achado 36): descobrir slugs brasileiros por SERP. A sobreposição com `jobs` saiu quase nula, com amostra fraca.
 - **Desenhar o currículo adaptado:** onde o CV mora, consentimento LGPD, retenção, e qual métrica mede o diferencial (CV gerado → candidatura, além de clique em "ver vaga").
 - **[fecha o Passo 4] Uma requisição por item na coleta** (trava 4). Fecha `data_publicacao`, empresa, modelo e corpo do post de uma vez. Só no Actions, nunca no request do usuário, e com falha de rede distinguível de campo ausente.
-- **[fecha o Passo 4] Garantir zero duplicata na exibição do feed** (trava 5). Colapso na leitura; a dedup semântica continua sendo o caso de fundo para URLs diferentes da mesma vaga.
+- ~~**[fecha o Passo 4] Garantir zero duplicata na exibição do feed** (trava 5)~~ — **feito em 23/10, achado 40.** Colapso na exibição em duas regras, dedup de gravação por id da fonte, autocura das vagas descartadas. A regra entre fontes não disparou em produção ainda.
 - **Ligar Anonymous Sign-ins no Supabase** (trava 7). O caminho já está pronto no código — `is_anonymous` lido, teto aplicado. Falta o botão no dashboard.
 - **Região metropolitana determinística** (trava 6, achado 22). `cidade_slug` + tabela de municípios por RM.
 - **Segunda fonte gratuita brasileira** (trava 10). A Gupy sustenta o caso de cargo novo sozinha, o que é risco de fonte única. Nenhum candidato foi verificado; a sonda mede **sobreposição com o acervo atual**, não volume.
@@ -767,6 +782,8 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 **O Passo 4 fecha com três condições, e só com elas** (trava 3, 28/08): `data_publicacao` real na maioria das linhas, zero duplicata no feed, Telegram medido. Melhoria fora dessas três é o Passo 4 não terminando nunca — o resto vai para o Passo 5.
 
 **Telegram medido em 29/08** (achado 35) — a terceira condição está cumprida. Faltam as duas de dado.
+
+**As três cumpridas em 23/10:** data real em 100% das vagas da janela (938 de 938 em 22/10, pela coleta diária de Gupy + InfoJobs); zero duplicata no feed (achado 40); Telegram medido. **O Passo 4 fecha quando este trabalho chegar ao `main`.**
 
 **Não ajude o Pedro a pular etapas.**
 

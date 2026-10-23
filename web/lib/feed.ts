@@ -13,6 +13,7 @@
  */
 import { chaveDeFamilia } from '../../src/classificar/familia.ts';
 import { consultaDeFeed, JANELA_DIAS } from '../../src/feed/consulta.ts';
+import { colapsarRepetidas } from '../../src/feed/colapsar.ts';
 import { preencherSeNecessario, type MotivoDoPreenchimento } from '../../src/fontes/sob-demanda.ts';
 import { clienteAdministrativo, coletaSobDemandaDisponivel } from './admin.ts';
 import { chaveDaBusca, ehRepeticao, lerBuscaDaSessao } from './sessao.ts';
@@ -39,7 +40,12 @@ export interface Vaga {
   local_avaliado: boolean;
   confianca: number | null;
   tipo_contrato: string | null;
+  /** Anúncios idênticos que este cartão representa (trava 5). Não vem do banco. */
+  repeticoes?: number;
 }
+
+/** Teto de cartões no feed. Era o `limit` padrão da consulta. */
+const MOSTRAR = 100;
 
 export interface ResultadoDoFeed {
   vagas: Vaga[];
@@ -101,7 +107,10 @@ export async function carregarFeed(
   const token = data.session?.access_token;
   if (!token) throw new Error('feed pedido sem sessão');
 
-  const consulta = consultaDeFeed({ cargo, cidade, soRemoto });
+  // Pede três vezes o que mostra: o colapso da trava 5 pode tirar muito. Em
+  // Atendente/Rio, 150 linhas viraram 42 cartões (108 anúncios repetidos do
+  // McDonald's) — com folga pequena, o feed encolhia com vaga sobrando no banco.
+  const consulta = consultaDeFeed({ cargo, cidade, soRemoto, limite: MOSTRAR * 3 });
 
   const resposta = await fetch(`${SUPABASE_URL()}/rest/v1/jobs?${consulta.query}`, {
     headers: {
@@ -115,7 +124,8 @@ export async function carregarFeed(
     throw new Error(`feed ${resposta.status}: ${(await resposta.text()).slice(0, 300)}`);
   }
 
-  const vagas = (await resposta.json()) as Vaga[];
+  // Trava 5: a mesma vaga, vinda de fontes diferentes, aparece uma vez só.
+  const vagas = colapsarRepetidas((await resposta.json()) as Vaga[]).vagas.slice(0, MOSTRAR);
   const naCidade = vagas.filter((v) => v.cidade_slug === consulta.cidadeSlug).length;
 
   return {

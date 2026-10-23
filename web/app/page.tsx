@@ -78,6 +78,9 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
         {naCidade ? <span className="etiqueta">na sua cidade</span> : null}
         {vaga.senioridade ? <span className="etiqueta">{vaga.senioridade}</span> : null}
         {vaga.tipo_contrato ? <span className="etiqueta">{textoDoContrato(vaga.tipo_contrato)}</span> : null}
+        {vaga.repeticoes && vaga.repeticoes > 1 ? (
+          <span className="etiqueta">{vaga.repeticoes} anúncios iguais</span>
+        ) : null}
         <span className="etiqueta">{NOME_DA_FONTE[vaga.fonte]}</span>
         <span className="etiqueta">{textoDaData(vaga)}</span>
       </div>

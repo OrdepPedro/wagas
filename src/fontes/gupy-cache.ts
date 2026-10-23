@@ -20,9 +20,9 @@
  *                 com as outras.
  *   jobs          com as colunas de filtro do feed já preenchidas.
  */
-import { SupabaseRest, hashesExistentes } from '../db/supabase.ts';
+import { SupabaseRest } from '../db/supabase.ts';
 import { canonicalizarUrl, hashUrl } from '../normalize/url.ts';
-import { chaveDedupVaga, normalizarCargo } from '../dedupe.ts';
+import { normalizarCargo } from '../dedupe.ts';
 import { classesDeFamilia, senioridadeDoTitulo, tokensDeFamilia } from '../classificar/familia.ts';
 import { normalizarLocal, slugCidade } from '../normalize/local.ts';
 import { log } from '../logger.ts';
@@ -132,8 +132,13 @@ function linhaJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache
 
   return {
     raw_result_id: rawId,
-    dedup_key: chaveDedupVaga(vaga.empresa, vaga.cargo),
-    dedup_por_empresa: vaga.empresa !== 'não identificada',
+    // O id da vaga NA FONTE, não empresa + cargo. A chave por empresa + cargo
+    // descartava 65% das vagas aprovadas (medido em 23/10): a mesma rede com
+    // "Vendedor(a) de Loja" em BH e em SP virava uma linha só, e quem buscava
+    // em BH perdia a vaga. Vaga repetida ENTRE fontes é problema da exibição
+    // (trava 5, `src/feed/colapsar.ts`), não da gravação.
+    dedup_key: `${origem.fonte}:${vaga.fonteId}`,
+    dedup_por_empresa: false,
     empresa: vaga.empresa,
     cargo: vaga.cargo,
     cargo_normalizado: normalizarCargo(vaga.cargo),
@@ -179,35 +184,34 @@ export async function gravarDaGupy(
     return { recebidas: vagas.length, novas: 0, jaNoBanco: 0, vagasGravadas: 0 };
   }
 
-  const conhecidos = await hashesExistentes(
-    db,
-    prontas.map((p) => p.urlHash),
-  );
-  const novas = prontas.filter((p) => !conhecidos.has(p.urlHash));
+  const existentes = await origensExistentes(db, prontas.map((p) => p.urlHash));
+  const novas = prontas.filter((p) => !existentes.has(p.urlHash));
+  // Já está em `raw_results` mas não virou linha de `jobs`: é o que a chave por
+  // empresa + cargo descartou antes de 23/10. Completar aqui faz a próxima
+  // coleta recuperar essas vagas sem apagar nada.
+  const orfas = prontas.filter((p) => existentes.get(p.urlHash)?.temVaga === false);
 
-  if (novas.length === 0) {
-    return {
-      recebidas: vagas.length,
-      novas: 0,
-      jaNoBanco: prontas.length,
-      vagasGravadas: 0,
-    };
+  if (novas.length === 0 && orfas.length === 0) {
+    return { recebidas: vagas.length, novas: 0, jaNoBanco: prontas.length, vagasGravadas: 0 };
   }
 
   // `raw_results` primeiro, e com retorno, para a linha de `jobs` poder apontar
   // para a origem. Mesma ordem do classificador: a vaga entra antes de a origem
   // ser dada por resolvida.
-  const gravadasRaw = await db.insert<{ id: number; url_hash: string }>(
-    'raw_results',
-    novas.map((n) => linhaRaw(n, contexto.cargoBusca, contexto.cidadeBusca, contexto.soRemoto, origem)),
-    { ignorarDuplicados: true, conflito: 'url_hash', retornar: true },
-  );
+  const gravadasRaw = novas.length
+    ? await db.insert<{ id: number; url_hash: string }>(
+        'raw_results',
+        novas.map((n) => linhaRaw(n, contexto.cargoBusca, contexto.cidadeBusca, contexto.soRemoto, origem)),
+        { ignorarDuplicados: true, conflito: 'url_hash', retornar: true },
+      )
+    : [];
 
   const idPorHash = new Map(gravadasRaw.map((g) => [g.url_hash, g.id]));
+  for (const o of orfas) idPorHash.set(o.urlHash, existentes.get(o.urlHash)!.id);
 
   const gravadasJobs = await db.insert<{ id: number }>(
     'jobs',
-    novas.map((n) => linhaJob(n, idPorHash.get(n.urlHash) ?? null, origem)),
+    [...novas, ...orfas].map((n) => linhaJob(n, idPorHash.get(n.urlHash) ?? null, origem)),
     { ignorarDuplicados: true, conflito: 'dedup_key', retornar: true },
   );
 
@@ -225,6 +229,29 @@ export async function gravarDaGupy(
     jaNoBanco: prontas.length - novas.length,
     vagasGravadas: gravadasJobs.length,
   };
+}
+
+/**
+ * Para cada hash já em `raw_results`: o id, e se ele já tem linha em `jobs`.
+ * Em lotes, porque `in.(…)` vai na URL.
+ */
+async function origensExistentes(
+  db: SupabaseRest,
+  hashes: string[],
+  tamanhoLote = 100,
+): Promise<Map<string, { id: number; temVaga: boolean }>> {
+  const saida = new Map<string, { id: number; temVaga: boolean }>();
+  for (let i = 0; i < hashes.length; i += tamanhoLote) {
+    const lote = hashes.slice(i, i + tamanhoLote).map((h) => `"${h}"`).join(',');
+    const raws = await db.select<{ id: number; url_hash: string }>('raw_results', `select=id,url_hash&url_hash=in.(${lote})`);
+    if (raws.length === 0) continue;
+    const comVaga = new Set(
+      (await db.select<{ raw_result_id: number }>('jobs', `select=raw_result_id&raw_result_id=in.(${raws.map((r) => r.id).join(',')})`))
+        .map((j) => j.raw_result_id),
+    );
+    for (const r of raws) saida.set(r.url_hash, { id: r.id, temVaga: comVaga.has(r.id) });
+  }
+  return saida;
 }
 
 /** O nome honesto agora que a gravação serve a mais de uma fonte. */

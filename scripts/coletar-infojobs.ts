@@ -39,9 +39,9 @@ if (pares.length === 0) {
   // A demanda guarda só a cidade. A UF sai do que já foi gravado em `jobs` para
   // aquela cidade, pela UF mais frequente — homônimas (Bom Jesus, Santa Luzia)
   // poderiam errar, e por isso o par sem UF conhecida é pulado, não chutado.
-  const ufs = await db.select<{ cidade_slug: string; uf: string }>(
+  const ufs = await db.selectTodos<{ cidade_slug: string; uf: string }>(
     'jobs',
-    'select=cidade_slug,uf&uf=not.is.null&cidade_slug=not.is.null&limit=10000',
+    'select=cidade_slug,uf&uf=not.is.null&cidade_slug=not.is.null&order=id',
   );
   const contagem = new Map<string, Map<string, number>>();
   for (const l of ufs) {
