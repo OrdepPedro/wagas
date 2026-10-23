@@ -24,6 +24,9 @@ export function contarPares(
   teto: number,
 ): { usadas: number; estourou: boolean } {
   const pares = new Set(linhas.map((l) => chaveDoPar(l.cargo, l.cidade_slug)));
-  const usadas = pares.size;
-  return { usadas, estourou: !pares.has(parAtual) && usadas >= teto };
+  const novo = !pares.has(parAtual);
+  const estourou = novo && pares.size >= teto;
+  // A busca atual ainda não está em `buscas` (é gravada depois do feed), mas já
+  // conta: sem isso a 1ª busca do dia mostrava "3 de 3 restantes".
+  return { usadas: pares.size + (novo && !estourou ? 1 : 0), estourou };
 }
