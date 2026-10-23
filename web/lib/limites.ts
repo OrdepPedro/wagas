@@ -15,7 +15,9 @@
  * O dia é o de Brasília, não UTC. Um limite diário que vira às 21h para o
  * usuário é um limite que parece quebrado.
  */
+import { slugCidade } from '../../src/normalize/local.ts';
 import { clienteDoServidor } from './supabase.ts';
+import { chaveDoPar, contarPares } from './pares-do-dia.ts';
 
 export const LIMITE_VISITANTE = numero('LIMITE_DIARIO_VISITANTE', 3);
 export const LIMITE_GRATUITO = numero('LIMITE_DIARIO_GRATUITO', 10);
@@ -50,33 +52,36 @@ export interface EstadoDoLimite {
 /**
  * Quantas buscas o usuário já fez hoje.
  *
- * Só conta busca DISTINTA: `buscas` já colapsa repetição de menos de um minuto,
- * então recarregar a página não consome o teto. O que consome é trocar de cargo
- * ou de cidade — que é exatamente o que dispara trabalho de verdade.
- *
  * Erro de leitura devolve "não estourou". Bloquear alguém por causa de uma
  * falha de rede na contagem é o pior dos dois erros possíveis aqui.
  */
 export async function estadoDoLimite(
   userId: string,
   visitante: boolean,
+  cargo: string,
+  cidade: string,
 ): Promise<EstadoDoLimite> {
   const teto = visitante ? LIMITE_VISITANTE : LIMITE_GRATUITO;
 
   try {
     const supabase = await clienteDoServidor();
-    const { count } = await supabase
+    const { data, error } = await supabase
       .from('buscas')
-      .select('id', { count: 'exact', head: true })
+      .select('cargo, cidade_slug')
       .eq('user_id', userId)
       .gte('criado_em', inicioDoDiaBrasilia());
+    if (error) throw error;
 
-    const usadas = count ?? 0;
+    const { usadas, estourou } = contarPares(
+      data ?? [],
+      chaveDoPar(cargo, slugCidade(cidade)),
+      teto,
+    );
     return {
       usadas,
       teto,
       restantes: Math.max(teto - usadas, 0),
-      estourou: usadas >= teto,
+      estourou,
       visitante,
     };
   } catch {

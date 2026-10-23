@@ -119,7 +119,11 @@ export function consultaDeFeed(pedido: PedidoDeFeed): ConsultaDeFeed {
       ? `and(modelo.eq.remoto,pais_br.not.is.false)`
       : `or(cidade_slug.eq.${cidadeSlug},and(modelo.eq.remoto,pais_br.not.is.false))`,
   ];
-  if (classes.length > 0) {
+  // Busca sem domínio não tem a saída do título sem função: a função é a única
+  // âncora (ver `cargoBateNoTitulo`).
+  if (classes.length > 0 && dominio.length === 0) {
+    grupos.unshift(`familia_classes.ov.${lista(classes)}`);
+  } else if (classes.length > 0) {
     grupos.unshift(`or(familia_classes.eq.{},familia_classes.ov.${lista(classes)})`);
   }
   partes.push(`and=(${grupos.join(',')})`);

@@ -326,6 +326,19 @@ export function cargoBateNoTitulo(cargoBuscado: string, titulo: string): Casamen
     };
   }
 
+  // Busca só de função ("Desenvolvedor", "Analista"): sem domínio, a função é a
+  // ÚNICA âncora, então título sem função reconhecida não pode passar. Com a
+  // saída aberta, "Desenvolvedor" devolvia Zelador, Recepcionista e Barista —
+  // todo título sem função do léxico. Com domínio na busca, a saída continua
+  // valendo, porque o domínio já segura o título.
+  if (alvo.dominio.length === 0 && alvo.funcoes.length > 0 && candidato.funcoes.length === 0) {
+    return {
+      bate: false,
+      motivo: 'funcao_de_outra_classe',
+      detalhe: 'título sem função reconhecida, e a busca não tem domínio',
+    };
+  }
+
   if (alvo.funcoes.length > 0 && candidato.funcoes.length > 0) {
     const classesAlvo = new Set(alvo.funcoes.map((f) => f.classe));
     const compativel = candidato.funcoes.some((f) => classesAlvo.has(f.classe));
