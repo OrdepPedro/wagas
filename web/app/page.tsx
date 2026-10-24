@@ -8,6 +8,7 @@ import { usuarioAtual } from '../lib/supabase.ts';
 import { sair, voltarParaBusca } from './actions.ts';
 import { FormularioDeBusca, FormularioDeEntrada } from './formularios.tsx';
 import { Landing } from './landing.tsx';
+import { carregarVitrine } from '../lib/vitrine.ts';
 
 export const dynamic = 'force-dynamic';
 
@@ -284,7 +285,7 @@ export default async function Pagina() {
 
   const perfil = await lerPerfil(usuario.id);
 
-  if (!perfil) return <Landing />;
+  if (!perfil) return <Landing vitrine={await carregarVitrine()} />;
 
   return (
     <>
