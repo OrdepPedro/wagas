@@ -73,8 +73,8 @@ export async function definirBusca(
   // esta submissão é uma repetição.
   await gravarBuscaDaSessao(chaveDaBusca(cargo, cidade, soRemoto));
 
-  revalidatePath('/');
-  redirect('/');
+  revalidatePath('/vagas');
+  redirect('/vagas');
 }
 
 /** Atalho das buscas salvas do visitante: mesma ação, sem estado de formulário. */

@@ -16,7 +16,6 @@
     "harness:prefiltro": "node scripts/harness.ts --so-prefiltro",
     "test": "node --test \"test/*.test.ts\"",
     "typecheck": "tsc --noEmit",
-    "paridade": "node --env-file-if-exists=.env scripts/paridade.ts",
     "passo1": "node --env-file-if-exists=.env scripts/comparar-passo1.ts",
     "alertas": "node --env-file-if-exists=.env scripts/medir-alertas.ts",
     "backfill": "node --env-file-if-exists=.env scripts/backfill-feed.ts",

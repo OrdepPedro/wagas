@@ -22,7 +22,7 @@ export async function GET(
   const jobId = Number(id);
 
   if (!Number.isInteger(jobId) || jobId < 1) {
-    return NextResponse.redirect(new URL('/', process.env['NEXT_PUBLIC_SITE_URL'] ?? 'http://localhost:3000'));
+    return NextResponse.redirect(new URL('/vagas', process.env['NEXT_PUBLIC_SITE_URL'] ?? 'http://localhost:3000'));
   }
 
   const usuario = await usuarioAtual();
@@ -33,7 +33,7 @@ export async function GET(
   const { data: vaga } = await supabase.from('jobs').select('url').eq('id', jobId).maybeSingle();
 
   if (!vaga?.url) {
-    return NextResponse.redirect(new URL('/', process.env['NEXT_PUBLIC_SITE_URL'] ?? 'http://localhost:3000'));
+    return NextResponse.redirect(new URL('/vagas', process.env['NEXT_PUBLIC_SITE_URL'] ?? 'http://localhost:3000'));
   }
 
   if (usuario) {
