@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { ocuparVagas, type LinhaDeBusca } from '../web/lib/pares-do-dia.ts';
+import { ocuparVagas, type LinhaDeBusca } from '../src/feed/pares-do-dia.ts';
 
 /**
  * O teto ocupa VAGAS por par cargo × cidade, não conta linhas de `buscas`.

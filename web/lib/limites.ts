@@ -21,7 +21,7 @@
  */
 import { slugCidade } from '../../src/normalize/local.ts';
 import { clienteDoServidor } from './supabase.ts';
-import { ocuparVagas, type Vaga } from './pares-do-dia.ts';
+import { ocuparVagas, type Vaga } from '../../src/feed/pares-do-dia.ts';
 
 export const LIMITE_VISITANTE = numero('LIMITE_VISITANTE', 2);
 /** Quanto vale uma busca salva do visitante: a janela do feed. */

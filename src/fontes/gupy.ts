@@ -173,6 +173,18 @@ export interface RespostaDaGupy {
    * tentativa, e o feed ficaria vazio por meia hora por causa de um soluço.
    */
   falhou: boolean;
+  /**
+   * Id de TUDO o que a API listou, antes dos nossos filtros. É o que permite
+   * dizer que uma vaga sumiu da fonte: sumir das aproveitadas não basta, porque
+   * filtro de família ou de local também tira vaga dali.
+   */
+  idsVistos: string[];
+  /**
+   * A paginação terminou sozinha — página vazia, curta ou inteira fora da
+   * janela —, e não por falha nem pelo `limite`. Só varredura completa serve
+   * para concluir que uma vaga não está mais lá.
+   */
+  completa: boolean;
 }
 
 /**
@@ -205,6 +217,8 @@ export async function buscarNaGupy(pedido: PedidoNaGupy): Promise<RespostaDaGupy
   let foraDaJanela = 0;
   let outraFamilia = 0;
   let falhou = false;
+  let completa = false;
+  const idsVistos: string[] = [];
 
   for (let offset = 0; offset < limite; offset += POR_PAGINA) {
     const params = new URLSearchParams({
@@ -235,13 +249,17 @@ export async function buscarNaGupy(pedido: PedidoNaGupy): Promise<RespostaDaGupy
       break;
     }
 
-    if (itens.length === 0) break;
+    if (itens.length === 0) {
+      completa = true;
+      break;
+    }
     vistos += itens.length;
 
     let algumNaJanela = false;
     for (const item of itens) {
       const vaga = normalizarItem(item);
       if (!vaga) continue;
+      idsVistos.push(vaga.fonteId);
 
       if (Date.parse(vaga.dataPublicacao) < corte) {
         foraDaJanela++;
@@ -268,8 +286,10 @@ export async function buscarNaGupy(pedido: PedidoNaGupy): Promise<RespostaDaGupy
 
     // Ordenação é por data decrescente: página inteira fora da janela significa
     // que as seguintes também estão.
-    if (!algumNaJanela) break;
-    if (itens.length < POR_PAGINA) break;
+    if (!algumNaJanela || itens.length < POR_PAGINA) {
+      completa = true;
+      break;
+    }
   }
 
   log.info('gupy consultada', {
@@ -281,7 +301,35 @@ export async function buscarNaGupy(pedido: PedidoNaGupy): Promise<RespostaDaGupy
     foraDaJanela,
     outraFamilia,
     falhou,
+    completa,
   });
 
-  return { vagas: saida, vistos, foraDaJanela, outraFamilia, falhou };
+  return { vagas: saida, vistos, foraDaJanela, outraFamilia, falhou, idsVistos, completa: completa && !falhou };
+}
+
+/**
+ * Situação da vaga lida da própria página dela, no JSON que o Next da Gupy
+ * embute (`__NEXT_DATA__`): `"status":"closed"` ou `"published"`.
+ *
+ * Confirma o encerramento antes de gravar. Sumir da listagem da API acerta 40
+ * de 45 (medido em 24/10); das 5 restantes, 3 continuavam publicadas e 2 pediam
+ * login. Só `closed` encerra — qualquer outra resposta, inclusive falha de
+ * rede, mantém a vaga aberta.
+ */
+export function statusNaPagina(html: string): string | null {
+  const dados = /<script id="__NEXT_DATA__"[^>]*>([\s\S]*?)<\/script>/.exec(html)?.[1];
+  return dados ? (/"status":"([a-z_]+)"/.exec(dados)?.[1] ?? null) : null;
+}
+
+export async function vagaFechadaNaGupy(url: string, buscar: typeof fetch = fetch): Promise<boolean> {
+  try {
+    const resposta = await buscar(url, {
+      headers: { accept: 'text/html', 'user-agent': 'Mozilla/5.0' },
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!resposta.ok) return false;
+    return statusNaPagina(await resposta.text()) === 'closed';
+  } catch {
+    return false;
+  }
 }
