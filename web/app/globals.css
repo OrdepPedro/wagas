@@ -989,3 +989,23 @@ a.botao:hover {
 html {
   scroll-behavior: smooth;
 }
+
+.topo-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.link-feed {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--acento);
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: var(--acento-fraco);
+}
+
+.link-feed:hover {
+  background: var(--borda);
+}

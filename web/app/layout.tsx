@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { lerPerfil } from '../lib/perfil.ts';
+import { usuarioAtual } from '../lib/supabase.ts';
 import { AlternarTema } from './tema.tsx';
 import './globals.css';
 
@@ -14,6 +16,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const salvo = (await cookies()).get('tema')?.value;
   const tema = salvo === 'dark' || salvo === 'light' ? salvo : null;
 
+  // "Minhas vagas" só para quem já tem busca salva; para os outros, o link
+  // levaria de volta à própria landing.
+  const usuario = await usuarioAtual().catch(() => null);
+  const temFeed = usuario ? Boolean(await lerPerfil(usuario.id).catch(() => null)) : false;
+
   return (
     <html lang="pt-BR" suppressHydrationWarning {...(tema ? { 'data-theme': tema } : {})}>
       <body>
@@ -25,7 +32,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </span>
               wagas
             </a>
-            <AlternarTema inicial={tema} />
+            <nav className="topo-acoes">
+              {temFeed ? (
+                <a href="/vagas" className="link-feed">
+                  Minhas vagas
+                </a>
+              ) : null}
+              <AlternarTema inicial={tema} />
+            </nav>
           </div>
         </header>
         <main>{children}</main>
