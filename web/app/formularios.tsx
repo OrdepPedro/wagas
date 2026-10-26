@@ -57,16 +57,19 @@ export function FormularioDeBusca({
   cidade = '',
   soRemoto = false,
   rotulo = 'Ver vagas',
+  hero = false,
 }: {
   cargo?: string;
   cidade?: string;
   soRemoto?: boolean;
   rotulo?: string;
+  /** Na landing: campos e botão na mesma linha, em tamanho maior. */
+  hero?: boolean;
 }) {
   const [estado, acao] = useActionState(definirBusca, VAZIO);
 
   return (
-    <form action={acao}>
+    <form action={acao} className={hero ? 'form-hero' : undefined}>
       <div className="campos duplo">
         <div>
           <label htmlFor="cargo">Cargo</label>
@@ -76,7 +79,8 @@ export function FormularioDeBusca({
             type="text"
             required
             defaultValue={cargo}
-            placeholder="Product Manager"
+            placeholder={hero ? 'Ex.: Vendedor, Enfermeiro' : 'Product Manager'}
+            autoComplete="organization-title"
           />
         </div>
         <div>
@@ -87,7 +91,8 @@ export function FormularioDeBusca({
             type="text"
             required
             defaultValue={cidade}
-            placeholder="São Paulo"
+            placeholder={hero ? 'Ex.: Belo Horizonte' : 'São Paulo'}
+            autoComplete="address-level2"
           />
         </div>
       </div>
