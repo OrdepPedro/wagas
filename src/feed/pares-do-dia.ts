@@ -1,5 +1,6 @@
 /**
- * A regra do teto de buscas, sem Next nem Supabase, para a suíte da raiz testar.
+ * A regra do teto de buscas, sem Next nem Supabase. Mora em `src/` porque a
+ * suíte da raiz a testa e o `web/` a importa — mesma convenção de `consulta.ts`.
  */
 
 /** Um par cargo × cidade, na mesma forma em que `buscas` grava. */

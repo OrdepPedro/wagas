@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buscarNaGupy, normalizarItem } from '../src/fontes/gupy.ts';
+import { buscarNaGupy, normalizarItem, statusNaPagina, vagaFechadaNaGupy } from '../src/fontes/gupy.ts';
 
 const AGORA = new Date('2026-08-26T12:00:00Z');
 
@@ -141,4 +141,51 @@ test('para de paginar quando a página inteira saiu da janela', async () => {
 
   assert.equal(r.vagas.length, 0);
   assert.equal(r.vistos, 100, 'não devia ter pedido a segunda página');
+});
+
+/**
+ * `idsVistos` e `completa` sustentam o encerramento de vaga (migration 0011):
+ * concluir "sumiu da fonte" com varredura cortada encerraria vaga aberta.
+ */
+test('idsVistos traz tudo o que a API listou, inclusive o que os filtros cortaram', async () => {
+  const r = await buscarNaGupy({
+    cargo: 'Analista de Dados',
+    agora: AGORA,
+    buscar: fetchFalso([
+      [
+        item({ id: 1, name: 'Analista de Dados Pleno' }),
+        item({ id: 2, name: 'Analista de Tesouraria' }),
+        item({ id: 3, name: 'Analista de Dados', publishedDate: '2026-07-01T10:00:00Z' }),
+      ],
+    ]),
+  });
+  assert.deepEqual(r.idsVistos, ['1', '2', '3']);
+  assert.equal(r.completa, true);
+});
+
+test('varredura cortada pelo limite não é completa', async () => {
+  const cheia = Array.from({ length: 100 }, (_, i) => item({ id: i }));
+  const r = await buscarNaGupy({ cargo: 'Enfermeiro', agora: AGORA, limite: 100, buscar: fetchFalso([cheia, cheia]) });
+  assert.equal(r.completa, false);
+});
+
+test('varredura que falhou não é completa', async () => {
+  const falha = (async () => new Response('erro', { status: 500 })) as unknown as typeof fetch;
+  const r = await buscarNaGupy({ cargo: 'Enfermeiro', agora: AGORA, buscar: falha });
+  assert.equal(r.completa, false);
+  assert.equal(r.falhou, true);
+});
+
+test('a situação da vaga sai do JSON embutido na página', async () => {
+  const pagina = (status: string) =>
+    `<html><script id="__NEXT_DATA__" type="application/json">{"props":{"job":{"id":1,"status":"${status}"}}}</script></html>`;
+  assert.equal(statusNaPagina(pagina('closed')), 'closed');
+  assert.equal(statusNaPagina(pagina('published')), 'published');
+  assert.equal(statusNaPagina('<html>tela de login</html>'), null);
+
+  const responde = (corpo: string, status = 200) =>
+    (async () => new Response(corpo, { status })) as unknown as typeof fetch;
+  assert.equal(await vagaFechadaNaGupy('https://x.gupy.io/job/1', responde(pagina('closed'))), true);
+  assert.equal(await vagaFechadaNaGupy('https://x.gupy.io/job/1', responde(pagina('published'))), false);
+  assert.equal(await vagaFechadaNaGupy('https://x.gupy.io/job/1', responde('', 503)), false);
 });

@@ -36,6 +36,7 @@ export async function carregarVitrine(): Promise<Vitrine> {
         .from('jobs')
         .select('id', { count: 'exact', head: true })
         .eq('ativo', true)
+        .is('encerrada_em', null)
         .gte('data_referencia', desde),
       // Cartões só com empresa e data de publicação reais: a vitrine mostra o
       // melhor caso do feed, mas um caso que existe.
@@ -43,6 +44,7 @@ export async function carregarVitrine(): Promise<Vitrine> {
         .from('jobs')
         .select('id, cargo, empresa, localizacao, modelo, fonte, data_publicacao')
         .eq('ativo', true)
+        .is('encerrada_em', null)
         .not('data_publicacao', 'is', null)
         .neq('empresa', 'não identificada')
         .gte('data_publicacao', desde)

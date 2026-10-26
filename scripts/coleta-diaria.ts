@@ -21,9 +21,10 @@ import { carregarConfigClassificador } from '../src/config/env.ts';
 import { SupabaseRest } from '../src/db/supabase.ts';
 import { CARGOS_PRE_CARGA, CIDADES_PRE_CARGA } from '../src/config/pre-carga.ts';
 import { montarPares, ufMaisFrequente, type BuscaRegistrada } from '../src/coleta/pares.ts';
-import { buscarNaGupy } from '../src/fontes/gupy.ts';
+import { buscarNaGupy, vagaFechadaNaGupy } from '../src/fontes/gupy.ts';
 import { buscarNoInfojobs } from '../src/fontes/infojobs.ts';
 import { GUPY, INFOJOBS, gravarNoCache, registrarColeta, ultimaColeta } from '../src/fontes/gupy-cache.ts';
+import { decidirEncerramentos, type ConsultaDoDia, type VagaVerificavel } from '../src/coleta/encerramento.ts';
 
 const args = process.argv.slice(2);
 const seco = args.includes('--seco');
@@ -63,10 +64,13 @@ const consultasGupy = [
   ...[...new Map(pares.map((p) => [p.cargo.toLowerCase(), p.cargo])).values()].map((cargo) => ({ cargo, cidade: null, soRemoto: true })),
 ];
 
+const consultasDoDia: ConsultaDoDia[] = [];
+
 for (const c of consultasGupy) {
   const r = await buscarNaGupy({ cargo: c.cargo, cidade: c.cidade, soRemoto: c.soRemoto, limite: 500 });
   // A Gupy recusa rajada (achado 35): uma pausa curta entre consultas.
   await new Promise((ok) => setTimeout(ok, 500));
+  consultasDoDia.push({ cargo: c.cargo, cidade: c.cidade, soRemoto: c.soRemoto, completa: r.completa, idsVistos: r.idsVistos });
   if (r.falhou && r.vagas.length === 0) { placar.gupy.falhou++; continue; }
   placar.gupy.ok++;
   if (seco) continue;
@@ -75,6 +79,58 @@ for (const c of consultasGupy) {
   placar.gupy.gravadas += g.vagasGravadas;
 }
 console.log(`Gupy: ${placar.gupy.ok} ok, ${placar.gupy.falhou} falharam, ${placar.gupy.gravadas} vagas novas — ${minutos()} min`);
+
+// --- Vagas encerradas: a Gupy deixou de listar (migration 0011) --------------
+// Falhar aqui não pode derrubar a coleta: sem encerramento, o feed só fica como
+// era antes. Mas o erro sai no log, não é engolido.
+try {
+  const desde = new Date(agora.getTime() - 7 * 864e5).toISOString();
+  const linhas = await db.selectTodos<{
+    id: number;
+    url: string;
+    data_publicacao: string;
+    encerrada_em: string | null;
+    raw_results: { fonte_id: string | null; cargo_busca: string; localizacao_busca: string | null; modelo_busca: string } | null;
+  }>(
+    'jobs',
+    `select=id,url,data_publicacao,encerrada_em,raw_results(fonte_id,cargo_busca,localizacao_busca,modelo_busca)&fonte=eq.ats_gupy&ativo=is.true&data_publicacao=gte.${desde}&order=id`,
+  );
+  const vagas: VagaVerificavel[] = linhas.flatMap((l) =>
+    l.raw_results?.fonte_id
+      ? [{
+          id: l.id,
+          fonteId: l.raw_results.fonte_id,
+          cargoBusca: l.raw_results.cargo_busca,
+          cidadeBusca: l.raw_results.localizacao_busca,
+          soRemoto: l.raw_results.modelo_busca === 'remoto',
+          dataPublicacao: l.data_publicacao,
+          encerradaEm: l.encerrada_em,
+        }]
+      : [],
+  );
+  const v = decidirEncerramentos(vagas, consultasDoDia, agora);
+
+  // Sumir da listagem é a suspeita; a página da vaga dizendo "closed" é a
+  // confirmação. Sem ela, 3 de 45 seriam encerradas ainda publicadas (24/10).
+  const urlPorId = new Map(linhas.map((l) => [l.id, l.url]));
+  const confirmadas: number[] = [];
+  for (const id of v.encerrar) {
+    if (await vagaFechadaNaGupy(urlPorId.get(id)!)) confirmadas.push(id);
+    await new Promise((ok) => setTimeout(ok, 500));
+  }
+  console.log(`Encerramento (Gupy): ${vagas.length} verificáveis, ${v.encerrar.length} sumiram da listagem, ${confirmadas.length} confirmadas fechadas na página, ${v.reabrir.length} reabertas, ${consultasDoDia.filter((c) => c.completa).length}/${consultasDoDia.length} consultas completas`);
+  for (const s of v.suspeitas) console.warn(`  consulta ignorada, encerraria demais — ${s}`);
+
+  if (!seco) {
+    const emLotes = async (ids: number[], campos: Record<string, unknown>) => {
+      for (let i = 0; i < ids.length; i += 200) await db.update('jobs', `id=in.(${ids.slice(i, i + 200).join(',')})`, campos);
+    };
+    await emLotes(confirmadas, { encerrada_em: agora.toISOString() });
+    await emLotes(v.reabrir, { encerrada_em: null });
+  }
+} catch (erro) {
+  console.error(`Encerramento falhou (a migration 0011 foi aplicada?): ${String(erro).slice(0, 300)}`);
+}
 
 // --- InfoJobs: por par, dentro do orçamento de tempo -------------------------
 if (!soGupy) {

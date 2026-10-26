@@ -102,6 +102,8 @@ export function consultaDeFeed(pedido: PedidoDeFeed): ConsultaDeFeed {
   const partes = [
     `select=${COLUNAS_DO_FEED}`,
     'ativo=is.true',
+    // Vaga que a fonte deixou de listar (migration 0011): fechada, não velha.
+    'encerrada_em=is.null',
     `data_referencia=gte.${desde}`,
   ];
 
