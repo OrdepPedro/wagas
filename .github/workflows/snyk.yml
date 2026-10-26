@@ -1,0 +1,54 @@
+name: snyk
+
+# Vulnerabilidade conhecida nas dependências, pelo Snyk (conta pessoal do Pedro,
+# plano gratuito).
+#
+# Lê os dois lockfiles: a raiz quase não tem dependência (o coletor é fetch puro)
+# e o risco real mora no `web/` — Next, React, Supabase. Não precisa de
+# `npm install`: o Snyk resolve a árvore pelo `package-lock.json`.
+#
+# Roda em PR e push para o main, e toda segunda-feira: vulnerabilidade nova é
+# publicada sem nenhum commit nosso. É o primeiro check que roda em PR neste
+# repositório.
+#
+# Falha a partir de severidade alta. Alerta baixo ou médio aparece no log sem
+# travar o merge — travar por tudo ensina a ignorar o check.
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: '41 9 * * 1' # segunda, 06h41 de Brasília (minuto quebrado: hora cheia atrasa)
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependencias:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      # Sem token, o Snyk falha com erro de autenticação genérico. Melhor dizer o
+      # que falta.
+      - name: Conferir o token
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: |
+          if [ -z "${SNYK_TOKEN}" ]; then
+            echo "::error::Falta o secret SNYK_TOKEN (Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+
+      - name: Testar dependências
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: npx --yes snyk@1 test --all-projects --detection-depth=2 --severity-threshold=high
