@@ -20,6 +20,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // levaria de volta à própria landing.
   const usuario = await usuarioAtual().catch(() => null);
   const temFeed = usuario ? Boolean(await lerPerfil(usuario.id).catch(() => null)) : false;
+  // Visitante anônimo também vê "Entrar": é por aqui que quem já tem conta volta
+  // a ela em outro navegador.
+  const entrou = Boolean(usuario && !usuario.visitante);
 
   return (
     <html lang="pt-BR" suppressHydrationWarning {...(tema ? { 'data-theme': tema } : {})}>
@@ -38,6 +41,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   Minhas vagas
                 </a>
               ) : null}
+              {entrou ? null : (
+                <a href="/entrar" className="link-entrar">
+                  Entrar
+                </a>
+              )}
               <AlternarTema inicial={tema} />
             </nav>
           </div>

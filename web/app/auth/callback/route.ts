@@ -30,5 +30,5 @@ export async function GET(requisicao: Request) {
     if (!error) return NextResponse.redirect(new URL('/vagas', url.origin));
   }
 
-  return NextResponse.redirect(new URL('/?erro=link', url.origin));
+  return NextResponse.redirect(new URL('/entrar?erro=link', url.origin));
 }

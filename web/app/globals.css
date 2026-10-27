@@ -1009,3 +1009,44 @@ html {
 .link-feed:hover {
   background: var(--borda);
 }
+
+.link-entrar {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--texto);
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--borda);
+}
+
+.link-entrar:hover {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.entrar {
+  max-width: 440px;
+  margin: 24px auto 0;
+}
+
+.entrar h1 {
+  margin-bottom: 8px;
+}
+
+.entrar .caixa {
+  margin-top: 20px;
+}
+
+/* Celular: "Minhas vagas", "Entrar" e o tema na mesma linha do logo. */
+@media (max-width: 420px) {
+  .topo-acoes {
+    gap: 8px;
+  }
+
+  .link-feed,
+  .link-entrar {
+    padding: 6px 10px;
+    font-size: 0.8125rem;
+  }
+}
