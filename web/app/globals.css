@@ -273,6 +273,54 @@ ul.vagas {
   color: var(--alerta);
 }
 
+.paginacao {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 24px;
+  font-size: 0.875rem;
+}
+
+.paginacao ol {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paginacao a,
+.paginacao span {
+  display: inline-block;
+  min-width: 32px;
+  padding: 6px 10px;
+  border-radius: var(--raio);
+  text-align: center;
+  text-decoration: none;
+}
+
+.paginacao a {
+  color: var(--acento);
+}
+
+.paginacao a:hover {
+  background: var(--acento-fraco);
+}
+
+.paginacao [aria-current='page'] {
+  background: var(--acento);
+  color: var(--sobre-acento);
+  font-weight: 600;
+}
+
+.paginacao .desligado {
+  color: var(--texto-fraco);
+  opacity: 0.5;
+}
+
 .rodape {
   margin-top: 40px;
   padding-top: 20px;

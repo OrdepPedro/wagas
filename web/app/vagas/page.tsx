@@ -11,6 +11,9 @@ import { FormularioDeBusca, FormularioDeEntrada } from '../formularios.tsx';
 
 export const dynamic = 'force-dynamic';
 
+/** Cartões por página. A consulta continua trazendo o feed inteiro (até 100). */
+const POR_PAGINA = 10;
+
 const NOME_DA_FONTE: Record<Vaga['fonte'], string> = {
   linkedin_job: 'LinkedIn',
   linkedin_post: 'post no LinkedIn',
@@ -213,18 +216,48 @@ function AvisoDePrivacidade() {
   );
 }
 
+/**
+ * Links simples (`?pagina=N`), sem JavaScript: funcionam com voltar do
+ * navegador e abrem em outra guia. Trocar de busca volta para a página 1,
+ * porque `definirBusca` redireciona para `/vagas` sem parâmetro.
+ */
+function Paginacao({ atual, total }: { atual: number; total: number }) {
+  if (total <= 1) return null;
+  const href = (n: number) => (n === 1 ? '/vagas' : `/vagas?pagina=${n}`);
+
+  return (
+    <nav className="paginacao" aria-label="Páginas de vagas">
+      {atual > 1 ? <a href={href(atual - 1)}>← Anterior</a> : <span className="desligado">← Anterior</span>}
+      <ol>
+        {Array.from({ length: total }, (_, i) => i + 1).map((n) => (
+          <li key={n}>
+            {n === atual ? (
+              <span aria-current="page">{n}</span>
+            ) : (
+              <a href={href(n)}>{n}</a>
+            )}
+          </li>
+        ))}
+      </ol>
+      {atual < total ? <a href={href(atual + 1)}>Próxima →</a> : <span className="desligado">Próxima →</span>}
+    </nav>
+  );
+}
+
 async function Feed({
   cargo,
   cidade,
   soRemoto,
   userId,
   visitante,
+  pagina,
 }: {
   cargo: string;
   cidade: string;
   soRemoto: boolean;
   userId: string;
   visitante: boolean;
+  pagina: number;
 }) {
   const limite = await estadoDoLimite(userId, visitante, cargo, cidade);
 
@@ -247,6 +280,10 @@ async function Feed({
     );
   }
 
+  // Página fora do intervalo (link velho, feed que encolheu) cai na última.
+  const paginas = Math.ceil(vagas.length / POR_PAGINA);
+  const atual = Math.min(pagina, paginas);
+
   return (
     <>
       <BuscasSalvas limite={limite} cargo={cargo} cidade={cidade} />
@@ -259,10 +296,11 @@ async function Feed({
         .
       </p>
       <ul className="vagas">
-        {vagas.map((vaga) => (
+        {vagas.slice((atual - 1) * POR_PAGINA, atual * POR_PAGINA).map((vaga) => (
           <CartaoDeVaga key={vaga.id} vaga={vaga} cidadeSlug={cidadeSlug} />
         ))}
       </ul>
+      <Paginacao atual={atual} total={paginas} />
       <div className="rodape">
         <p className="limite">
           {limite.restantes} de {limite.teto}{' '}
@@ -275,7 +313,14 @@ async function Feed({
   );
 }
 
-export default async function PaginaDoFeed() {
+export default async function PaginaDoFeed({
+  searchParams,
+}: {
+  searchParams: Promise<{ pagina?: string }>;
+}) {
+  const { pagina: bruta } = await searchParams;
+  const pagina = Math.max(1, Number.parseInt(bruta ?? '1', 10) || 1);
+
   const usuario = await usuarioAtual();
 
   // O feed mora em /vagas; a landing, em /. Sem sessão ou sem busca salva, não
@@ -324,6 +369,7 @@ export default async function PaginaDoFeed() {
         soRemoto={perfil.soRemoto}
         userId={usuario.id}
         visitante={usuario.visitante}
+        pagina={pagina}
       />
     </>
   );
