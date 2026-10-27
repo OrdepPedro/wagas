@@ -337,11 +337,9 @@ function idade(iso: string): string {
 function CartaoExemplo({ cartao }: { cartao: CartaoDaVitrine }) {
   return (
     <li className="vaga">
+      <p className="empresa">{cartao.empresa}</p>
       <span className="titulo">{cartao.cargo}</span>
-      <p className="empresa">
-        {cartao.empresa}
-        {cartao.localizacao ? ` · ${cartao.localizacao}` : ''}
-      </p>
+      {cartao.localizacao ? <p className="local">{cartao.localizacao}</p> : null}
       <div className="etiquetas">
         {cartao.modelo ? (
           <span className={`etiqueta${cartao.modelo === 'remoto' ? ' destaque' : ''}`}>

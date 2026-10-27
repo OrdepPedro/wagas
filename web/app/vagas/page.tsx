@@ -60,19 +60,20 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
 
   return (
     <li className="vaga">
-      {/* O clique passa por /ir/[id] para ser contado antes de sair. É a
-          métrica do produto: clique em "ver vaga" por usuário por semana. */}
-      <a className="titulo" href={`/ir/${vaga.id}`} target="_blank" rel="noopener noreferrer">
-        {vaga.cargo}
-      </a>
+      {/* Empresa antes do cargo: é o primeiro filtro de quem lê o feed. */}
       <p className="empresa">
         {vaga.empresa === 'não identificada' ? (
           <em>empresa não identificada</em>
         ) : (
           vaga.empresa
         )}
-        {vaga.localizacao ? ` · ${vaga.localizacao}` : ''}
       </p>
+      {/* O clique passa por /ir/[id] para ser contado antes de sair. É a
+          métrica do produto: clique em "ver vaga" por usuário por semana. */}
+      <a className="titulo" href={`/ir/${vaga.id}`} target="_blank" rel="noopener noreferrer">
+        {vaga.cargo}
+      </a>
+      {vaga.localizacao ? <p className="local">{vaga.localizacao}</p> : null}
       <div className="etiquetas">
         {vaga.modelo ? (
           <span className={`etiqueta${vaga.modelo === 'remoto' ? ' destaque' : ''}`}>
@@ -90,6 +91,10 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
         <span className="etiqueta">{NOME_DA_FONTE[vaga.fonte]}</span>
         <span className="etiqueta">{textoDaData(vaga)}</span>
       </div>
+      <a className="ver-vaga" href={`/ir/${vaga.id}`} target="_blank" rel="noopener noreferrer">
+        Ver vaga <span aria-hidden="true">↗</span>
+        <span className="sr-only"> (abre em nova aba)</span>
+      </a>
     </li>
   );
 }
