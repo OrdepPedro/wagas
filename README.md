@@ -1,4 +1,36 @@
-# wagas — coletor e classificador (Passos 2 e 3)
+# wagas — agregador de vagas dos últimos 7 dias
+
+Em produção: **https://wagas-three.vercel.app**. A pessoa informa cargo e cidade e recebe as vagas da semana — presenciais e híbridas na cidade, remotas do Brasil inteiro.
+
+## Web (`web/`, Passos 4 e 5)
+
+Next.js 16 + Supabase Auth, na Vercel. Importa `../src` em vez de copiar: a regra de família de cargo e a normalização de cidade têm uma implementação só.
+
+| rota | o que é |
+|---|---|
+| `/` | landing com a busca no hero e a contagem viva do acervo |
+| `/vagas` | o feed, 10 vagas por página (`?pagina=N`) |
+| `/entrar` | link mágico por e-mail, para quem já tem conta |
+| `/ir/[id]` | conta o clique e abre a vaga em nova guia |
+
+- **Visitante sem cadastro** ganha sessão anônima (Supabase Anonymous Sign-ins) e 2 buscas salvas de 7 dias cada. Com e-mail, 10 buscas por dia. O teto conta pares cargo × cidade distintos, não recargas.
+- **LGPD:** visitante sem acesso há 30 dias é apagado e o histórico dele fica anônimo (`npm run limpar-visitantes`, roda na coleta diária).
+- **E-mail** pelo SMTP do Brevo; o link usa `token_hash`, então abre em qualquer navegador.
+- **Leitura pela RLS**, com a chave pública. A chave secreta só existe no servidor, para a coleta sob demanda.
+
+Rodar local:
+
+```bash
+cd web && npm run dev
+```
+
+Variáveis na Vercel: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY`. No Supabase, Site URL e Redirect URLs apontando para o domínio e para `/auth/callback`.
+
+Coleta diária (Gupy + InfoJobs + encerramento de vagas fechadas + limpeza de visitantes) em `.github/workflows/coleta-diaria.yml`. Snyk nas dependências em `.github/workflows/snyk.yml`.
+
+---
+
+# Coletor e classificador (Passos 2 e 3)
 
 **Coletor.** Busca vagas dos últimos 7 dias em três blocos — LinkedIn Jobs, posts do LinkedIn e Gupy —, normaliza, deduplica e grava em `raw_results`.
 
@@ -123,7 +155,7 @@ Só a camada de fonte é específica. `normalize/`, `dedupe`, `db` e as migratio
 Para refazer do zero em outro ambiente:
 
 1. Criar conta em [serper.dev](https://serper.dev) e pôr a chave em `SERPER_KEY` no `.env`
-2. Aplicar `migrations/0001_*.sql`, `0002_*.sql` e `0003_*.sql` no SQL Editor do Supabase
+2. Aplicar `migrations/0001_*.sql` a `0011_*.sql`, em ordem, no SQL Editor do Supabase
 3. Copiar a URL do projeto e a **secret key** (Settings → API Keys) para o `.env`
 4. Secrets no repositório: `SERPER_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` e, para classificar, `GEMINI_KEY` (opcional: `GROQ_KEY`)
 
@@ -250,5 +282,4 @@ Três dos quatro são o mesmo problema: **falta de snippet no golden set**, não
 
 - **Posts precisam de solução melhor.** Funcionam e generalizam, mas o título vem reescrito e a extração de empresa/cargo exige buscar o corpo da página — uma requisição a mais por item.
 - **Dedup semântica.** A mesma vaga anunciada na Gupy e repostada como post tem URLs diferentes e, quando o nome da empresa sai diferente nas duas, `dedup_key` também não pega. Precisa de pgvector sobre o texto extraído.
-- **Gupy é fonte única de ATS.** Risco registrado, não resolvido.
-- **Nada lê o banco ainda.** `jobs` só vira produto no Passo 4.
+- **Gupy é fonte única de ATS.** Atenuado pelo InfoJobs (não-tech), não resolvido para tech.

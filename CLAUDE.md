@@ -213,7 +213,22 @@ O feed responde hoje, com janela de 7 dias, em São Paulo: Auxiliar Administrati
 
 **A data é dita com a procedência.** Com `data_publicacao` null em 192 de 192, o cartão escreve "vista em 24/08", não "publicada há 2 dias". A segunda frase seria invenção: com `qdr:w`, item coletado ontem podia ter até sete dias.
 
-**O que a tela ainda NÃO tem:** deploy na Vercel, e SMTP próprio. O remetente padrão do Supabase tem limite baixo de e-mails por hora — serve para um usuário, não para as dez pessoas do Passo 5.
+~~**O que a tela ainda NÃO tem:** deploy na Vercel, e SMTP próprio.~~ Os dois feitos em 26/10 — ver Passo 5.
+
+### Passo 5 — no ar (26–27/10/2026)
+
+**Produção em https://wagas-three.vercel.app** (Vercel Hobby, região `gru1`, projeto `prj_lvl4XrxcJne5n4Us7JMiPGVrTBVx`). Proteção de deploy só nas prévias; produção é pública. Testado em produção: landing, sessão anônima, busca sob demanda (Gupy), teto e clique gravado em `cliques`.
+
+- **Rotas.** `/` é a landing (busca no hero, contagem viva do acervo, três vagas reais, modo escuro). `/vagas` é o feed, 10 cartões por página (`?pagina=N`). `/entrar` é o link mágico para quem já tem conta. `/ir/[id]` conta o clique e abre a vaga em nova guia.
+- **Visitante (trava 7).** `proxy.ts` cria sessão anônima só em GET de documento para `/` — nunca em prefetch, `/ir`, callback ou robô. Teto por **pares cargo×cidade distintos**, não por carga: visitante tem 2 buscas salvas que valem 7 dias cada; com e-mail, 10 por dia. Busca negada não ocupa vaga. Visitante não tem "Sair" (zeraria o teto).
+- **LGPD do visitante (migration 0010).** `limpar_visitantes(30)` apaga o usuário anônimo após 30 dias sem acesso; `buscas` e `cliques` ficam com `user_id` nulo (anonimizados, não apagados). Roda na coleta diária. O aviso está na tela.
+- **SMTP próprio pelo Brevo**, sem domínio próprio. Risco conhecido: remetente Gmail/Outlook saindo de outro servidor tende ao spam. Para abrir ao público, domínio próprio.
+- **Link mágico por `token_hash`, não PKCE.** O primeiro login falhou: o Supabase verificou o link, mas o PKCE exige abrir no mesmo navegador que pediu (e eu tinha sugerido janela anônima). Os templates "Magic Link" e "Confirm signup" usam `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email`; `auth/callback` aceita os dois formatos. Funciona em outro navegador e no celular.
+- **Encerramento de vaga (migration 0011).** `jobs.encerrada_em`: vaga da Gupy que some de todas as consultas completas do dia, tem menos de 6 dias e cuja página confirma `"status":"closed"`. Trava se uma consulta encerraria mais de 50%; reabre sozinha se reaparecer. `cliques.job_id` sobrevive à exclusão da vaga (`on delete set null`). InfoJobs ainda sem encerramento.
+- **Snyk** no Actions (`snyk.yml`), falha em severidade alta. Primeira rodada pegou 9 vulnerabilidades, incluindo RCE no Next; corrigidas com Next 16.4.3. A integração Snyk–GitHub ficou desligada (limite de testes privados do plano grátis).
+- **Cron da coleta diária em `17 6 * * *`.** O minuto quebrado não reduziu o atraso do Actions (rodou 5h19 e 6h52).
+
+**O que o Passo 5 ainda não tem:** critério de sucesso escrito e as 10 pessoas escolhidas (de segmentos variados, não só PM/BH); ingestão por e-mail.
 
 ---
 
@@ -747,13 +762,15 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 - **Desenhar o currículo adaptado:** onde o CV mora, consentimento LGPD, retenção, e qual métrica mede o diferencial (CV gerado → candidatura, além de clique em "ver vaga").
 - **[fecha o Passo 4] Uma requisição por item na coleta** (trava 4). Fecha `data_publicacao`, empresa, modelo e corpo do post de uma vez. Só no Actions, nunca no request do usuário, e com falha de rede distinguível de campo ausente.
 - ~~**[fecha o Passo 4] Garantir zero duplicata na exibição do feed** (trava 5)~~ — **feito em 23/10, achado 40.** Colapso na exibição em duas regras, dedup de gravação por id da fonte, autocura das vagas descartadas. A regra entre fontes não disparou em produção ainda.
-- **Ligar Anonymous Sign-ins no Supabase** (trava 7). O caminho já está pronto no código — `is_anonymous` lido, teto aplicado. Falta o botão no dashboard.
+- ~~**Ligar Anonymous Sign-ins no Supabase** (trava 7)~~ — **feito, confirmado em 26/10.** Um `POST /auth/v1/signup` com corpo vazio e só a chave pública devolveu `access_token` com `aud: authenticated` e `is_anonymous`, o que só acontece com o sign-in anônimo ligado no projeto. O código já lê `is_anonymous` e aplica o teto. Verificado no pentest da frente 2 (ataque à API com a chave pública), que também confirmou a RLS: anônimo puro recebe `[]` em todas as tabelas; autenticado lê `jobs` (4447 linhas) mas `[]` em `buscas`/`perfis`/`cliques` dos outros e nas tabelas sem policy; INSERT em `jobs` barrado por RLS (`42501`) para anônimo e para autenticado, porque a policy é `for select`.
 - **Região metropolitana determinística** (trava 6, achado 22). `cidade_slug` + tabela de municípios por RM.
 - **Segunda fonte gratuita brasileira** (trava 10). A Gupy sustenta o caso de cargo novo sozinha, o que é risco de fonte única. Nenhum candidato foi verificado; a sonda mede **sobreposição com o acervo atual**, não volume.
 - **Medir se post converte — mas só no Passo 5.** Posts são 19 de 248 itens (7,7%) com a MAIOR taxa de aprovação de todas as fontes (95%): quando aparece, é vaga boa. Cliques por usuário por semana não existem porque não há deploy. Com o post rebaixado (trava 1), essa medição deixou de ser urgente: ela decide se vale reinvestir na fonte, não se o produto entrega feed. `/ir/[id]` já grava o clique.
 - **Fechar a conta do achado 27 custa 1 crédito** e continua sem ser feito. Repetir a sonda da frase exata do post e ver quando ele aparece no índice. Não é mais caminho crítico — é a diferença entre "o Google demora" e "o Google não indexa", que muda o que se escreve sobre a fonte, não o que se constrói.
 - **Telemetria escreve durante o render** (achado 25). A janela de 60s remenda o dobro; a correção estrutural é tirar a escrita do render.
-- **Deploy da tela e SMTP próprio.** `web/` roda local e o build passa, mas não está na Vercel. E o remetente padrão do Supabase limita e-mails por hora: serve para um usuário testando, não para as dez pessoas do Passo 5.
+- ~~**Deploy da tela e SMTP próprio.**~~ — **feito em 26/10** (Vercel + Brevo). Ver Passo 5.
+- **Visitante que entra com e-mail vira outra conta.** Perde as buscas salvas; o certo é `updateUser` sobre a sessão anônima.
+- **Busca de par novo consulta a Gupy duas vezes** (render duplo, achado 25). E cada página do feed recarrega a consulta inteira.
 - **`data_publicacao` continua null na prática,** e enquanto isso a janela de 7 dias é uma janela de até 14. O fix da regex da Gupy recupera 9 de 57 na próxima coleta; o LinkedIn não tem sinal na SERP (achado 19), mas tem na página (trava 4).
 - **58% das vagas sem modelo de trabalho,** e a leitura determinística recuperou 0 (achado 20). Sem modelo, a vaga não entra no balde remoto do feed. Resolvido pela trava 4.
 - **30% das vagas gravadas ficaram sem empresa** e aparecem como `"não identificada"`. Ruim de mostrar no feed e impede dedup entre fontes. Resolvido pela trava 4.
@@ -776,8 +793,8 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
-| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **funcionando local, sem deploy.** Migrations 0004–0007, `web/` com Auth por link mágico, busca de qualquer cargo pela API pública da Gupy, toggle Só Remoto, teto diário, clique em `/ir/[id]` e fila de coleta paga |
-| 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente. Inclui Vercel, SMTP próprio e Anonymous Sign-ins |
+| 4 — Feed mínimo (Next.js + Supabase Auth) | ✅ **fechado.** As três condições da trava 3 cumpridas em 23/10 e no `main` |
+| 5 — Ingestão por e-mail e teste com 10 usuários reais | 🔨 **no ar em 26/10** (wagas-three.vercel.app): landing, visitante anônimo com teto, link mágico, SMTP Brevo, LGPD do visitante, paginação. Faltam critério de sucesso, as 10 pessoas e a ingestão por e-mail |
 
 **O Passo 4 fecha com três condições, e só com elas** (trava 3, 28/08): `data_publicacao` real na maioria das linhas, zero duplicata no feed, Telegram medido. Melhoria fora dessas três é o Passo 4 não terminando nunca — o resto vai para o Passo 5.
 
