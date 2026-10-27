@@ -35,7 +35,7 @@ concurrency:
 jobs:
   classificar:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 75
 
     steps:
       - uses: actions/checkout@v5
@@ -73,3 +73,12 @@ jobs:
           if [ "${SO_PREFILTRO:-false}" = "true" ]; then args+=(--so-prefiltro); fi
           if [ -n "${LIMITE:-}" ]; then args+=("--limite=${LIMITE}"); fi
           node src/classify.ts ${args[@]+"${args[@]}"}
+
+      # Data real das vagas do LinkedIn Jobs, lida da página de cada uma
+      # (achado 41). Uma página a cada 20 s, por isso o timeout maior.
+      - name: Datar LinkedIn
+        if: ${{ !inputs.dry_run }}
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: node scripts/datar-linkedin.ts
