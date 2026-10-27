@@ -24,6 +24,7 @@
     "web:build": "npm run build --prefix web",
     "infojobs": "node --env-file-if-exists=.env scripts/coletar-infojobs.ts",
     "diaria": "node --env-file-if-exists=.env scripts/coleta-diaria.ts",
+    "datar-linkedin": "node --env-file-if-exists=.env scripts/datar-linkedin.ts",
     "limpar-visitantes": "node --env-file-if-exists=.env scripts/limpar-visitantes.ts"
   },
   "devDependencies": {

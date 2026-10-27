@@ -42,6 +42,8 @@ Consequência direta na coleta: cada par cargo×cidade vira **duas consultas por
 
    **Exceção decidida pelo Pedro em 22/10 (achado 39):** quando a página não publica `JobPosting`, vale ler o HTML **do bloco da própria vaga**, delimitado por um marcador fixo antes da lateral de outras vagas (no InfoJobs, `id="divSimilarVacancies"`). Sem o marcador, a página é recusada. A data lida assim só tem precisão de dia e é gravada com origem `pagina_html`, nunca `metatag`.
 
+   **Exceção decidida pelo Pedro em 27/10 (achado 41): a página pública da vaga do LinkedIn (`/jobs/view/<id>`) pode ser lida mesmo com o `robots.txt` proibindo** (`User-agent: * / Disallow: /`). Decisão tomada contra a minha recomendação, sabendo do precedente da hiQ (achado 32). Todas as outras condições continuam valendo: GET anônimo, sem cookie e sem conta (restrição 2 intacta); só na coleta; intervalo de 20 s; só o bloco da própria vaga (`posted-time-ago__text`), nunca a lateral (`aside-job-card`). A exceção é só do LinkedIn: o Hays continua fora.
+
 ---
 
 ## A PSE morreu — 22/08/2026
@@ -661,6 +663,25 @@ Amostra de 21, de 8 buscas, lendo o campo de modelo da própria vaga:
 Efeito medido: Atendente/Rio, 224 linhas → **99 cartões**, sem esconder vaga distinta; Auxiliar Administrativo/SP, 134 → 133. O feed passou a pedir 3× o que mostra, porque com folga pequena o Rio encolhia para 42 com vaga sobrando no banco.
 
 **O que NÃO está medido:** a regra (b) nunca disparou em dado real — 0 grupos entre fontes, porque as linhas do LinkedIn Jobs de agosto já expiraram e só Gupy + InfoJobs estão na janela, e essas duas quase não se sobrepõem (achado 37). Ela está coberta por teste, não por produção.
+
+**41. A página da vaga do LinkedIn entrega a data relativa, mas não o `JobPosting`, e o robots.txt proíbe a leitura (27/10).** `scripts/sondar-linkedin-data.ts`, 30 URLs frescas pela Serper (3 créditos), 20 s de intervalo, retentativa no 429. Bruto em `linkedin-data-2026-10-27.json`.
+
+| | páginas |
+|---|---|
+| 200 | 30 |
+| 429 | 0 |
+| com `JobPosting` | 0 |
+| com "Há X dias" no topo da vaga | 30 |
+
+- **Com 20 s de intervalo, o racionamento do achado 38 sumiu.** Com 8 s, eram 2 bloqueios em 8.
+- **Não há `JobPosting` em nenhuma página.** Não vem descrição estruturada nem data com hora; a precisão é de dia.
+- **O `<time datetime>` da página é da lateral** (`aside-job-card__listdate`, 40 por página). Ler dali seria o achado 1 de novo.
+- **23% do que o `qdr:w` devolve já está fora da janela:** 7 de 30 com "1 semana" ou mais, incluindo um "2 meses". Confirma o achado 19 sobre a vaga, não sobre o snippet.
+- **`robots.txt`: `User-agent: * / Disallow: /`.** Pelas condições da restrição 3, isso deixaria o LinkedIn de fora, como aconteceu com o Hays. O Pedro abriu a exceção em 27/10.
+
+**Implementado em 27/10:** `src/fontes/linkedin-pagina.ts` + `scripts/datar-linkedin.ts` (`npm run datar-linkedin`), como passo final do `classificador.yml`. O script pega as linhas `linkedin_job` sem data coletadas nos últimos 14 dias, abre uma página a cada 20 s e grava `data_publicacao` com origem `pagina_html`. Nada é cortado à mão: com a data real, `data_referencia` tira do feed sozinha o que passou de 7 dias. 429, 5xx e erro de rede contam como `falhou` e não gravam nada; o job falha se mais da metade das páginas falhar. Teste a seco em 3 linhas antigas, de agosto: 1 com data ("Há 2 meses") e 2 `sem_data`. Provavelmente é a variante de vaga encerrada, mas não conferi. **Ainda não rodou sobre uma coleta nova da Serper.**
+
+A descrição continua faltando: para o currículo adaptado, o LinkedIn segue como fonte de segunda classe.
 
 ---
 
