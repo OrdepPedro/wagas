@@ -1305,8 +1305,14 @@ code.dork {
 
 .dork-acoes {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 8px 12px;
+}
+
+.link-sem-periodo {
+  font-size: 0.8125rem;
+  color: var(--texto-fraco);
 }
 
 /* Celular: "Minhas vagas", "Entrar" e o tema na mesma linha do logo. */

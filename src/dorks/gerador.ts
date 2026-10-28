@@ -92,6 +92,12 @@ export interface Dork {
   site: Site;
   consulta: string;
   url: string;
+  /**
+   * Mesma busca sem o filtro de período. O `tbs` do Google filtra pela data do
+   * índice, não da publicação (achado 19): vaga de 2 dias pode não ter entrado
+   * ainda e a busca vem vazia. Null quando o período já é "qualquer".
+   */
+  urlSemPeriodo: string | null;
 }
 
 /** Aspas do usuário quebrariam a frase exata do dork. */
@@ -109,8 +115,12 @@ export function gerarDorks(pedido: PedidoDeDork): Dork[] {
 
   return SITES.filter((s) => pedido.sites.includes(s.id)).map((site) => {
     const consulta = site.montar(cargo, local);
-    const params = new URLSearchParams({ q: consulta });
-    if (tbs) params.set('tbs', tbs);
-    return { site, consulta, url: `https://www.google.com/search?${params}` };
+    const base = `https://www.google.com/search?${new URLSearchParams({ q: consulta })}`;
+    return {
+      site,
+      consulta,
+      url: tbs ? `${base}&${new URLSearchParams({ tbs })}` : base,
+      urlSemPeriodo: tbs ? base : null,
+    };
   });
 }

@@ -95,6 +95,11 @@ export function GeradorDeDorks() {
                 <a href={d.url} target="_blank" rel="noopener noreferrer" className="link-feed">
                   Pesquisar no Google
                 </a>
+                {d.urlSemPeriodo ? (
+                  <a href={d.urlSemPeriodo} target="_blank" rel="noopener noreferrer" className="link-sem-periodo">
+                    Veio vazio? Sem filtro de data
+                  </a>
+                ) : null}
                 <button type="button" className="discreto" onClick={() => copiar(d.site.id, d.consulta)}>
                   {copiado === d.site.id ? 'Copiado' : 'Copiar'}
                 </button>

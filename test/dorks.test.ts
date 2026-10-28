@@ -29,6 +29,9 @@ describe('gerarDorks', () => {
     assert.equal(new URL(d.url).searchParams.get('tbs'), 'qdr:d');
     const q = gerarDorks({ cargo: 'Vendedor', sites: ['gupy'], periodo: 'qualquer' })[0]!;
     assert.equal(new URL(q.url).searchParams.get('tbs'), null);
+    assert.equal(q.urlSemPeriodo, null);
+    assert.equal(new URL(d.urlSemPeriodo!).searchParams.get('tbs'), null);
+    assert.equal(new URL(d.urlSemPeriodo!).searchParams.get('q'), d.consulta);
   });
 
   it('aspas do usuário não quebram a frase exata', () => {
