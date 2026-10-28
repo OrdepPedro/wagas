@@ -20,11 +20,16 @@ export const PERIODOS: { id: Periodo; rotulo: string; tbs: string | null }[] = [
   { id: 'qualquer', rotulo: 'Qualquer data', tbs: null },
 ];
 
+export type Grupo = 'LinkedIn' | 'Portais brasileiros' | 'ATS';
+
+export const GRUPOS: Grupo[] = ['LinkedIn', 'Portais brasileiros', 'ATS'];
+
 export interface Site {
   id: string;
   nome: string;
   /** Validado no Passo 1 (precisão medida) ou só montado no mesmo molde. */
   medido: boolean;
+  grupo: Grupo;
   montar: (cargo: string, local: Local) => string;
 }
 
@@ -55,13 +60,27 @@ function validado(bloco: 'linkedin_job' | 'linkedin_post') {
 }
 
 export const SITES: Site[] = [
-  { id: 'linkedin_job', nome: 'LinkedIn Vagas', medido: true, montar: validado('linkedin_job') },
-  { id: 'linkedin_post', nome: 'Posts do LinkedIn', medido: true, montar: validado('linkedin_post') },
-  { id: 'gupy', nome: 'Gupy', medido: true, montar: molde('gupy.io') },
-  { id: 'infojobs', nome: 'InfoJobs', medido: false, montar: molde('infojobs.com.br') },
-  { id: 'greenhouse', nome: 'Greenhouse', medido: false, montar: molde('boards.greenhouse.io') },
-  { id: 'lever', nome: 'Lever', medido: false, montar: molde('jobs.lever.co') },
-  { id: 'ashby', nome: 'Ashby', medido: false, montar: molde('jobs.ashbyhq.com') },
+  { id: 'linkedin_job', nome: 'LinkedIn Vagas', grupo: 'LinkedIn', medido: true, montar: validado('linkedin_job') },
+  { id: 'linkedin_post', nome: 'Posts do LinkedIn', grupo: 'LinkedIn', medido: true, montar: validado('linkedin_post') },
+
+  // Portais: a busca roda no Google pela própria pessoa, então anti-bot e
+  // robots.txt (que tiram Catho e Hays da COLETA) não se aplicam aqui.
+  { id: 'gupy', nome: 'Gupy', grupo: 'Portais brasileiros', medido: true, montar: molde('gupy.io') },
+  { id: 'infojobs', nome: 'InfoJobs', grupo: 'Portais brasileiros', medido: false, montar: molde('infojobs.com.br') },
+  { id: 'vagas', nome: 'Vagas.com', grupo: 'Portais brasileiros', medido: false, montar: molde('vagas.com.br/vagas') },
+  { id: 'catho', nome: 'Catho', grupo: 'Portais brasileiros', medido: false, montar: molde('catho.com.br/vagas') },
+  { id: 'indeed', nome: 'Indeed Brasil', grupo: 'Portais brasileiros', medido: false, montar: molde('br.indeed.com') },
+  { id: 'glassdoor', nome: 'Glassdoor', grupo: 'Portais brasileiros', medido: false, montar: molde('glassdoor.com.br') },
+  { id: 'bne', nome: 'BNE', grupo: 'Portais brasileiros', medido: false, montar: molde('bne.com.br') },
+  { id: 'trabalhabrasil', nome: 'Trabalha Brasil', grupo: 'Portais brasileiros', medido: false, montar: molde('trabalhabrasil.com.br') },
+  { id: 'empregos', nome: 'Empregos.com.br', grupo: 'Portais brasileiros', medido: false, montar: molde('empregos.com.br') },
+  { id: 'solides', nome: 'Sólides Vagas', grupo: 'Portais brasileiros', medido: false, montar: molde('vagas.solides.com.br') },
+  { id: 'michaelpage', nome: 'Michael Page', grupo: 'Portais brasileiros', medido: false, montar: molde('michaelpage.com.br') },
+  { id: 'roberthalf', nome: 'Robert Half', grupo: 'Portais brasileiros', medido: false, montar: molde('roberthalf.com/br') },
+
+  { id: 'greenhouse', nome: 'Greenhouse', grupo: 'ATS', medido: false, montar: molde('boards.greenhouse.io') },
+  { id: 'lever', nome: 'Lever', grupo: 'ATS', medido: false, montar: molde('jobs.lever.co') },
+  { id: 'ashby', nome: 'Ashby', grupo: 'ATS', medido: false, montar: molde('jobs.ashbyhq.com') },
 ];
 
 export interface PedidoDeDork {

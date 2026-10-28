@@ -41,3 +41,12 @@ describe('gerarDorks', () => {
     assert.deepEqual(gerarDorks({ cargo: 'Vendedor', sites: [], periodo: 'semana' }), []);
   });
 });
+
+describe('portais brasileiros', () => {
+  it('cada portal gera dork próprio, com o cargo entre aspas', () => {
+    const ids = ['vagas', 'catho', 'indeed', 'bne'];
+    const dorks = gerarDorks({ cargo: 'Vendedor', sites: ids, periodo: 'semana', cidade: 'Recife' });
+    assert.equal(dorks.length, ids.length);
+    for (const d of dorks) assert.match(d.consulta, /^site:\S+ "Vendedor" "Recife"$/);
+  });
+});

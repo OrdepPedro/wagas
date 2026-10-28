@@ -1171,6 +1171,7 @@ html {
 .gerador-dorks legend {
   font-weight: 600;
   margin-bottom: 6px;
+  width: 100%;
 }
 
 .gerador-dorks label.opcao,

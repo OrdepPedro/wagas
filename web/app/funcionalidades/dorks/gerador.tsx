@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { gerarDorks, PERIODOS, SITES, type Periodo } from '../../../../src/dorks/gerador.ts';
+import { gerarDorks, GRUPOS, PERIODOS, SITES, type Periodo } from '../../../../src/dorks/gerador.ts';
 
 /**
  * Tudo no cliente: o dork é texto montado a partir do formulário, sem chamada
@@ -57,15 +57,17 @@ export function GeradorDeDorks() {
           Só vagas remotas
         </label>
 
-        <fieldset>
-          <legend>Sites</legend>
-          {SITES.map((s) => (
-            <label key={s.id} className="opcao">
-              <input type="checkbox" checked={sites.includes(s.id)} onChange={() => alternarSite(s.id)} />
-              {s.nome}
-            </label>
-          ))}
-        </fieldset>
+        {GRUPOS.map((grupo) => (
+          <fieldset key={grupo}>
+            <legend>{grupo}</legend>
+            {SITES.filter((s) => s.grupo === grupo).map((s) => (
+              <label key={s.id} className="opcao">
+                <input type="checkbox" checked={sites.includes(s.id)} onChange={() => alternarSite(s.id)} />
+                {s.nome}
+              </label>
+            ))}
+          </fieldset>
+        ))}
 
         <fieldset>
           <legend>Período</legend>
