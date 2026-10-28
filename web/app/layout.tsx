@@ -36,8 +36,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               </span>
               <span className="marca-nome">wagas</span>
             </a>
-            <nav className="topo-acoes">
+            <nav className="topo-centro" aria-label="Funcionalidades">
               <MenuFuncionalidades />
+            </nav>
+            <nav className="topo-acoes">
               {temFeed ? (
                 <a href="/vagas" className="link-feed">
                   Minhas vagas
