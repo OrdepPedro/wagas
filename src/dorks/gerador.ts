@@ -6,8 +6,8 @@
  * crítica do CLAUDE.md (request de usuário nunca chega na API paga) vale aqui.
  *
  * Os templates de LinkedIn Jobs, posts e Gupy são os de `montarDork`, os
- * validados no Passo 1. Os demais sites (portais brasileiros) seguem o
- * mesmo molde `site:<caminho da vaga> "<cargo>" <local>` e NÃO foram medidos.
+ * validados no Passo 1. Os portais brasileiros foram medidos em 28/10 — ver
+ * o comentário em `SITES`.
  */
 import { montarDork } from '../config/alvos.ts';
 
@@ -42,9 +42,15 @@ function termoDeLocal(local: Local): string | null {
   return 'remoto' in local ? TERMO_REMOTO : `"${local.cidade}"`;
 }
 
-function molde(caminho: string) {
+/**
+ * `site:<caminho> [filtro] "<cargo>" [local] [exclusão]`. O filtro existe porque
+ * nos portais grandes o `site:` puro devolve quase só página de SEO (listagem por
+ * cidade, salário, blog): medido em 28/10, 0–15% de página de vaga. O filtro
+ * mira o formato da URL ou do título da vaga individual.
+ */
+function molde(caminho: string, filtro?: string, exclusao?: string) {
   return (cargo: string, local: Local) =>
-    [`site:${caminho}`, `"${cargo}"`, termoDeLocal(local)].filter(Boolean).join(' ');
+    [`site:${caminho}`, filtro, `"${cargo}"`, termoDeLocal(local), exclusao].filter(Boolean).join(' ');
 }
 
 /** Dork de produção quando há local; sem local, o mesmo dork sem o termo final. */
@@ -65,18 +71,22 @@ export const SITES: Site[] = [
 
   // Portais: a busca roda no Google pela própria pessoa, então anti-bot e
   // robots.txt (que tiram Catho e Hays da COLETA) não se aplicam aqui.
+  //
+  // Medição de 28/10 pela Serper, 2 cargos (Auxiliar Administrativo, Analista
+  // de Dados) x 10 resultados: com o filtro abaixo, 100% dos resultados são
+  // página de vaga individual em todos os portais, inclusive com `qdr:w`. Mede
+  // FORMATO, não cargo: BNE e Trabalha Brasil devolvem "Analista de Banco de
+  // Dados" para "Analista de Dados".
   { id: 'gupy', nome: 'Gupy', grupo: 'Portais brasileiros', medido: true, montar: molde('gupy.io') },
-  { id: 'infojobs', nome: 'InfoJobs', grupo: 'Portais brasileiros', medido: false, montar: molde('infojobs.com.br') },
-  { id: 'vagas', nome: 'Vagas.com', grupo: 'Portais brasileiros', medido: false, montar: molde('vagas.com.br/vagas') },
-  { id: 'catho', nome: 'Catho', grupo: 'Portais brasileiros', medido: false, montar: molde('catho.com.br/vagas') },
-  { id: 'indeed', nome: 'Indeed Brasil', grupo: 'Portais brasileiros', medido: false, montar: molde('br.indeed.com') },
-  { id: 'glassdoor', nome: 'Glassdoor', grupo: 'Portais brasileiros', medido: false, montar: molde('glassdoor.com.br') },
-  { id: 'bne', nome: 'BNE', grupo: 'Portais brasileiros', medido: false, montar: molde('bne.com.br') },
-  { id: 'trabalhabrasil', nome: 'Trabalha Brasil', grupo: 'Portais brasileiros', medido: false, montar: molde('trabalhabrasil.com.br') },
-  { id: 'empregos', nome: 'Empregos.com.br', grupo: 'Portais brasileiros', medido: false, montar: molde('empregos.com.br') },
-  { id: 'solides', nome: 'Sólides Vagas', grupo: 'Portais brasileiros', medido: false, montar: molde('vagas.solides.com.br') },
-  { id: 'michaelpage', nome: 'Michael Page', grupo: 'Portais brasileiros', medido: false, montar: molde('michaelpage.com.br') },
-  { id: 'roberthalf', nome: 'Robert Half', grupo: 'Portais brasileiros', medido: false, montar: molde('roberthalf.com/br') },
+  { id: 'infojobs', nome: 'InfoJobs', grupo: 'Portais brasileiros', medido: true, montar: molde('infojobs.com.br', 'inurl:vaga-de') },
+  { id: 'vagas', nome: 'Vagas.com', grupo: 'Portais brasileiros', medido: true, montar: molde('vagas.com.br', 'intitle:Vaga') },
+  { id: 'catho', nome: 'Catho', grupo: 'Portais brasileiros', medido: true, montar: molde('catho.com.br', 'intitle:"Vaga de Emprego de"') },
+  { id: 'indeed', nome: 'Indeed Brasil', grupo: 'Portais brasileiros', medido: true, montar: molde('br.indeed.com/viewjob') },
+  { id: 'glassdoor', nome: 'Glassdoor', grupo: 'Portais brasileiros', medido: true, montar: molde('glassdoor.com.br/job-listing') },
+  { id: 'bne', nome: 'BNE', grupo: 'Portais brasileiros', medido: true, montar: molde('bne.com.br', 'inurl:vaga-de-emprego-na-area') },
+  { id: 'trabalhabrasil', nome: 'Trabalha Brasil', grupo: 'Portais brasileiros', medido: true, montar: molde('trabalhabrasil.com.br', 'intitle:"Vaga de"') },
+  { id: 'empregos', nome: 'Empregos.com.br', grupo: 'Portais brasileiros', medido: true, montar: molde('empregos.com.br/vaga') },
+  { id: 'solides', nome: 'Sólides Vagas', grupo: 'Portais brasileiros', medido: true, montar: molde('vagas.solides.com.br', 'inurl:vaga', '-blog') },
 ];
 
 export interface PedidoDeDork {

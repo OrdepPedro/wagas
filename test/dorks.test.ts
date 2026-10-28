@@ -50,6 +50,14 @@ describe('portais brasileiros', () => {
     const ids = ['vagas', 'catho', 'indeed', 'bne'];
     const dorks = gerarDorks({ cargo: 'Vendedor', sites: ids, periodo: 'semana', cidade: 'Recife' });
     assert.equal(dorks.length, ids.length);
-    for (const d of dorks) assert.match(d.consulta, /^site:\S+ "Vendedor" "Recife"$/);
+    for (const d of dorks) assert.match(d.consulta, /^site:\S+ (\S+ )?"Vendedor" "Recife"$/);
+  });
+
+  it('portal grande leva o filtro que mira a página da vaga', () => {
+    // Sem ele, o `site:` puro devolve 0–15% de vaga (medido em 28/10).
+    const [d] = gerarDorks({ cargo: 'Vendedor', sites: ['catho'], periodo: 'semana' });
+    assert.equal(d!.consulta, 'site:catho.com.br intitle:"Vaga de Emprego de" "Vendedor"');
+    const [s] = gerarDorks({ cargo: 'Vendedor', sites: ['solides'], periodo: 'semana', remoto: true });
+    assert.ok(s!.consulta.endsWith('-blog'), s!.consulta);
   });
 });
