@@ -18,6 +18,11 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   outputFileTracingRoot: path.join(path.dirname(fileURLToPath(import.meta.url)), '..'),
   typedRoutes: true,
+  // O medidor de currículo recebe o arquivo pela Server Action. O padrão é
+  // 1 MB, menor que muito PDF com fonte embutida; o teto do medidor é 5 MB.
+  experimental: {
+    serverActions: { bodySizeLimit: '6mb' },
+  },
 };
 
 export default config;

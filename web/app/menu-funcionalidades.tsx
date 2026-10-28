@@ -2,11 +2,28 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-const ITENS = [
+const SECOES = [
   {
-    href: '/funcionalidades/dorks',
-    titulo: 'Gerador de buscas avançadas',
-    descricao: 'Monte a busca do Google por cargo, sites e período, pronta para abrir.',
+    titulo: 'Ferramentas de busca',
+    itens: [
+      {
+        href: '/funcionalidades/dorks',
+        titulo: 'Gerador de buscas avançadas',
+        descricao: 'Monte a busca do Google por cargo, sites e período, pronta para abrir.',
+        icone: 'busca',
+      },
+    ],
+  },
+  {
+    titulo: 'Currículo',
+    itens: [
+      {
+        href: '/funcionalidades/ats',
+        titulo: 'Medidor de currículo para ATS',
+        descricao: 'Veja se sistemas de recrutamento leem seu currículo e o que falta para o cargo.',
+        icone: 'documento',
+      },
+    ],
   },
 ];
 
@@ -49,21 +66,35 @@ export function MenuFuncionalidades() {
         </svg>
       </button>
       <div className="menu-func-painel">
-          <p className="menu-func-secao">Ferramentas de busca</p>
-          {ITENS.map((item) => (
-            <a key={item.href} href={item.href} className="menu-func-item" onClick={() => setAberto(false)}>
-              <span className="menu-func-icone" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="7" />
-                  <path d="m20 20-3.5-3.5" />
-                  <path d="m8.5 11 1.75 1.75L13.5 9.5" />
-                </svg>
-              </span>
-              <span>
-                <strong>{item.titulo}</strong>
-                <span className="menu-func-desc">{item.descricao}</span>
-              </span>
-            </a>
+          {SECOES.map((secao) => (
+            <div key={secao.titulo}>
+              <p className="menu-func-secao">{secao.titulo}</p>
+              {secao.itens.map((item) => (
+                <a key={item.href} href={item.href} className="menu-func-item" onClick={() => setAberto(false)}>
+                  <span className="menu-func-icone" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      {item.icone === 'busca' ? (
+                        <>
+                          <circle cx="11" cy="11" r="7" />
+                          <path d="m20 20-3.5-3.5" />
+                          <path d="m8.5 11 1.75 1.75L13.5 9.5" />
+                        </>
+                      ) : (
+                        <>
+                          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+                          <path d="M14 3v5h5" />
+                          <path d="m9 14 2 2 4-4" />
+                        </>
+                      )}
+                    </svg>
+                  </span>
+                  <span>
+                    <strong>{item.titulo}</strong>
+                    <span className="menu-func-desc">{item.descricao}</span>
+                  </span>
+                </a>
+              ))}
+            </div>
           ))}
       </div>
     </div>
