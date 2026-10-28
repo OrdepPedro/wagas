@@ -1122,15 +1122,101 @@ html {
   margin-top: 20px;
 }
 
-.link-funcionalidades {
+.menu-func {
+  position: relative;
+}
+
+button.menu-func-botao,
+button.menu-func-botao:hover:not(:disabled) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.875rem;
   font-weight: 600;
-  text-decoration: none;
+  color: var(--texto-fraco);
+  background: transparent;
+  border: 0;
+  padding: 7px 14px;
+  border-radius: 999px;
+}
+
+button.menu-func-botao:hover:not(:disabled),
+button.menu-func-botao.aberto {
+  color: var(--texto);
+  background: var(--superficie-2);
+}
+
+.menu-func-botao svg {
+  transition: transform 0.15s;
+}
+
+.menu-func-botao.aberto svg {
+  transform: rotate(180deg);
+}
+
+.menu-func-painel {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 20;
+  width: min(400px, calc(100vw - 32px));
+  padding: 24px 20px 16px;
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 20px;
+  box-shadow: var(--sombra);
+}
+
+.menu-func-secao {
+  margin: 0 0 12px 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--texto-fraco);
 }
 
-.link-funcionalidades:hover {
+.menu-func-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  padding: 12px;
+  border-radius: 14px;
+  text-decoration: none;
+  color: var(--texto);
+}
+
+.menu-func-item > span:last-child {
+  min-width: 0;
+}
+
+.menu-func-item:hover {
+  background: var(--superficie-2);
+}
+
+.menu-func-item strong {
+  display: block;
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.menu-func-desc {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--texto-fraco);
+}
+
+.menu-func-icone {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
   color: var(--acento);
+  background: var(--acento-fraco);
+  border: 1px solid var(--borda);
 }
 
 .funcionalidades {
@@ -1145,18 +1231,6 @@ html {
 .funcionalidades > .caixa,
 .lista-dorks {
   margin-top: 20px;
-}
-
-.cartao-funcionalidade {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-decoration: none;
-  color: var(--texto);
-}
-
-.cartao-funcionalidade:hover {
-  border-color: var(--acento);
 }
 
 .gerador-dorks fieldset {
@@ -1221,8 +1295,35 @@ code.dork {
 
   .link-feed,
   .link-entrar,
-  .link-funcionalidades {
+  button.menu-func-botao {
     padding: 6px 10px;
     font-size: 0.8125rem;
+  }
+}
+
+.topo-acoes a,
+button.menu-func-botao {
+  white-space: nowrap;
+}
+
+/* Celular: com o menu, o nome ao lado do ícone não cabe — o ícone basta. */
+@media (max-width: 480px) {
+  .marca-nome {
+    display: none;
+  }
+
+  .topo-acoes {
+    gap: 4px;
+  }
+}
+
+/* Celular: o painel ocupa a largura da tela em vez de pendurar no botão. */
+@media (max-width: 560px) {
+  .menu-func-painel {
+    position: fixed;
+    top: 64px;
+    left: 16px;
+    right: 16px;
+    width: auto;
   }
 }
