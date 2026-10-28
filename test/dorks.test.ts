@@ -30,6 +30,9 @@ describe('gerarDorks', () => {
     const q = gerarDorks({ cargo: 'Vendedor', sites: ['gupy'], periodo: 'qualquer' })[0]!;
     assert.equal(new URL(q.url).searchParams.get('tbs'), null);
     assert.equal(q.urlSemPeriodo, null);
+    // Sem a aba Web, o Google ignora `site:` quando há aspas.
+    assert.equal(new URL(d.url).searchParams.get('udm'), '14');
+    assert.equal(new URL(d.urlSemPeriodo!).searchParams.get('udm'), '14');
     assert.equal(new URL(d.urlSemPeriodo!).searchParams.get('tbs'), null);
     assert.equal(new URL(d.urlSemPeriodo!).searchParams.get('q'), d.consulta);
   });

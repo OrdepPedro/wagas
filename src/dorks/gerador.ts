@@ -125,7 +125,11 @@ export function gerarDorks(pedido: PedidoDeDork): Dork[] {
 
   return SITES.filter((s) => pedido.sites.includes(s.id)).map((site) => {
     const consulta = site.montar(cargo, local);
-    const base = `https://www.google.com/search?${new URLSearchParams({ q: consulta })}`;
+    // `udm=14` é a aba "Web" do Google. Sem ela, em 28/10, o Google reescrevia a
+    // busca (modo IA) e ignorava `site:` sempre que havia aspas: o dork voltava
+    // artigo de blog. A Serper honra os operadores com ou sem isso, e por isso a
+    // medição pela API passou enquanto o link para o usuário falhava.
+    const base = `https://www.google.com/search?${new URLSearchParams({ q: consulta, udm: '14' })}`;
     return {
       site,
       consulta,
