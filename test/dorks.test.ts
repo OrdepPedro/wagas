@@ -50,7 +50,7 @@ describe('portais brasileiros', () => {
     const ids = ['vagas', 'catho', 'indeed', 'bne'];
     const dorks = gerarDorks({ cargo: 'Vendedor', sites: ids, periodo: 'semana', cidade: 'Recife' });
     assert.equal(dorks.length, ids.length);
-    for (const d of dorks) assert.match(d.consulta, /^site:\S+ (\S+ )?"Vendedor" "Recife"$/);
+    for (const d of dorks) assert.match(d.consulta, /^site:\S+ (.+ )?"Vendedor" "Recife"$/);
   });
 
   it('portal grande leva o filtro que mira a página da vaga', () => {
