@@ -10,7 +10,10 @@ const ITENS = [
   },
 ];
 
-/** Menu suspenso do cabeçalho. Fecha com clique fora, Esc ou ao escolher um item. */
+/**
+ * Menu suspenso do cabeçalho. Abre no hover (CSS); o clique continua abrindo
+ * para toque e teclado, e fecha com clique fora, Esc ou ao escolher um item.
+ */
 export function MenuFuncionalidades() {
   const [aberto, setAberto] = useState(false);
   const raiz = useRef<HTMLDivElement>(null);
@@ -32,7 +35,7 @@ export function MenuFuncionalidades() {
   }, [aberto]);
 
   return (
-    <div className="menu-func" ref={raiz}>
+    <div className={`menu-func${aberto ? ' aberto' : ''}`} ref={raiz}>
       <button
         type="button"
         className={`menu-func-botao${aberto ? ' aberto' : ''}`}
@@ -45,8 +48,7 @@ export function MenuFuncionalidades() {
           <path d="M3 4.5 6 7.5 9 4.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      {aberto ? (
-        <div className="menu-func-painel">
+      <div className="menu-func-painel">
           <p className="menu-func-secao">Ferramentas de busca</p>
           {ITENS.map((item) => (
             <a key={item.href} href={item.href} className="menu-func-item" onClick={() => setAberto(false)}>
@@ -63,8 +65,7 @@ export function MenuFuncionalidades() {
               </span>
             </a>
           ))}
-        </div>
-      ) : null}
+      </div>
     </div>
   );
 }
