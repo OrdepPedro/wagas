@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { lerPerfil } from '../lib/perfil.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
+import { MenuFuncionalidades } from './menu-funcionalidades.tsx';
 import { AlternarTema } from './tema.tsx';
 import './globals.css';
 
@@ -33,8 +34,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               <span className="marca-icone" aria-hidden="true">
                 w
               </span>
-              wagas
+              <span className="marca-nome">wagas</span>
             </a>
+            <nav className="topo-centro" aria-label="Funcionalidades">
+              <MenuFuncionalidades />
+            </nav>
             <nav className="topo-acoes">
               {temFeed ? (
                 <a href="/vagas" className="link-feed">
