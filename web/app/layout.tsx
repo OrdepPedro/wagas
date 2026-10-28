@@ -36,6 +36,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               wagas
             </a>
             <nav className="topo-acoes">
+              <a href="/funcionalidades" className="link-funcionalidades">
+                Funcionalidades
+              </a>
               {temFeed ? (
                 <a href="/vagas" className="link-feed">
                   Minhas vagas

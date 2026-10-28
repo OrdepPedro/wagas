@@ -1122,6 +1122,96 @@ html {
   margin-top: 20px;
 }
 
+.link-funcionalidades {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--texto-fraco);
+}
+
+.link-funcionalidades:hover {
+  color: var(--acento);
+}
+
+.funcionalidades {
+  max-width: 640px;
+  margin: 24px auto 0;
+}
+
+.funcionalidades h1 {
+  margin-bottom: 8px;
+}
+
+.funcionalidades > .caixa,
+.lista-dorks {
+  margin-top: 20px;
+}
+
+.cartao-funcionalidade {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+  color: var(--texto);
+}
+
+.cartao-funcionalidade:hover {
+  border-color: var(--acento);
+}
+
+.gerador-dorks fieldset {
+  border: 0;
+  padding: 0;
+  margin: 16px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+}
+
+.gerador-dorks legend {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.gerador-dorks label.opcao,
+label.opcao {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+  margin-top: 8px;
+}
+
+.lista-dorks {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lista-dorks li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+code.dork {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--acento-fraco);
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+  user-select: all;
+}
+
+.dork-acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* Celular: "Minhas vagas", "Entrar" e o tema na mesma linha do logo. */
 @media (max-width: 420px) {
   .topo-acoes {
@@ -1129,7 +1219,8 @@ html {
   }
 
   .link-feed,
-  .link-entrar {
+  .link-entrar,
+  .link-funcionalidades {
     padding: 6px 10px;
     font-size: 0.8125rem;
   }
