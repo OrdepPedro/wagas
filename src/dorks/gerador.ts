@@ -6,7 +6,7 @@
  * crítica do CLAUDE.md (request de usuário nunca chega na API paga) vale aqui.
  *
  * Os templates de LinkedIn Jobs, posts e Gupy são os de `montarDork`, os
- * validados no Passo 1. Os demais sites (InfoJobs e ATSs por empresa) seguem o
+ * validados no Passo 1. Os demais sites (portais brasileiros) seguem o
  * mesmo molde `site:<caminho da vaga> "<cargo>" <local>` e NÃO foram medidos.
  */
 import { montarDork } from '../config/alvos.ts';
@@ -20,9 +20,9 @@ export const PERIODOS: { id: Periodo; rotulo: string; tbs: string | null }[] = [
   { id: 'qualquer', rotulo: 'Qualquer data', tbs: null },
 ];
 
-export type Grupo = 'LinkedIn' | 'Portais brasileiros' | 'ATS';
+export type Grupo = 'LinkedIn' | 'Portais brasileiros';
 
-export const GRUPOS: Grupo[] = ['LinkedIn', 'Portais brasileiros', 'ATS'];
+export const GRUPOS: Grupo[] = ['LinkedIn', 'Portais brasileiros'];
 
 export interface Site {
   id: string;
@@ -77,10 +77,6 @@ export const SITES: Site[] = [
   { id: 'solides', nome: 'Sólides Vagas', grupo: 'Portais brasileiros', medido: false, montar: molde('vagas.solides.com.br') },
   { id: 'michaelpage', nome: 'Michael Page', grupo: 'Portais brasileiros', medido: false, montar: molde('michaelpage.com.br') },
   { id: 'roberthalf', nome: 'Robert Half', grupo: 'Portais brasileiros', medido: false, montar: molde('roberthalf.com/br') },
-
-  { id: 'greenhouse', nome: 'Greenhouse', grupo: 'ATS', medido: false, montar: molde('boards.greenhouse.io') },
-  { id: 'lever', nome: 'Lever', grupo: 'ATS', medido: false, montar: molde('jobs.lever.co') },
-  { id: 'ashby', nome: 'Ashby', grupo: 'ATS', medido: false, montar: molde('jobs.ashbyhq.com') },
 ];
 
 export interface PedidoDeDork {
