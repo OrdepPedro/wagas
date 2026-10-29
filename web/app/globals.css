@@ -18,6 +18,8 @@
   --acento-forte: #1e40af;
   --acento-fraco: #e8efff;
   --sobre-acento: #ffffff;
+  --logo-icone: #3566d9;
+  --logo-texto: #0f1220;
   --alerta: #8a5a00;
   --alerta-fraco: #fdf4e3;
   --sombra: 0 1px 2px rgba(15, 27, 45, 0.04), 0 8px 24px rgba(29, 78, 216, 0.08);
@@ -37,6 +39,8 @@
     --acento-forte: #93bdff;
     --acento-fraco: #15264a;
     --sobre-acento: #0a1120;
+    --logo-icone: #6e9eff;
+    --logo-texto: #f2f4f8;
     --alerta: #e8b765;
     --alerta-fraco: #2a2416;
     --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -55,6 +59,8 @@
   --acento-forte: #93bdff;
   --acento-fraco: #15264a;
   --sobre-acento: #0a1120;
+  --logo-icone: #6e9eff;
+  --logo-texto: #f2f4f8;
   --alerta: #e8b765;
   --alerta-fraco: #2a2416;
   --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -486,23 +492,17 @@ button.salva.atual {
 .marca {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 1.0625rem;
-  letter-spacing: -0.01em;
+  gap: 6px;
   text-decoration: none;
 }
 
-.marca-icone {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: var(--acento);
-  color: var(--sobre-acento);
-  font-size: 0.9375rem;
-  line-height: 1;
+/* Os dois SVGs da marca dividem o recorte vertical do logo, então a mesma
+   altura alinha ícone e nome; o gap repete o respiro do arquivo original. */
+.marca-icone,
+.marca-nome {
+  display: block;
+  height: 24px;
+  width: auto;
 }
 
 button.tema,
@@ -1367,5 +1367,172 @@ button.menu-func-botao {
     right: 16px;
     width: auto;
     transform: none;
+  }
+}
+
+/* --- medidor de currículo --- */
+
+.medidor-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.medidor-form label {
+  margin-top: 16px;
+}
+
+.medidor-form label:first-child {
+  margin-top: 0;
+}
+
+.medidor-form textarea,
+.medidor-form input[type='file'] {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  resize: vertical;
+}
+
+.medidor-form textarea:focus {
+  border-color: var(--acento);
+}
+
+.medidor-form button[type='submit'] {
+  margin-top: 20px;
+}
+
+.medidor-form .erro {
+  margin: 16px 0 0;
+}
+
+.alternar-entrada {
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+.nota-campo {
+  margin: 8px 0 0;
+}
+
+.medidor-resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 20px 0 40px;
+}
+
+.medidor-resultado h2 {
+  font-size: 1.0625rem;
+  margin: 0 0 12px;
+}
+
+.medidor-resultado h3 {
+  font-size: 0.875rem;
+  margin: 16px 0 8px;
+}
+
+.medidor-nota {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.medidor-numero {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  margin: 0;
+  color: var(--acento);
+  white-space: nowrap;
+}
+
+.medidor-numero span {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--texto-fraco);
+}
+
+.medidor-faixa {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.medidor-nota .fraco {
+  margin: 0;
+}
+
+.medidor-pilar h3:first-child {
+  margin-top: 0;
+}
+
+.medidor-criterio {
+  margin-bottom: 12px;
+}
+
+.medidor-criterio-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.9375rem;
+}
+
+.medidor-barra {
+  height: 6px;
+  margin: 6px 0;
+  border-radius: 999px;
+  background: var(--superficie-2);
+  overflow: hidden;
+}
+
+.medidor-barra span {
+  display: block;
+  height: 100%;
+  background: var(--acento);
+}
+
+.medidor-criterio .fraco {
+  margin: 0;
+}
+
+.medidor-grupo .etiquetas {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.medidor-lista {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.medidor-feedback {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.medidor-feedback p {
+  margin: 0;
+}
+
+.medidor-feedback div {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 480px) {
+  .medidor-nota {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
