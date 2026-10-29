@@ -1,0 +1,16 @@
+/* Mesmo hero da landing (.hero, global), mais largo que o miolo de 640px. */
+.pagina {
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.hero {
+  padding-top: 56px;
+  padding-bottom: 32px;
+}
+
+.corpo {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: left;
+}
