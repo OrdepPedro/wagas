@@ -1,14 +1,23 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useId, useState } from 'react';
 
 import { CRITERIOS, PILARES } from '../../../../src/curriculo/rubrica.ts';
+import { Check } from '../../check.tsx';
 import type { ResultadoDaMedicao, TipoAlerta } from '../../../../src/curriculo/tipos.ts';
 import { medir, registrarFeedback, type EstadoDaMedicao } from './acoes.ts';
 
 export function Medidor() {
-  const [estado, enviar, medindo] = useActionState<EstadoDaMedicao, FormData>(medir, {});
+  const [arquivo, setArquivo] = useState<string | null>(null);
+  const [estado, enviar, medindo] = useActionState<EstadoDaMedicao, FormData>(async (anterior, dados) => {
+    const proximo = await medir(anterior, dados);
+    // O React limpa o input de arquivo junto com o formulário; o nome exibido
+    // tem que sumir junto, senão a área diz que há arquivo e o envio é recusado.
+    setArquivo(null);
+    return proximo;
+  }, {});
   const [colar, setColar] = useState(false);
+  const [arrastando, setArrastando] = useState(false);
   // Controlados de propósito: o React 19 limpa o formulário depois de cada
   // action, e quem corrige o currículo e mede de novo não deveria redigitar
   // cargo e vaga. O arquivo é o único que volta vazio — o novo envio é outro arquivo.
@@ -19,18 +28,7 @@ export function Medidor() {
 
   return (
     <>
-      <form action={enviar} className="caixa medidor-form">
-        <label htmlFor="ats-cargo">Cargo que você busca</label>
-        <input
-          id="ats-cargo"
-          name="cargo"
-          type="text"
-          required
-          value={cargo}
-          onChange={(e) => setCargo(e.target.value)}
-          placeholder="Ex.: Analista de Dados"
-        />
-
+      <form action={enviar} className="hero-busca medidor-form">
         {mostrarTexto ? (
           <>
             <label htmlFor="ats-texto">Texto do currículo</label>
@@ -47,20 +45,63 @@ export function Medidor() {
             </p>
           </>
         ) : (
-          <>
-            <label htmlFor="ats-arquivo">Currículo (PDF ou DOCX, até 5 MB)</label>
+          // O input cobre a área inteira, invisível: soltar o arquivo em cima
+          // dele é o comportamento nativo do navegador, sem reimplementar o drop.
+          <div
+            className={`soltar${arrastando ? ' arrastando' : ''}${arquivo ? ' com-arquivo' : ''}`}
+            onDragEnter={() => setArrastando(true)}
+            onDragLeave={() => setArrastando(false)}
+            onDrop={() => setArrastando(false)}
+          >
             <input
               id="ats-arquivo"
               name="arquivo"
               type="file"
               required
+              aria-label="Currículo em PDF ou DOCX"
               accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={(e) => setArquivo(e.target.files?.[0]?.name ?? null)}
             />
-          </>
+            <span className="soltar-icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="28" height="28">
+                <path
+                  d="M12 15V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </span>
+            {arquivo ? (
+              <>
+                <strong className="soltar-titulo">{arquivo}</strong>
+                <span className="soltar-acao">trocar arquivo</span>
+              </>
+            ) : (
+              <>
+                <strong className="soltar-titulo">Arraste seu currículo aqui</strong>
+                <span className="soltar-acao">ou escolha um arquivo</span>
+                <span className="fraco">PDF ou DOCX · até 5 MB</span>
+              </>
+            )}
+          </div>
         )}
         <button type="button" className="discreto alternar-entrada" onClick={() => setColar(!mostrarTexto)}>
           {mostrarTexto ? 'Enviar arquivo em vez de colar' : 'Prefiro colar o texto'}
         </button>
+
+        <label htmlFor="ats-cargo">Cargo que você busca</label>
+        <input
+          id="ats-cargo"
+          name="cargo"
+          type="text"
+          required
+          value={cargo}
+          onChange={(e) => setCargo(e.target.value)}
+          placeholder="Ex.: Analista de Dados"
+        />
 
         <label htmlFor="ats-vaga">Descrição da vaga (opcional)</label>
         <textarea
@@ -77,10 +118,26 @@ export function Medidor() {
         <button type="submit" disabled={medindo}>
           {medindo ? 'Medindo… pode levar até 30 segundos' : 'Medir currículo'}
         </button>
-        <p className="fraco nota-campo">
-          O currículo é lido em memória e descartado. Guardamos só a nota e os pontos por critério, sem o texto.
-        </p>
       </form>
+
+      <ul className="garantias" aria-label="O que você precisa saber">
+        <li>
+          <Check />
+          Lido em memória e descartado
+        </li>
+        <li>
+          <Check />
+          Sem cadastro
+        </li>
+        <li>
+          <Check />
+          Grátis
+        </li>
+      </ul>
+      <p className="fraco medidor-ressalva">
+        Guardamos só a nota e os pontos por critério, nunca o texto. A nota é um diagnóstico do wagas, não a da
+        Gupy, do LinkedIn ou de qualquer empresa: nenhum ATS publica a nota que dá.
+      </p>
 
       {estado.resultado ? <Resultado resultado={estado.resultado} id={estado.id} /> : null}
     </>
@@ -94,6 +151,70 @@ const ROTULO_ALERTA: Record<TipoAlerta, string> = {
   privacidade: 'Privacidade',
 };
 
+const MANCHETE: Record<ResultadoDaMedicao['faixa'], string> = {
+  'Muito bom': 'Seu currículo está bem preparado',
+  'Bom, com ajustes pontuais': 'Bom, mas ainda dá para melhorar',
+  'Lacunas relevantes': 'Há lacunas que custam pontos',
+  'Recomenda-se reestruturação': 'Vale reestruturar o currículo',
+};
+
+/** Mesmos cortes das faixas da rubrica: 70 abre "Bom", 50 abre "Lacunas". */
+function nivel(pct: number): 'bom' | 'medio' | 'ruim' {
+  if (pct >= 70) return 'bom';
+  if (pct >= 50) return 'medio';
+  return 'ruim';
+}
+
+function Anel({ nota }: { nota: number }) {
+  const raio = 52;
+  const volta = 2 * Math.PI * raio;
+  return (
+    <div className="medidor-anel" role="img" aria-label={`Nota ${nota} de 100`}>
+      <svg viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r={raio} className="medidor-anel-fundo" />
+        <circle
+          cx="60"
+          cy="60"
+          r={raio}
+          className={`medidor-anel-valor nivel-${nivel(nota)}`}
+          strokeDasharray={volta}
+          strokeDashoffset={volta * (1 - nota / 100)}
+        />
+      </svg>
+      <p aria-hidden="true">
+        <strong>{nota}</strong>
+        <span>/100</span>
+      </p>
+    </div>
+  );
+}
+
+/** Abre no hover e no foco; no toque, o clique alterna — celular não tem hover. */
+function Dica({ texto }: { texto: string }) {
+  const [aberta, setAberta] = useState(false);
+  const id = useId();
+  return (
+    <span className={`dica${aberta ? ' aberta' : ''}`}>
+      <button
+        type="button"
+        aria-label="O que é este critério"
+        aria-describedby={id}
+        aria-expanded={aberta}
+        onClick={() => setAberta(!aberta)}
+        onBlur={() => setAberta(false)}
+      >
+        <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+          <circle cx="8" cy="8" r="7" fill="none" stroke="currentColor" strokeWidth="1.5" />
+          <path d="M8 7.2V11.5M8 4.6v.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      </button>
+      <span role="tooltip" id={id} className="dica-texto">
+        {texto}
+      </span>
+    </span>
+  );
+}
+
 function Resultado({ resultado, id }: { resultado: ResultadoDaMedicao; id: string | undefined }) {
   const { nota, faixa, estimada, criterios, requisitos, alertas, melhorias } = resultado;
   const grupos = [
@@ -104,41 +225,51 @@ function Resultado({ resultado, id }: { resultado: ResultadoDaMedicao; id: strin
 
   return (
     <section className="medidor-resultado" aria-live="polite">
-      <div className="caixa medidor-nota">
-        <p className="medidor-numero">
-          {nota}
-          <span>/100</span>
-        </p>
-        <div>
-          <p className="medidor-faixa">{faixa}</p>
+      <h2 className="medidor-manchete">{MANCHETE[faixa]}</h2>
+
+      <div className="caixa medidor-placar">
+        <div className="medidor-nota">
+          <Anel nota={nota} />
+          <p className="medidor-faixa">
+            Sua nota: <strong className={`nivel-${nivel(nota)}`}>{faixa}</strong>
+          </p>
           <p className="fraco">
-            {estimada ? 'Estimada, sem vaga de referência. ' : ''}
-            Diagnóstico de boas práticas e aderência do wagas. Não é a nota de nenhuma plataforma ou empresa.
+            {estimada ? 'Estimada contra o que o cargo costuma pedir, sem vaga de referência. ' : ''}
+            Diagnóstico do wagas, não a nota de nenhuma plataforma ou empresa.
           </p>
         </div>
-      </div>
 
-      <div className="caixa">
-        <h2>Por critério</h2>
         {PILARES.map((pilar) => (
           <div key={pilar} className="medidor-pilar">
             <h3>{pilar}</h3>
             {criterios
               .filter((c) => CRITERIOS[c.id].pilar === pilar)
-              .map((c) => (
-                <div key={c.id} className="medidor-criterio">
-                  <div className="medidor-criterio-topo">
-                    <span>{c.nome}</span>
-                    <strong>{c.avaliado ? `${c.pontos}/${c.maximo}` : 'não avaliado'}</strong>
-                  </div>
-                  {c.avaliado ? (
-                    <div className="medidor-barra" aria-hidden="true">
-                      <span style={{ width: `${(100 * c.pontos) / c.maximo}%` }} />
+              .map((c) => {
+                const pct = Math.round((100 * c.pontos) / c.maximo);
+                return (
+                  <div key={c.id} className="medidor-criterio">
+                    <div className="medidor-criterio-topo">
+                      <span className="medidor-criterio-nome">
+                        {c.nome}
+                        <Dica texto={CRITERIOS[c.id].descricao} />
+                      </span>
+                      {c.avaliado ? (
+                        <strong className={`nivel-${nivel(pct)}`} title={`${c.pontos} de ${c.maximo} pontos`}>
+                          {pct}%
+                        </strong>
+                      ) : (
+                        <span className="fraco">não avaliado</span>
+                      )}
                     </div>
-                  ) : null}
-                  {c.observacao ? <p className="fraco">{c.observacao}</p> : null}
-                </div>
-              ))}
+                    {c.avaliado ? (
+                      <div className="medidor-barra" aria-hidden="true">
+                        <span className={`nivel-${nivel(pct)}`} style={{ width: `${pct}%` }} />
+                      </div>
+                    ) : null}
+                    {c.observacao ? <p className="medidor-observacao">{c.observacao}</p> : null}
+                  </div>
+                );
+              })}
           </div>
         ))}
       </div>

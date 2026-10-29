@@ -5,14 +5,17 @@ export const maxDuration = 60;
 
 export default function PaginaDoMedidor() {
   return (
-    <div className="funcionalidades">
-      <h1>Medidor de currículo para ATS</h1>
-      <p className="fraco">
-        Avaliamos se sistemas de recrutamento conseguem ler o seu currículo, se ele mostra o que o cargo
-        pede e se convence quem lê. A nota é um diagnóstico do wagas, não a nota da Gupy, do LinkedIn ou de
-        qualquer empresa: nenhum ATS publica a nota que dá.
-      </p>
-      <Medidor />
+    <div className="funcionalidades medidor-pagina">
+      <section className="hero hero-ats">
+        <h1>
+          Medidor de currículo <mark>para ATS</mark>
+        </h1>
+        <p className="hero-sub">
+          Envie o seu currículo e receba uma nota de 0 a 100, com o que mais aumenta as suas chances: se os
+          sistemas de recrutamento conseguem lê-lo, se ele mostra o que o cargo pede e se convence quem lê.
+        </p>
+        <Medidor />
+      </section>
     </div>
   );
 }

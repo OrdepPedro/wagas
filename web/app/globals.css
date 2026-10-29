@@ -22,6 +22,9 @@
   --logo-texto: #0f1220;
   --alerta: #8a5a00;
   --alerta-fraco: #fdf4e3;
+  --nivel-bom: #15803d;
+  --nivel-medio: #c2410c;
+  --nivel-ruim: #b91c1c;
   --sombra: 0 1px 2px rgba(15, 27, 45, 0.04), 0 8px 24px rgba(29, 78, 216, 0.08);
   --raio: 10px;
 }
@@ -43,6 +46,9 @@
     --logo-texto: #f2f4f8;
     --alerta: #e8b765;
     --alerta-fraco: #2a2416;
+    --nivel-bom: #4ade80;
+    --nivel-medio: #fb923c;
+    --nivel-ruim: #f87171;
     --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   }
 }
@@ -63,6 +69,9 @@
   --logo-texto: #f2f4f8;
   --alerta: #e8b765;
   --alerta-fraco: #2a2416;
+  --nivel-bom: #4ade80;
+  --nivel-medio: #fb923c;
+  --nivel-ruim: #f87171;
   --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
@@ -1419,6 +1428,106 @@ button.menu-func-botao {
   margin: 8px 0 0;
 }
 
+/* Hero do medidor: o envio do arquivo é a chamada principal. */
+main:has(> .medidor-pagina) {
+  max-width: 1040px;
+  padding-top: 0;
+}
+
+.medidor-pagina {
+  max-width: none;
+  margin-top: 0;
+}
+
+.hero-ats {
+  padding: 56px 16px 32px;
+}
+
+.hero-ats .medidor-form,
+.hero-ats .medidor-resultado {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-ats h1 {
+  margin-bottom: 16px;
+}
+
+.soltar {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 32px 16px 28px;
+  text-align: center;
+  background: var(--superficie-2);
+  border: 2px dashed var(--borda);
+  border-radius: 14px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.soltar:hover,
+.soltar.arrastando {
+  border-color: var(--acento);
+  background: var(--acento-fraco);
+}
+
+.soltar.com-arquivo {
+  border-style: solid;
+  border-color: var(--acento);
+}
+
+.soltar:has(input:focus-visible) {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* Invisível e por cima de tudo: clique e soltar caem no input nativo. */
+.medidor-form .soltar input[type='file'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.soltar-icone {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 14px;
+  color: var(--sobre-acento);
+  background: var(--acento);
+  border-radius: 14px;
+  box-shadow: 0 6px 16px rgba(29, 78, 216, 0.25);
+}
+
+.soltar-titulo {
+  font-size: 1.0625rem;
+  overflow-wrap: anywhere;
+}
+
+.soltar-acao {
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.medidor-ressalva {
+  max-width: 60ch;
+  margin: 12px auto 0;
+}
+
+.hero-ats .medidor-resultado {
+  text-align: left;
+  margin-top: 32px;
+}
+
 .medidor-resultado {
   display: flex;
   flex-direction: column;
@@ -1436,54 +1545,128 @@ button.menu-func-botao {
   margin: 16px 0 8px;
 }
 
+.medidor-resultado h2.medidor-manchete {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin: 0 0 4px;
+}
+
+.medidor-placar {
+  padding: 28px 24px 12px;
+}
+
 .medidor-nota {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  text-align: center;
+  padding-bottom: 20px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--borda);
 }
 
-.medidor-numero {
-  font-size: 3rem;
-  font-weight: 700;
-  line-height: 1;
+.medidor-anel {
+  position: relative;
+  width: 168px;
+  height: 168px;
+  margin-bottom: 16px;
+}
+
+.medidor-anel svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.medidor-anel circle {
+  fill: none;
+  stroke-width: 10;
+}
+
+.medidor-anel-fundo {
+  stroke: var(--superficie-2);
+}
+
+.medidor-anel-valor {
+  stroke-linecap: round;
+}
+
+.medidor-anel p {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   margin: 0;
-  color: var(--acento);
-  white-space: nowrap;
+  line-height: 1;
 }
 
-.medidor-numero span {
-  font-size: 1rem;
-  font-weight: 500;
+.medidor-anel strong {
+  font-size: 3.25rem;
+  letter-spacing: -0.03em;
+}
+
+.medidor-anel span {
+  margin-top: 6px;
+  font-size: 0.9375rem;
   color: var(--texto-fraco);
 }
 
 .medidor-faixa {
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 1.0625rem;
+  margin: 0 0 4px;
 }
 
 .medidor-nota .fraco {
+  max-width: 48ch;
   margin: 0;
 }
 
-.medidor-pilar h3:first-child {
-  margin-top: 0;
+/* Cor por nível: texto, barra e anel usam a mesma. */
+strong.nivel-bom { color: var(--nivel-bom); }
+strong.nivel-medio { color: var(--nivel-medio); }
+strong.nivel-ruim { color: var(--nivel-ruim); }
+.medidor-barra span.nivel-bom { background: var(--nivel-bom); }
+.medidor-barra span.nivel-medio { background: var(--nivel-medio); }
+.medidor-barra span.nivel-ruim { background: var(--nivel-ruim); }
+.medidor-anel-valor.nivel-bom { stroke: var(--nivel-bom); }
+.medidor-anel-valor.nivel-medio { stroke: var(--nivel-medio); }
+.medidor-anel-valor.nivel-ruim { stroke: var(--nivel-ruim); }
+
+.medidor-resultado .medidor-pilar h3 {
+  margin: 20px 0 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--texto-fraco);
 }
 
+/* Âncora do tooltip: a linha inteira do critério, não o ícone — assim ele nunca sai da tela no celular. */
 .medidor-criterio {
-  margin-bottom: 12px;
+  position: relative;
+  margin-bottom: 14px;
 }
 
 .medidor-criterio-topo {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 12px;
   font-size: 0.9375rem;
 }
 
+.medidor-criterio-nome {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .medidor-barra {
   height: 6px;
-  margin: 6px 0;
+  margin: 6px 0 4px;
   border-radius: 999px;
   background: var(--superficie-2);
   overflow: hidden;
@@ -1492,11 +1675,56 @@ button.menu-func-botao {
 .medidor-barra span {
   display: block;
   height: 100%;
-  background: var(--acento);
+  border-radius: 999px;
 }
 
-.medidor-criterio .fraco {
+.medidor-observacao {
   margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--texto-fraco);
+}
+
+.dica button,
+.dica button:hover:not(:disabled) {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  color: var(--texto-fraco);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  cursor: help;
+}
+
+.dica:hover button,
+.dica.aberta button {
+  color: var(--acento);
+}
+
+.dica-texto {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  right: 0;
+  z-index: 5;
+  display: none;
+  padding: 10px 12px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  box-shadow: var(--sombra);
+}
+
+.dica:hover .dica-texto,
+.dica:focus-within .dica-texto,
+.dica.aberta .dica-texto {
+  display: block;
 }
 
 .medidor-grupo .etiquetas {
@@ -1531,8 +1759,7 @@ button.menu-func-botao {
 }
 
 @media (max-width: 480px) {
-  .medidor-nota {
-    flex-direction: column;
-    align-items: flex-start;
+  .medidor-placar {
+    padding: 24px 16px 8px;
   }
 }

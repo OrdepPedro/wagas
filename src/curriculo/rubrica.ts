@@ -23,15 +23,64 @@ import type {
   Requisito,
 } from './tipos.ts';
 
-export const CRITERIOS: Record<IdCriterio, { nome: string; maximo: number; pilar: string }> = {
-  A: { nome: 'Formato e extração', maximo: 15, pilar: 'Legibilidade técnica' },
-  B: { nome: 'Estrutura e seções', maximo: 10, pilar: 'Legibilidade técnica' },
-  C: { nome: 'Requisitos essenciais demonstrados', maximo: 25, pilar: 'Aderência' },
-  D: { nome: 'Desejáveis, variações e distribuição', maximo: 10, pilar: 'Aderência' },
-  E: { nome: 'Título e resumo', maximo: 10, pilar: 'Aderência' },
-  F: { nome: 'Evidências nas experiências', maximo: 20, pilar: 'Leitura humana' },
-  G: { nome: 'Formação, certificações e idiomas', maximo: 5, pilar: 'Leitura humana' },
-  H: { nome: 'Clareza e linguagem', maximo: 5, pilar: 'Leitura humana' },
+/** `descricao` é para quem lê o resultado; o que o LLM avalia está em `prompt.ts`. */
+export const CRITERIOS: Record<IdCriterio, { nome: string; maximo: number; pilar: string; descricao: string }> = {
+  A: {
+    nome: 'Formato e extração',
+    maximo: 15,
+    pilar: 'Legibilidade técnica',
+    descricao:
+      'Se um sistema consegue ler o arquivo na ordem certa. Colunas, tabelas, caixas de texto, imagens e contato no cabeçalho do editor costumam embaralhar ou sumir na leitura.',
+  },
+  B: {
+    nome: 'Estrutura e seções',
+    maximo: 10,
+    pilar: 'Legibilidade técnica',
+    descricao:
+      'Se as seções esperadas estão lá (contato, resumo, experiência, formação, competências) com títulos que sistemas reconhecem, e numa ordem que faz sentido para o seu perfil.',
+  },
+  C: {
+    nome: 'Requisitos essenciais demonstrados',
+    maximo: 25,
+    pilar: 'Aderência',
+    descricao:
+      'Quantos requisitos obrigatórios da vaga, ou do cargo, aparecem usados de verdade nas suas experiências. Só listar em competências vale metade.',
+  },
+  D: {
+    nome: 'Desejáveis, variações e distribuição',
+    maximo: 10,
+    pilar: 'Aderência',
+    descricao:
+      'Se os diferenciais aparecem, se o termo exato da vaga está escrito ao menos uma vez, se siglas vêm com o nome por extenso e se o essencial aparece em mais de uma seção.',
+  },
+  E: {
+    nome: 'Título e resumo',
+    maximo: 10,
+    pilar: 'Aderência',
+    descricao:
+      'Se o título profissional bate com o cargo que você busca e se o resumo diz, em poucas linhas, quem você é, há quanto tempo e no que é forte.',
+  },
+  F: {
+    nome: 'Evidências nas experiências',
+    maximo: 20,
+    pilar: 'Leitura humana',
+    descricao:
+      'Se cada experiência mostra o que você fez, com que ferramenta e com que resultado ou escala, em vez de só listar responsabilidades.',
+  },
+  G: {
+    nome: 'Formação, certificações e idiomas',
+    maximo: 5,
+    pilar: 'Leitura humana',
+    descricao:
+      'Se a formação tem grau e situação claros, se cursos livres estão separados da graduação, se certificações têm emissor e ano e se idiomas têm nível.',
+  },
+  H: {
+    nome: 'Clareza e linguagem',
+    maximo: 5,
+    pilar: 'Leitura humana',
+    descricao:
+      'Ortografia, frases curtas, tempo verbal consistente e ausência de clichês como "proativo" e "dinâmico".',
+  },
 };
 
 export const PILARES = ['Legibilidade técnica', 'Aderência', 'Leitura humana'] as const;

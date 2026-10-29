@@ -1,6 +1,7 @@
 import { JANELA_DIAS } from '../lib/feed.ts';
 import { LIMITE_GRATUITO, LIMITE_VISITANTE } from '../lib/limites.ts';
 import type { CartaoDaVitrine, Vitrine } from '../lib/vitrine.ts';
+import { Check } from './check.tsx';
 import { FormularioDeBusca } from './formularios.tsx';
 
 /**
@@ -350,22 +351,6 @@ function CartaoExemplo({ cartao }: { cartao: CartaoDaVitrine }) {
         <span className="etiqueta">{idade(cartao.data_publicacao)}</span>
       </div>
     </li>
-  );
-}
-
-function Check() {
-  return (
-    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-      <circle cx="10" cy="10" r="9" fill="var(--acento-fraco)" />
-      <path
-        d="M6 10.2l2.6 2.6L14 7.4"
-        fill="none"
-        stroke="var(--acento)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
   );
 }
 
