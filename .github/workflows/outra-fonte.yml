@@ -1,0 +1,39 @@
+name: outra-fonte
+
+# Coleta do InfoJobs para os pares que a busca acabou de pedir
+# (`pedidos_outra_fonte`, migration 0014). Disparado pelo servidor do site via
+# API (src/coleta/outra-fonte.ts), nunca por cron.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  # Para ver se a coleta diária está rodando: as duas juntas passariam de uma
+  # requisição por segundo ao InfoJobs.
+  actions: read
+
+# Uma por vez. O GitHub mantém só um disparo na fila e cancela o anterior, o
+# que não perde pedido: o script processa todos os pendentes antes de sair.
+concurrency:
+  group: outra-fonte
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Coletar pedidos
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+          LOG_LEVEL: warn
+        run: node scripts/coletar-pedidos.ts
