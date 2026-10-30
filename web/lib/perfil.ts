@@ -34,6 +34,19 @@ export async function lerPerfil(userId: string): Promise<Perfil | null> {
   };
 }
 
+/**
+ * O que se grava em `perfis.cidade` quando a pessoa pede só remoto e não diz
+ * cidade. A coluna é `not null` com 2 a 80 caracteres, e com `so_remoto` a
+ * cidade não filtra nada — o valor só precisa existir e ler bem onde aparece
+ * (buscas salvas, `buscas.cidade`). O formulário o mostra como campo vazio.
+ */
+export const CIDADE_SO_REMOTO = 'Todo o Brasil';
+
+/** A cidade como o formulário deve exibir: o sentinela vira campo vazio. */
+export function cidadeDoFormulario(perfil: Perfil): string {
+  return perfil.cidade === CIDADE_SO_REMOTO ? '' : perfil.cidade;
+}
+
 export interface ErroDePerfil {
   campo: 'cargo' | 'cidade';
   mensagem: string;
@@ -54,11 +67,19 @@ export async function salvarPerfil(
   soRemoto = false,
 ): Promise<ErroDePerfil | null> {
   const cargo = cargoBruto.trim().replace(/\s+/g, ' ');
-  const cidade = cidadeBruta.trim().replace(/\s+/g, ' ');
+  let cidade = cidadeBruta.trim().replace(/\s+/g, ' ');
+
+  // Só remoto dispensa a cidade. E o caminho inverso também vale: as buscas
+  // salvas do visitante reenviam só cargo e cidade, sem a opção — o sentinela
+  // é o que lembra que aquela busca era remota.
+  if (soRemoto && cidade === '') cidade = CIDADE_SO_REMOTO;
+  if (cidade === CIDADE_SO_REMOTO) soRemoto = true;
 
   if (cargo.length < 2) return { campo: 'cargo', mensagem: 'Escreva o cargo que você procura.' };
   if (cargo.length > 80) return { campo: 'cargo', mensagem: 'Cargo longo demais.' };
-  if (cidade.length < 2) return { campo: 'cidade', mensagem: 'Escreva a sua cidade.' };
+  if (cidade.length < 2) {
+    return { campo: 'cidade', mensagem: 'Escreva a sua cidade ou marque "Só vagas remotas".' };
+  }
   if (cidade.length > 80) return { campo: 'cidade', mensagem: 'Cidade longa demais.' };
 
   const cidadeSlug = slugCidade(cidade);
