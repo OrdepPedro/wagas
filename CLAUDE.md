@@ -679,9 +679,31 @@ Efeito medido: Atendente/Rio, 224 linhas → **99 cartões**, sem esconder vaga 
 - **23% do que o `qdr:w` devolve já está fora da janela:** 7 de 30 com "1 semana" ou mais, incluindo um "2 meses". Confirma o achado 19 sobre a vaga, não sobre o snippet.
 - **`robots.txt`: `User-agent: * / Disallow: /`.** Pelas condições da restrição 3, isso deixaria o LinkedIn de fora, como aconteceu com o Hays. O Pedro abriu a exceção em 27/10.
 
-**Implementado em 27/10:** `src/fontes/linkedin-pagina.ts` + `scripts/datar-linkedin.ts` (`npm run datar-linkedin`), como passo final do `classificador.yml`. O script pega as linhas `linkedin_job` sem data coletadas nos últimos 14 dias, abre uma página a cada 20 s e grava `data_publicacao` com origem `pagina_html`. Nada é cortado à mão: com a data real, `data_referencia` tira do feed sozinha o que passou de 7 dias. 429, 5xx e erro de rede contam como `falhou` e não gravam nada; o job falha se mais da metade das páginas falhar. Teste a seco em 3 linhas antigas, de agosto: 1 com data ("Há 2 meses") e 2 `sem_data`. Provavelmente é a variante de vaga encerrada, mas não conferi. **Ainda não rodou sobre uma coleta nova da Serper.**
+**Implementado em 27/10:** `src/fontes/linkedin-pagina.ts` + `scripts/datar-linkedin.ts` (`npm run datar-linkedin`), como passo final do `classificador.yml`. O script pega as linhas `linkedin_job` sem data coletadas nos últimos 14 dias, abre uma página a cada 20 s e grava `data_publicacao` com origem `pagina_html`. Nada é cortado à mão: com a data real, `data_referencia` tira do feed sozinha o que passou de 7 dias. 429, 5xx e erro de rede contam como `falhou` e não gravam nada; o job falha se mais da metade das páginas falhar. Teste a seco em 3 linhas antigas, de agosto: 1 com data ("Há 2 meses") e 2 `sem_data`. Provavelmente é a variante de vaga encerrada, mas não conferi. **Rodou em produção em 30/10 (achado 42).**
 
 A descrição continua faltando: para o currículo adaptado, o LinkedIn segue como fonte de segunda classe.
+
+**42. A Serper passou a devolver redirect opaco, e a datação do LinkedIn funcionou na primeira coleta real (30/10).** Coleta com 1 página por consulta (48 créditos, saldo de 2.122 para 2.074).
+
+**157 de 242 links (65%) vieram como `https://www.google.com/goto?url=<opaco>`**, não como a URL do resultado. É o mesmo defeito que eliminou o grounding do Gemini, agora na Serper: o coletor gravou tudo como `fonte = desconhecida`, e o pré-filtro cortou 126 por `fonte_sem_extrator`. A rodada parecia saudável: zero erro, 242 gravados.
+
+O redirect resolve com um GET ao Google, que devolve 302 com a URL real no `Location`. Isso não toca o destino. `src/serper/redirect.ts` faz isso na coleta, e falha conta em `redirectsNaoResolvidos`. `scripts/resolver-goto.ts` recuperou as 157 sem crédito: 114 resolvidas (88 LinkedIn Jobs, 24 Gupy, 2 posts), 43 duplicatas, 0 falhas.
+
+**Datação, sobre as vagas aprovadas da rodada:**
+
+| | LinkedIn Jobs |
+|---|---|
+| páginas lidas | 81 (29 + 52, em duas execuções) |
+| `falhou` / 429 | 0 |
+| com data real | **81 (100%)** |
+| mais de 7 dias, saem do feed sozinhas | 9 (11%) |
+| sem empresa | 25 (31%) |
+| sem modelo | 30 (37%) |
+
+- **Os 20 s de intervalo seguem sem 429:** 0 em 81, somado ao 0 em 30 do achado 41.
+- **11% fora da janela, contra 23% no achado 41.** Amostras diferentes; o ponto é que o `qdr:w` deixa passar vaga velha, e agora o feed corta.
+- **A página não resolve empresa nem modelo.** Os números de 31% e 37% continuam os da SERP: a trava 4 fechou só a data.
+- Feed de Product Manager em São Paulo: 28 vagas, 8 sem data real (as da Gupy via Serper e os posts). Aparece "ZENVIA" e "Zenvia Jobs" com o mesmo cargo: a regra (b) de colapso não pega grafias diferentes da empresa.
 
 ---
 
@@ -784,7 +806,7 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 - **A dedup de cargo por chave continua frágil,** porque a chave depende da extração de cargo pelo LLM, que varia entre rodadas (achado 11). A trava 5 tirou o sintoma do feed; a causa segue lá, e reaparece em qualquer lugar que use `chaveDedupVaga` para outra coisa que não exibição.
 - **Classificar cargo que não seja Product Manager.** A única rodada de produção foi 100% PM. Roda o coletor nos outros alvos (~84 créditos) e classifica de novo.
 - **Desenho dos tiers** (precisão × quantidade × preço). Base de custo: ~16 créditos por par cargo×cidade. Continua bloqueado por não haver dado de retenção.
-- **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de **6 meses** (vence por volta de 22/02/2027). Consumidos até 24/08: 244. Uma rodada completa custa ~84.
+- **Saldo da Serper é finito.** 2.500 créditos, sem renovação, validade de **6 meses** (vence por volta de 22/02/2027). Consumidos até 30/10: 426 (restam 2.074). Uma rodada completa custa ~84.
 - **A coleta não roda em cron, por decisão do Pedro (24/08).** Coletar todo dia sem front-end lendo o banco seria gastar saldo para ninguém. O `schedule` está comentado no workflow. Religar quando o Passo 4 existir — ou antes disso, se for medir fluxo semanal.
 - **Sem cron, o Supabase pausa por ociosidade.** O plano free suspende projeto sem atividade. Depois de algumas semanas parado, a primeira coleta vai falhar na conexão até despausar pelo dashboard. Não é bug do coletor.
 

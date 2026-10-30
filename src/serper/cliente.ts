@@ -23,6 +23,8 @@ export interface ResultadoOrganico {
   position?: number;
   /** A Serper às vezes devolve a data que o Google exibe ("há 3 dias", "10 de ago."). */
   date?: string;
+  /** Link `google.com/goto` original, quando o coletor resolveu o redirect (ver `redirect.ts`). */
+  linkGoogle?: string;
 }
 
 export interface RespostaSerper {
