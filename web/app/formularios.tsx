@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
 import { definirBusca, entrar, type EstadoDoFormulario } from './actions.ts';
 
@@ -67,6 +67,8 @@ export function FormularioDeBusca({
   hero?: boolean;
 }) {
   const [estado, acao] = useActionState(definirBusca, VAZIO);
+  // Só remoto ignora a cidade, então ela deixa de ser obrigatória.
+  const [remoto, setRemoto] = useState(soRemoto);
 
   return (
     <form action={acao} className={hero ? 'form-hero' : undefined}>
@@ -84,12 +86,12 @@ export function FormularioDeBusca({
           />
         </div>
         <div>
-          <label htmlFor="cidade">Cidade</label>
+          <label htmlFor="cidade">Cidade{remoto ? ' (opcional)' : ''}</label>
           <input
             id="cidade"
             name="cidade"
             type="text"
-            required
+            required={!remoto}
             defaultValue={cidade}
             placeholder={hero ? 'Ex.: Belo Horizonte' : 'São Paulo'}
             autoComplete="address-level2"
@@ -97,7 +99,12 @@ export function FormularioDeBusca({
         </div>
       </div>
       <label className="opcao">
-        <input type="checkbox" name="soRemoto" defaultChecked={soRemoto} />
+        <input
+          type="checkbox"
+          name="soRemoto"
+          checked={remoto}
+          onChange={(e) => setRemoto(e.target.checked)}
+        />
         <span>
           Só vagas remotas
           {/* Não é um filtro a mais sobre o feed normal: é outra composição.

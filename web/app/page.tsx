@@ -1,4 +1,4 @@
-import { lerPerfil } from '../lib/perfil.ts';
+import { cidadeDoFormulario, lerPerfil } from '../lib/perfil.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
 import { carregarVitrine } from '../lib/vitrine.ts';
 import { FormularioDeBusca, FormularioDeEntrada } from './formularios.tsx';
@@ -23,7 +23,7 @@ export default async function Pagina() {
     <FormularioDeBusca
       hero
       cargo={perfil.cargo}
-      cidade={perfil.cidade}
+      cidade={cidadeDoFormulario(perfil)}
       soRemoto={perfil.soRemoto}
       rotulo="Ver vagas"
     />

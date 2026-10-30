@@ -1,7 +1,7 @@
 import { carregarFeed, JANELA_DIAS, type Vaga } from '../../lib/feed.ts';
 import { registrarBusca } from '../../lib/feed.ts';
 import { estadoDoLimite, LIMITE_GRATUITO, type EstadoDoLimite } from '../../lib/limites.ts';
-import { lerPerfil } from '../../lib/perfil.ts';
+import { cidadeDoFormulario, lerPerfil } from '../../lib/perfil.ts';
 import { chaveDoPar } from '../../../src/feed/pares-do-dia.ts';
 import { slugCidade } from '../../../src/normalize/local.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
@@ -362,7 +362,7 @@ export default async function PaginaDoFeed({
       <section className="busca">
         <FormularioDeBusca
           cargo={perfil.cargo}
-          cidade={perfil.cidade}
+          cidade={cidadeDoFormulario(perfil)}
           soRemoto={perfil.soRemoto}
           rotulo="Buscar"
         />
