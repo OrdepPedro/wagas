@@ -128,11 +128,16 @@ export async function pedirOutraFonte(
   agora: Date = new Date(),
 ): Promise<ResultadoDoPedido> {
   const atual = await lerPedido(db, par.cargo, par.cidade);
-  const emAndamento =
-    atual &&
-    (atual.status === 'pendente' || atual.status === 'rodando') &&
-    agora.getTime() - Date.parse(atual.pedido_em) < PEDIDO_EXPIRA_MIN * 60_000;
-  if (emAndamento) return { pedido: atual, novo: false };
+  if (atual) {
+    const idade = agora.getTime() - Date.parse(atual.pedido_em);
+    const emAndamento = atual.status === 'pendente' || atual.status === 'rodando';
+    // Em andamento: espera, até expirar. Concluído, mesmo com falha: segura o
+    // par pelas mesmas 20 h. Sem isso, pedido que falha (e não carimba
+    // `coletas_sob_demanda`) era refeito a cada volta à busca.
+    if (emAndamento ? idade < PEDIDO_EXPIRA_MIN * 60_000 : idade < FRESCOR_INFOJOBS_H * 3_600_000) {
+      return { pedido: atual, novo: false };
+    }
+  }
 
   const anterior = await ultimaColeta(db, par.cargo, par.cidade, false, INFOJOBS);
   if (anterior && agora.getTime() - anterior.getTime() < FRESCOR_INFOJOBS_H * 3_600_000) {

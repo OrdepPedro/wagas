@@ -109,6 +109,19 @@ test('pedido: InfoJobs coletado há menos de 20 h não pede de novo', async () =
   assert.equal(inserts.length, 0);
 });
 
+// Alternar entre buscas salvas refazia o pedido a cada clique.
+test('pedido: concluído há menos de 20 h, mesmo com falha, não pede de novo', async () => {
+  for (const status of ['falhou', 'pronto', 'adiado', 'sem_uf'] as const) {
+    const { db, inserts } = banco({ pedido: pedido({ status, pedido_em: minutosAtras(3) }) });
+    const r = await pedirOutraFonte(db, { cargo: 'Fisioterapeuta', cidade: 'Recife' }, AGORA);
+    assert.equal(r.novo, false, status);
+    assert.equal(inserts.length, 0, status);
+  }
+  const { db, inserts } = banco({ pedido: pedido({ status: 'falhou', pedido_em: minutosAtras(60 * 21) }) });
+  assert.equal((await pedirOutraFonte(db, { cargo: 'Fisioterapeuta', cidade: 'Recife' }, AGORA)).novo, true);
+  assert.equal(inserts.length, 1);
+});
+
 test('pedido: andamento expirado não trava o par para sempre', async () => {
   const { db, inserts } = banco({ pedido: pedido({ pedido_em: minutosAtras(40) }) });
   const r = await pedirOutraFonte(db, { cargo: 'Fisioterapeuta', cidade: 'Recife' }, AGORA);
