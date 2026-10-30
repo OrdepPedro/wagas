@@ -4,10 +4,11 @@
  * Ordem que importa:
  *   1. reserva créditos (atômico) antes de qualquer chamada;
  *   2. consulta a Serper respeitando o que foi reservado;
- *   3. normaliza;
- *   4. deduplica por hash da URL canônica;
- *   5. grava o que é novo;
- *   6. devolve o que não usou.
+ *   3. resolve o redirect `google.com/goto` que a Serper às vezes devolve;
+ *   4. normaliza;
+ *   5. deduplica por hash da URL canônica;
+ *   6. grava o que é novo;
+ *   7. devolve o que não usou.
  *
  * O que este arquivo NÃO faz: classificar. Nada aqui decide se o resultado é
  * vaga de verdade, qual a senioridade ou se o cargo bate. `raw_results` guarda
@@ -34,6 +35,7 @@ import { paraLinha, type ResultadoNormalizado } from './normalize/resultado.ts';
 import { ArquivoQuotaStore, SupabaseQuotaStore, type QuotaStore } from './quota/store.ts';
 import { SerperCliente, SerperCreditosError, SerperErroFatal } from './serper/cliente.ts';
 import { normalizarPaginaSerper } from './serper/normalizar.ts';
+import { ehRedirectGoogle, resolverRedirectGoogle } from './serper/redirect.ts';
 import type { Combinacao } from './tipos.ts';
 
 /** Chave do saldo no Postgres. Fixa: os créditos da Serper não renovam. */
@@ -118,6 +120,8 @@ interface Resumo {
   novos: number;
   gravados: number;
   erros: number;
+  /** Links `google.com/goto` que não resolveram: gravados como `desconhecida`. */
+  redirectsNaoResolvidos: number;
   saldoEsgotado: boolean;
 }
 
@@ -192,6 +196,7 @@ async function main(): Promise<number> {
     novos: 0,
     gravados: 0,
     erros: 0,
+    redirectsNaoResolvidos: 0,
     saldoEsgotado: false,
   };
 
@@ -216,7 +221,19 @@ async function main(): Promise<number> {
           continue;
         }
 
-        const { normalizados, descartados } = normalizarPaginaSerper(organicos, {
+        const resolvidos = await Promise.all(
+          organicos.map(async (item) => {
+            if (!item.link || !ehRedirectGoogle(item.link)) return item;
+            const destino = await resolverRedirectGoogle(item.link);
+            if (!destino) {
+              resumo.redirectsNaoResolvidos++;
+              return item;
+            }
+            return { ...item, link: destino, linkGoogle: item.link };
+          }),
+        );
+
+        const { normalizados, descartados } = normalizarPaginaSerper(resolvidos, {
           combo: comboDaConsulta(c),
           pagina: c.pagina,
         });
