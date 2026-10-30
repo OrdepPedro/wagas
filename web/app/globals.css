@@ -1424,6 +1424,19 @@ button.menu-func-botao {
   margin-top: 8px;
 }
 
+/* Ação secundária, mas ativa: cor de acento para não parecer desabilitado. */
+button.discreto.alternar-entrada {
+  color: var(--acento);
+  border-color: var(--acento);
+  font-weight: 600;
+}
+
+button.discreto.alternar-entrada:hover:not(:disabled) {
+  color: var(--acento);
+  border-color: var(--acento);
+  background: var(--acento-fraco);
+}
+
 .nota-campo {
   margin: 8px 0 0;
 }
@@ -1635,13 +1648,31 @@ strong.nivel-ruim { color: var(--nivel-ruim); }
 .medidor-anel-valor.nivel-medio { stroke: var(--nivel-medio); }
 .medidor-anel-valor.nivel-ruim { stroke: var(--nivel-ruim); }
 
+/* Pilar é seção, critério é item dela: o pilar abre com divisória e título
+   forte, e os critérios ficam recuados sob uma linha que os agrupa. */
+.medidor-pilar {
+  padding-top: 20px;
+}
+
+.medidor-pilar + .medidor-pilar {
+  margin-top: 8px;
+  border-top: 1px solid var(--borda);
+}
+
 .medidor-resultado .medidor-pilar h3 {
-  margin: 20px 0 10px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--texto-fraco);
+  margin: 0 0 14px;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--texto);
+}
+
+.medidor-pilar .medidor-criterio {
+  padding-left: 14px;
+  border-left: 2px solid var(--borda);
+}
+
+.medidor-criterio-nome {
+  font-weight: 500;
 }
 
 /* Âncora do tooltip: a linha inteira do critério, não o ícone — assim ele nunca sai da tela no celular. */
@@ -1733,12 +1764,108 @@ strong.nivel-ruim { color: var(--nivel-ruim); }
   margin: 0;
 }
 
-.medidor-lista {
-  margin: 0;
-  padding-left: 20px;
+.medidor-detalhes {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+}
+
+.medidor-detalhes:empty {
+  display: none;
+}
+
+.medidor-cartao {
+  display: flex;
+  flex-direction: column;
+  padding: 22px;
+  box-shadow: var(--sombra);
+}
+
+.medidor-resultado .medidor-cartao h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  line-height: 1.3;
+  margin: 0 0 4px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--borda);
+}
+
+.medidor-cartao-icone {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  color: var(--acento);
+  background: var(--acento-fraco);
+}
+
+.medidor-cartao.alerta .medidor-cartao-icone {
+  color: var(--alerta);
+  background: var(--alerta-fraco);
+}
+
+.medidor-resultado .medidor-cartao h3 {
+  font-size: 0.8125rem;
+  margin: 16px 0 8px;
+}
+
+.medidor-cartao-rodape {
+  margin: auto 0 0;
+  padding-top: 16px;
+  font-size: 0.8125rem;
+}
+
+.medidor-lista {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.medidor-cartao.alerta .medidor-lista li {
+  padding-left: 12px;
+  border-left: 3px solid var(--alerta);
+}
+
+.medidor-cartao.alerta .medidor-lista strong {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--alerta);
+}
+
+.medidor-lista.numerada {
+  counter-reset: melhoria;
+}
+
+.medidor-lista.numerada li {
+  counter-increment: melhoria;
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+}
+
+.medidor-lista.numerada li::before {
+  content: counter(melhoria);
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--acento);
+  background: var(--acento-fraco);
 }
 
 .medidor-feedback {
