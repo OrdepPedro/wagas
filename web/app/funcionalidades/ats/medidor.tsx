@@ -215,6 +215,29 @@ function Dica({ texto }: { texto: string }) {
   );
 }
 
+const TRACO_ICONE: Record<'requisitos' | 'alertas' | 'melhorias', string> = {
+  requisitos: 'M9 6h11M9 12h11M9 18h11M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2',
+  alertas: 'M12 9v4m0 4v.01M10.3 3.9 2.4 17.5A2 2 0 0 0 4.1 20.5h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z',
+  melhorias: 'M3 17l6-6 4 4 8-8m0 0h-5m5 0v5',
+};
+
+function IconeCartao({ tipo }: { tipo: keyof typeof TRACO_ICONE }) {
+  return (
+    <span className="medidor-cartao-icone" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="18" height="18">
+        <path
+          d={TRACO_ICONE[tipo]}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </span>
+  );
+}
+
 function Resultado({ resultado, id }: { resultado: ResultadoDaMedicao; id: string | undefined }) {
   const { nota, faixa, estimada, criterios, requisitos, alertas, melhorias } = resultado;
   const grupos = [
@@ -274,52 +297,66 @@ function Resultado({ resultado, id }: { resultado: ResultadoDaMedicao; id: strin
         ))}
       </div>
 
-      {requisitos.length > 0 ? (
-        <div className="caixa">
-          <h2>{estimada ? 'O que o cargo costuma pedir' : 'Requisitos da vaga'}</h2>
-          {grupos
-            .filter((g) => g.itens.length > 0)
-            .map((g) => (
-              <div key={g.titulo} className="medidor-grupo">
-                <h3>
-                  {g.icone} {g.titulo}
-                </h3>
-                <ul className="etiquetas">
-                  {g.itens.map((r) => (
-                    <li key={r.termo} className={`etiqueta${r.essencial ? ' destaque' : ''}`}>
-                      {r.grafiaNoCurriculo ? `${r.grafiaNoCurriculo} → ${r.termo}` : r.termo}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          <p className="fraco nota-campo">Em destaque, os essenciais. São eles que contam no critério de requisitos.</p>
-        </div>
-      ) : null}
+      <div className="medidor-detalhes">
+        {requisitos.length > 0 ? (
+          <div className="caixa medidor-cartao">
+            <h2>
+              <IconeCartao tipo="requisitos" />
+              {estimada ? 'O que o cargo costuma pedir' : 'Requisitos da vaga'}
+            </h2>
+            {grupos
+              .filter((g) => g.itens.length > 0)
+              .map((g) => (
+                <div key={g.titulo} className="medidor-grupo">
+                  <h3>
+                    {g.icone} {g.titulo}
+                  </h3>
+                  <ul className="etiquetas">
+                    {g.itens.map((r) => (
+                      <li key={r.termo} className={`etiqueta${r.essencial ? ' destaque' : ''}`}>
+                        {r.grafiaNoCurriculo ? `${r.grafiaNoCurriculo} → ${r.termo}` : r.termo}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            <p className="fraco medidor-cartao-rodape">
+              Em destaque, os essenciais. São eles que contam no critério de requisitos.
+            </p>
+          </div>
+        ) : null}
 
-      {alertas.length > 0 ? (
-        <div className="caixa aviso">
-          <h2>Alertas fora da nota</h2>
-          <ul className="medidor-lista">
-            {alertas.map((a, i) => (
-              <li key={i}>
-                <strong>{ROTULO_ALERTA[a.tipo]}:</strong> {a.texto}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+        {alertas.length > 0 ? (
+          <div className="caixa medidor-cartao alerta">
+            <h2>
+              <IconeCartao tipo="alertas" />
+              Alertas fora da nota
+            </h2>
+            <ul className="medidor-lista">
+              {alertas.map((a, i) => (
+                <li key={i}>
+                  <strong>{ROTULO_ALERTA[a.tipo]}</strong>
+                  {a.texto}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
-      {melhorias.length > 0 ? (
-        <div className="caixa">
-          <h2>O que mais aumenta a nota</h2>
-          <ol className="medidor-lista">
-            {melhorias.map((m, i) => (
-              <li key={i}>{m}</li>
-            ))}
-          </ol>
-        </div>
-      ) : null}
+        {melhorias.length > 0 ? (
+          <div className="caixa medidor-cartao">
+            <h2>
+              <IconeCartao tipo="melhorias" />
+              O que mais aumenta a nota
+            </h2>
+            <ol className="medidor-lista numerada">
+              {melhorias.map((m, i) => (
+                <li key={i}>{m}</li>
+              ))}
+            </ol>
+          </div>
+        ) : null}
+      </div>
 
       {id ? <Feedback id={id} /> : null}
     </section>
