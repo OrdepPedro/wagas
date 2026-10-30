@@ -213,6 +213,31 @@ button.discreto:hover:not(:disabled) {
   padding: 20px;
 }
 
+/* Campo e botão na mesma linha a partir do tablet; no celular, um embaixo do
+   outro. O erro vai para a linha de baixo para não empurrar o botão. */
+@media (min-width: 520px) {
+  .form-linha {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 12px;
+    align-items: end;
+  }
+
+  .form-linha .campos {
+    margin-bottom: 0;
+  }
+
+  .form-linha button[type='submit'] {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .form-linha .erro {
+    grid-column: 1 / -1;
+    margin: 8px 0 0;
+  }
+}
+
 .caixa.aviso {
   background: var(--alerta-fraco);
   border-color: transparent;

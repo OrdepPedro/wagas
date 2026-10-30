@@ -156,7 +156,7 @@ function LimiteEstourado({ limite }: { limite: EstadoDoLimite }) {
     .sort((a, b) => a.getTime() - b.getTime())[0];
 
   return (
-    <div className="caixa aviso" style={{ marginBottom: 24 }}>
+    <div className="caixa" style={{ marginBottom: 24 }}>
       <p>
         {visitante
           ? `Você já usou as ${teto} buscas de visitante. Estas vagas são só do que já estava no nosso acervo.`
@@ -169,7 +169,7 @@ function LimiteEstourado({ limite }: { limite: EstadoDoLimite }) {
       </p>
       {visitante ? (
         <div style={{ marginTop: 16 }}>
-          <FormularioDeEntrada />
+          <FormularioDeEntrada emLinha />
         </div>
       ) : null}
     </div>

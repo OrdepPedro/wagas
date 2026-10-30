@@ -15,7 +15,12 @@ function Enviar({ children }: { children: string }) {
   );
 }
 
-export function FormularioDeEntrada() {
+export function FormularioDeEntrada({
+  emLinha = false,
+}: {
+  /** Caixa larga: botão ao lado do e-mail no desktop, embaixo no celular. */
+  emLinha?: boolean;
+} = {}) {
   const [estado, acao] = useActionState(entrar, VAZIO);
 
   if (estado.enviadoPara) {
@@ -32,7 +37,7 @@ export function FormularioDeEntrada() {
   }
 
   return (
-    <form action={acao}>
+    <form action={acao} className={emLinha ? 'form-linha' : undefined}>
       <div className="campos">
         <div>
           <label htmlFor="email">Seu e-mail</label>
