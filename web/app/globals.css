@@ -425,6 +425,30 @@ ul.vagas {
   margin-bottom: 16px;
 }
 
+/* Buscar na linha do "Só vagas remotas", no outro extremo, embaixo de Cidade.
+   Grade, não wrapper: o mesmo formulário monta o hero da landing. */
+.busca form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 16px;
+  align-items: center;
+}
+
+.busca .campos,
+.busca .erro {
+  grid-column: 1 / -1;
+}
+
+.busca .opcao {
+  grid-row: 2;
+}
+
+.busca button[type='submit'] {
+  grid-column: 2;
+  grid-row: 2;
+  margin-bottom: 16px;
+}
+
 /* Buscas salvas do visitante: atalhos, não navegação. */
 .salvas {
   margin-bottom: 20px;
