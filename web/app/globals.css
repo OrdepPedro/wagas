@@ -1340,8 +1340,9 @@ button.menu-func-botao:hover:not(:disabled),
   width: 100%;
 }
 
-.gerador-dorks label.opcao,
-label.opcao {
+/* Escopado ao gerador: solto, `label.opcao` virava inline-flex no "Só vagas
+   remotas" da busca, e o botão subia para a mesma linha. */
+.gerador-dorks label.opcao {
   display: inline-flex;
   align-items: center;
   gap: 6px;
