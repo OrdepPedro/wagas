@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import { LIMITE_GRATUITO } from '../lib/limites.ts';
 import { lerPerfil } from '../lib/perfil.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
+import { BotaoEntrar } from './entrar-modal.tsx';
 import { Marca } from './marca.tsx';
 import { MenuFuncionalidades } from './menu-funcionalidades.tsx';
 import { AlternarTema } from './tema.tsx';
@@ -43,11 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   Minhas vagas
                 </a>
               ) : null}
-              {entrou ? null : (
-                <a href="/entrar" className="link-entrar">
-                  Entrar
-                </a>
-              )}
+              {entrou ? null : <BotaoEntrar limite={LIMITE_GRATUITO} />}
               <AlternarTema inicial={tema} />
             </nav>
           </div>
