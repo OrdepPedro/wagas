@@ -7,7 +7,8 @@ import { slugCidade } from '../../../src/normalize/local.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
 import { sair, voltarParaBusca } from '../actions.ts';
 import { redirect } from 'next/navigation';
-import { FormularioDeBusca, FormularioDeEntrada } from '../formularios.tsx';
+import { FormularioDeBusca } from '../formularios.tsx';
+import { AvisoDeTeto } from '../teto-modal.tsx';
 
 export const dynamic = 'force-dynamic';
 
@@ -155,23 +156,21 @@ function LimiteEstourado({ limite }: { limite: EstadoDoLimite }) {
     .filter((d): d is Date => d !== null)
     .sort((a, b) => a.getTime() - b.getTime())[0];
 
+  if (visitante) {
+    return (
+      <AvisoDeTeto
+        teto={teto}
+        detalhe={`${proxima ? `Uma busca libera em ${formatarDia(proxima)}. ` : ''}Entrar com e-mail libera ${LIMITE_GRATUITO} buscas por dia.`}
+      />
+    );
+  }
+
   return (
-    <div className="caixa aviso" style={{ marginBottom: 24 }}>
-      <p>
-        {visitante
-          ? `Você já usou as ${teto} buscas de visitante. Estas vagas são só do que já estava no nosso acervo.`
-          : `Você já fez ${teto} ${teto === 1 ? 'busca' : 'buscas'} hoje.`}
-      </p>
+    <div className="caixa" style={{ marginBottom: 24 }}>
+      <p>{`Você já fez ${teto} ${teto === 1 ? 'busca' : 'buscas'} hoje.`}</p>
       <p className="fraco" style={{ margin: 0 }}>
-        {visitante
-          ? `${proxima ? `Uma busca libera em ${formatarDia(proxima)}. ` : ''}Entrar com e-mail libera ${LIMITE_GRATUITO} buscas por dia.`
-          : 'O contador zera à meia-noite. Recarregar o feed não conta — só trocar de cargo ou cidade.'}
+        O contador zera à meia-noite. Recarregar o feed não conta — só trocar de cargo ou cidade.
       </p>
-      {visitante ? (
-        <div style={{ marginTop: 16 }}>
-          <FormularioDeEntrada />
-        </div>
-      ) : null}
     </div>
   );
 }
