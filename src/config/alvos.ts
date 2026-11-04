@@ -6,7 +6,7 @@
  *   - vagas remotas de TODO O BRASIL.
  *
  * Por isso cada bloco vira duas consultas — `cidade` e `remoto`. Um alvo
- * completo custa 3 blocos x 2 recortes x N páginas.
+ * completo custa 4 blocos x 2 recortes x N páginas.
  *
  * ESTE É O ARQUIVO PARA EDITAR ao cobrir um segmento novo.
  *
@@ -64,8 +64,13 @@ export function montarDork(bloco: Bloco, cargo: string, recorte: Recorte, cidade
   }
 
   // Gupy: no recorte remoto o termo composto derruba demais o recall desta fonte.
-  const localGupy = recorte === 'cidade' ? `"${cidade}"` : '"remoto"';
-  return `site:gupy.io "${cargo}" ${localGupy}`;
+  // InHire herda o mesmo molde, SEM medição própria: é um ATS da mesma forma
+  // (subdomínio por empresa, página por vaga), e o molde da Gupy é o mais
+  // próximo de medido que existe. Caminho no `site:` arriscaria perder os
+  // subdomínios; a página que não é de vaga única cai no pré-filtro.
+  const localAts = recorte === 'cidade' ? `"${cidade}"` : '"remoto"';
+  if (bloco === 'ats_inhire') return `site:inhire.app "${cargo}" ${localAts}`;
+  return `site:gupy.io "${cargo}" ${localAts}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -87,7 +92,7 @@ export const ALVOS: Alvo[] = [
   { id: 'ux-bh', cargo: 'UX Designer', cidade: 'Belo Horizonte', ativo: true },
 ];
 
-const BLOCOS: Bloco[] = ['linkedin_job', 'linkedin_post', 'ats_gupy'];
+const BLOCOS: Bloco[] = ['linkedin_job', 'linkedin_post', 'ats_gupy', 'ats_inhire'];
 const RECORTES: Recorte[] = ['cidade', 'remoto'];
 
 export function alvosAtivos(alvos: Alvo[] = ALVOS): Alvo[] {

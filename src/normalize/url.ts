@@ -141,6 +141,20 @@ export function canonicalizarUrl(bruta: string): UrlCanonica | null {
     };
   }
 
+  if (host.endsWith('.inhire.app')) {
+    // `<empresa>.inhire.app/vagas/<jobId>/<slug>`, rota lida do bundle da página
+    // de carreira. Como na Gupy, o subdomínio é a empresa e o slug é descartável.
+    const id = /^\/vagas\/([A-Za-z0-9-]+)/.exec(url.pathname)?.[1];
+    if (id) {
+      return { url: `https://${host}/vagas/${id}`, fonte: 'ats_inhire', fonteId: id };
+    }
+    return {
+      url: `https://${host}${limparCaminho(url.pathname)}${queryLimpa(url)}`,
+      fonte: 'ats_inhire',
+      fonteId: null,
+    };
+  }
+
   if (host === 'infojobs.com.br' || host.endsWith('.infojobs.com.br')) {
     // `/vaga-de-<titulo>-em-<cidade>__12110964.aspx`: o slug do título muda se o
     // anunciante editar; o número não. Canonicaliza pelo número.

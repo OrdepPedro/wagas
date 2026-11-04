@@ -89,7 +89,7 @@ REGRA DE LOCAL (é a promessa do produto, não preferência):
 COMO LER CADA FONTE:
 - linkedin_job: o título é confiável. O snippet NÃO é: a página traz a barra lateral de "vagas similares", e o snippet pode descrever outra vaga de outra empresa. Nunca tire a empresa do snippet sozinho; se ela não estiver no título, devolva empresa: null.
 - linkedin_post: o título vem reescrito pelo Google ("Publicação de Fulano") e não diz nada. O sinal está no snippet, que é o começo do texto do post.
-- ats_gupy: título e snippet são confiáveis. A empresa costuma estar no subdomínio da URL.
+- ats_gupy e ats_inhire: título e snippet são confiáveis. A empresa costuma estar no subdomínio da URL.
 
 AUSÊNCIA DE EVIDÊNCIA NÃO É EVIDÊNCIA DE AUSÊNCIA:
 - ehVaga: false só quando houver evidência POSITIVA de que não é vaga (é artigo, é post de opinião, é página de listagem, é divulgação de curso).

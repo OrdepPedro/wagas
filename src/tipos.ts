@@ -1,5 +1,5 @@
 /** Origem do resultado. Vira a coluna `fonte` em raw_results e permite facetar o feed. */
-export type Fonte = 'linkedin_job' | 'linkedin_post' | 'ats_gupy' | 'portal_infojobs' | 'desconhecida';
+export type Fonte = 'linkedin_job' | 'linkedin_post' | 'ats_gupy' | 'ats_inhire' | 'portal_infojobs' | 'desconhecida';
 
 /** Modelo de trabalho pedido na busca (nao e o modelo da vaga — isso e o classificador que decide). */
 export type Modelo = 'remoto' | 'hibrido' | 'presencial' | 'qualquer';

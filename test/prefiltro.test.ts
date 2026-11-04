@@ -83,6 +83,20 @@ describe('prefiltrar', () => {
     assert.equal(d.motivo, 'pagina_de_listagem');
   });
 
+  it('corta a página de carreira da InHire e aceita a vaga única', () => {
+    const listagem = prefiltrar(
+      candidato({ fonte: 'ats_inhire', urlCanonica: 'https://acme.inhire.app/vagas' }),
+      { agora: AGORA },
+    );
+    assert.equal(listagem.motivo, 'pagina_de_listagem');
+
+    const vaga = prefiltrar(
+      candidato({ fonte: 'ats_inhire', urlCanonica: 'https://acme.inhire.app/vagas/0b1c2d3e-4f50' }),
+      { agora: AGORA },
+    );
+    assert.equal(vaga.passa, true);
+  });
+
   it('aceita a vaga da Gupy no formato /job/<base64>', () => {
     // Caso real: a URL não tem id numérico, mas é vaga única. Cortar por
     // ausência de id perderia a vaga.
