@@ -354,12 +354,19 @@ export default async function PaginaDoFeed({
         </div>
         {/* Visitante não tem "Sair": sair apagaria a sessão anônima, o proxy
             criaria outra no próximo acesso, e o teto zeraria com um clique. */}
+        {/* "Meu currículo" fica aqui e não no topo: no celular o topo já não
+            cabe em 375 px, e o link a mais o deixava 59 px mais largo. */}
         {usuario.visitante ? null : (
-          <form action={sair}>
-            <button type="submit" className="discreto">
-              Sair
-            </button>
-          </form>
+          <div className="cabecalho-acoes">
+            <a href="/curriculo" className="link-feed">
+              Meu currículo
+            </a>
+            <form action={sair}>
+              <button type="submit" className="discreto">
+                Sair
+              </button>
+            </form>
+          </div>
         )}
       </div>
 

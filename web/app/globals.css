@@ -2418,3 +2418,9 @@ details.descricao summary {
 details.descricao p {
   white-space: pre-line;
 }
+
+.cabecalho-acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
