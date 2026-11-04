@@ -4,7 +4,7 @@ import { describe, it } from 'node:test';
 import {
   chaveDaDecisao,
   classificar,
-  empresaDoSubdominioGupy,
+  empresaDoSubdominio,
   resumir,
 } from '../src/classificar/classificador.ts';
 import { medir, avaliarDecisoes, type CasoRotulado } from '../src/classificar/harness.ts';
@@ -299,9 +299,10 @@ describe('chave de dedup da vaga', () => {
   });
 
   it('empresa da Gupy sai do subdomínio quando o modelo não achou nome', () => {
-    assert.equal(empresaDoSubdominioGupy('https://carreirasomie.gupy.io/jobs/12168950'), 'carreirasomie');
-    assert.equal(empresaDoSubdominioGupy('https://portal.gupy.io/job-search'), null);
-    assert.equal(empresaDoSubdominioGupy('https://www.linkedin.com/jobs/view/1'), null);
+    assert.equal(empresaDoSubdominio('https://carreirasomie.gupy.io/jobs/12168950'), 'carreirasomie');
+    assert.equal(empresaDoSubdominio('https://portal.gupy.io/job-search'), null);
+    assert.equal(empresaDoSubdominio('https://www.linkedin.com/jobs/view/1'), null);
+    assert.equal(empresaDoSubdominio('https://acme.inhire.app/vagas/0b1c2d3e'), 'acme');
   });
 });
 

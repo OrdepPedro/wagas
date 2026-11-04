@@ -107,6 +107,25 @@ describe('canonicalizarUrl — Gupy', () => {
   });
 });
 
+describe('canonicalizarUrl — InHire', () => {
+  it('reduz a vaga ao id, preservando o subdomínio da empresa', () => {
+    const c = canonicalizarUrl(
+      'https://acme.inhire.app/vagas/0b1c2d3e-4f50-6172-8394-a5b6c7d8e9f0/product-manager?utm_source=linkedin',
+    );
+    assert.deepEqual(c, {
+      url: 'https://acme.inhire.app/vagas/0b1c2d3e-4f50-6172-8394-a5b6c7d8e9f0',
+      fonte: 'ats_inhire',
+      fonteId: '0b1c2d3e-4f50-6172-8394-a5b6c7d8e9f0',
+    });
+  });
+
+  it('página de carreira sem vaga fica na fonte, mas sem id', () => {
+    const c = canonicalizarUrl('https://acme.inhire.app/vagas/');
+    assert.equal(c?.fonte, 'ats_inhire');
+    assert.equal(c?.fonteId, null);
+  });
+});
+
 describe('canonicalizarUrl — genérico', () => {
   it('força https, tira www, fragmento, barra final e tracking, e ordena o resto', () => {
     const c = canonicalizarUrl('http://www.exemplo.com.br/vagas/?b=2&utm_source=x&a=1#topo');

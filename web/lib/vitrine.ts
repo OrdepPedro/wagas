@@ -17,7 +17,7 @@ export interface CartaoDaVitrine {
   empresa: string;
   localizacao: string | null;
   modelo: 'remoto' | 'hibrido' | 'presencial' | null;
-  fonte: 'linkedin_job' | 'linkedin_post' | 'ats_gupy' | 'portal_infojobs';
+  fonte: 'linkedin_job' | 'linkedin_post' | 'ats_gupy' | 'ats_inhire' | 'portal_infojobs';
   data_publicacao: string;
 }
 

@@ -72,6 +72,24 @@ function ehListagemGupy(candidato: Candidato): string | null {
 }
 
 /**
+ * Na InHire a vaga única é `/vagas/<jobId>/<slug>`; `/vagas` sozinho é a página
+ * de carreira da empresa, com a lista inteira.
+ */
+const CAMINHO_DE_VAGA_INHIRE = /^\/vagas\/[^/]+/;
+
+function ehListagemInhire(candidato: Candidato): string | null {
+  if (candidato.urlCanonica === '') return null;
+  let caminho: string;
+  try {
+    caminho = new URL(candidato.urlCanonica).pathname;
+  } catch {
+    return null;
+  }
+  if (!CAMINHO_DE_VAGA_INHIRE.test(caminho)) return `caminho ${caminho} não é de vaga única`;
+  return null;
+}
+
+/**
  * Idade em dias, ou `null` quando a data é desconhecida.
  *
  * Data desconhecida NÃO reprova: só a Gupy publica data estruturada no snippet,
@@ -102,6 +120,11 @@ export function prefiltrar(
 
   if (candidato.fonte === 'ats_gupy') {
     const listagem = ehListagemGupy(candidato);
+    if (listagem) return { passa: false, motivo: 'pagina_de_listagem', detalhe: listagem };
+  }
+
+  if (candidato.fonte === 'ats_inhire') {
+    const listagem = ehListagemInhire(candidato);
     if (listagem) return { passa: false, motivo: 'pagina_de_listagem', detalhe: listagem };
   }
 

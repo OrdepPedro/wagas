@@ -55,8 +55,19 @@ describe('montarDork', () => {
     );
   });
 
+  it('inhire segue o molde da gupy', () => {
+    assert.equal(
+      montarDork('ats_inhire', 'Enfermeiro', 'remoto', 'São Paulo'),
+      'site:inhire.app "Enfermeiro" "remoto"',
+    );
+    assert.equal(
+      montarDork('ats_inhire', 'Enfermeiro', 'cidade', 'São Paulo'),
+      'site:inhire.app "Enfermeiro" "São Paulo"',
+    );
+  });
+
   it('todo dork tem site: e correspondência exata de frase', () => {
-    for (const bloco of ['linkedin_job', 'linkedin_post', 'ats_gupy'] as const) {
+    for (const bloco of ['linkedin_job', 'linkedin_post', 'ats_gupy', 'ats_inhire'] as const) {
       for (const recorte of ['cidade', 'remoto'] as const) {
         const dork = montarDork(bloco, 'Product Designer', recorte, 'Curitiba');
         assert.match(dork, /^site:/, `${bloco}/${recorte} sem site:`);
@@ -67,14 +78,14 @@ describe('montarDork', () => {
 });
 
 describe('expansão', () => {
-  it('um alvo vira 3 blocos x 2 recortes x páginas', () => {
-    assert.equal(expandirAlvo(ALVO, 1).length, 6);
-    assert.equal(expandirAlvo(ALVO, 3).length, 18);
+  it('um alvo vira 4 blocos x 2 recortes x páginas', () => {
+    assert.equal(expandirAlvo(ALVO, 1).length, 8);
+    assert.equal(expandirAlvo(ALVO, 3).length, 24);
   });
 
   it('cobre os dois recortes em cada bloco', () => {
     const consultas = expandirAlvo(ALVO, 1);
-    for (const bloco of ['linkedin_job', 'linkedin_post', 'ats_gupy']) {
+    for (const bloco of ['linkedin_job', 'linkedin_post', 'ats_gupy', 'ats_inhire']) {
       const doBloco = consultas.filter((c) => c.bloco === bloco);
       assert.equal(doBloco.length, 2, `${bloco} deveria ter cidade e remoto`);
       assert.deepEqual(
