@@ -1,4 +1,4 @@
--- 0014 — pedido de coleta do InfoJobs disparado pela busca
+-- 0017 — pedido de coleta do InfoJobs disparado pela busca
 --
 -- Par novo só recebia o InfoJobs na coleta diária do dia seguinte. A busca
 -- agora PEDE a coleta: grava uma linha aqui e dispara o workflow

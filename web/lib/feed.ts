@@ -162,7 +162,7 @@ export async function carregarFeed(
  * resposta (`after`), para a busca não esperar a API do GitHub. Quem abre o
  * InfoJobs é o Actions. Repetição na sessão e teto estourado só leem o estado.
  *
- * Qualquer falha some em silêncio: sem a migration 0014 ou sem o token, o feed
+ * Qualquer falha some em silêncio: sem a migration 0017 ou sem o token, o feed
  * funciona como antes.
  */
 async function acompanharOutraFonte(
