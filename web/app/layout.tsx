@@ -45,6 +45,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   Minhas vagas
                 </a>
               ) : null}
+              {entrou ? (
+                <a href="/curriculo" className="link-feed">
+                  Meu currículo
+                </a>
+              ) : null}
               {entrou ? null : <BotaoEntrar limite={LIMITE_GRATUITO} />}
               <AlternarTema inicial={tema} />
             </nav>

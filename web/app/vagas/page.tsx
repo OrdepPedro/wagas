@@ -4,6 +4,7 @@ import { estadoDoLimite, LIMITE_GRATUITO, type EstadoDoLimite } from '../../lib/
 import { cidadeDoFormulario, lerPerfil } from '../../lib/perfil.ts';
 import { chaveDoPar } from '../../../src/feed/pares-do-dia.ts';
 import { slugCidade } from '../../../src/normalize/local.ts';
+import { vagaAdaptavel } from '../../../src/curriculo/adaptar.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
 import { sair, voltarParaBusca } from '../actions.ts';
 import { redirect } from 'next/navigation';
@@ -96,6 +97,12 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
         Ver vaga <span aria-hidden="true">↗</span>
         <span className="sr-only"> (abre em nova aba)</span>
       </a>
+      {/* Só com descrição de verdade: snippet do LinkedIn não tem o que adaptar. */}
+      {vagaAdaptavel(vaga) ? (
+        <a className="adaptar" href={`/adaptar/${vaga.id}`}>
+          Adaptar meu currículo
+        </a>
+      ) : null}
     </li>
   );
 }

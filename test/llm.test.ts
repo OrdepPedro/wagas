@@ -93,6 +93,27 @@ describe('ProvedorGroq', () => {
     const enviado = JSON.parse(await chamadas[0]!.text());
     assert.deepEqual(enviado.response_format, { type: 'json_object' });
     assert.equal(chamadas[0]!.headers.get('authorization'), 'Bearer k');
+    // Sem opção, o corpo não muda: o classificador segue igual.
+    assert.equal(enviado.max_completion_tokens, undefined);
+    assert.equal(enviado.reasoning_effort, undefined);
+  });
+
+  it('manda teto de saída e esforço de raciocínio quando pedidos', async () => {
+    const { fn, chamadas } = fetchFalso([() => resposta(textoGroq('{}'))]);
+    const provedor = new ProvedorGroq({ chave: 'k', modelo: 'm', fetchImpl: fn, maxTokens: 4000, reasoningEffort: 'low' });
+    await provedor.julgar('p', null);
+    const enviado = JSON.parse(await chamadas[0]!.text());
+    assert.equal(enviado.max_completion_tokens, 4000);
+    assert.equal(enviado.reasoning_effort, 'low');
+  });
+
+  it('resposta cortada no teto de tokens é erro, mesmo sendo JSON válido', async () => {
+    // Caso real de 03/11: o modo JSON fechou as chaves e o currículo veio sem formação.
+    const cortada = { choices: [{ finish_reason: 'length', message: { content: '{"nome":"x","experiencias":[]}' } }] };
+    const { fn, chamadas } = fetchFalso([() => resposta(cortada)]);
+    const provedor = new ProvedorGroq({ chave: 'k', modelo: 'm', fetchImpl: fn, sleepImpl: async () => {} });
+    await assert.rejects(() => provedor.julgar('p', null), /limite de tokens/);
+    assert.equal(chamadas.length, 1);
   });
 });
 

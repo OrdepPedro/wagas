@@ -211,12 +211,28 @@ const ENDPOINT_GROQ = 'https://api.groq.com/openai/v1/chat/completions';
  * Groq. Só aceita `json_object`, sem schema — por isso o prompt descreve o
  * formato em texto e `interpretarResposta` valida campo a campo.
  */
+export interface OpcoesGroq extends OpcoesProvedor {
+  /**
+   * Teto de tokens de saída. Sem ele vale o padrão do Groq, e o gpt-oss-120b
+   * bateu nele em 03/11 com um currículo real: o raciocínio interno come o
+   * orçamento e o JSON sai cortado. No tier gratuito, prompt + teto precisa
+   * caber nos 8.000 tokens por minuto, senão a chamada é recusada.
+   */
+  maxTokens?: number;
+  /** Só modelos de raciocínio (gpt-oss). `low` corta o raciocínio, que era 2/3 da saída. */
+  reasoningEffort?: 'low' | 'medium' | 'high';
+}
+
 export class ProvedorGroq extends ProvedorHttp {
   readonly nome: string;
+  #maxTokens: number | undefined;
+  #reasoningEffort: OpcoesGroq['reasoningEffort'];
 
-  constructor(opts: OpcoesProvedor) {
+  constructor(opts: OpcoesGroq) {
     super(opts);
     this.nome = `groq/${opts.modelo}`;
+    this.#maxTokens = opts.maxTokens;
+    this.#reasoningEffort = opts.reasoningEffort;
   }
 
   protected override requisicao(prompt: string): { url: string; init: RequestInit } {
@@ -230,13 +246,23 @@ export class ProvedorGroq extends ProvedorHttp {
           temperature: 0,
           response_format: { type: 'json_object' },
           messages: [{ role: 'user', content: prompt }],
+          ...(this.#maxTokens ? { max_completion_tokens: this.#maxTokens } : {}),
+          ...(this.#reasoningEffort ? { reasoning_effort: this.#reasoningEffort } : {}),
         }),
       },
     };
   }
 
   protected override extrairTexto(corpo: unknown): string | null {
-    const escolhas = (corpo as { choices?: Array<{ message?: { content?: string } }> } | null)?.choices;
+    const escolhas = (
+      corpo as { choices?: Array<{ finish_reason?: string; message?: { content?: string } }> } | null
+    )?.choices;
+    // Resposta cortada por teto de tokens pode chegar como JSON VÁLIDO e
+    // incompleto — o modo JSON fecha as chaves. Aceitá-la entregaria um
+    // currículo sem formação, ou um lote com vagas a menos, com cara de sucesso.
+    if (escolhas?.[0]?.finish_reason === 'length') {
+      throw new LlmErro(`${this.nome} cortou a resposta no limite de tokens`);
+    }
     return escolhas?.[0]?.message?.content ?? null;
   }
 }
