@@ -24,6 +24,7 @@ import { montarPares, ufMaisFrequente, type BuscaRegistrada } from '../src/colet
 import { buscarNaGupy, vagaFechadaNaGupy } from '../src/fontes/gupy.ts';
 import { buscarNoInfojobs } from '../src/fontes/infojobs.ts';
 import { GUPY, INFOJOBS, gravarNoCache, registrarColeta, ultimaColeta } from '../src/fontes/gupy-cache.ts';
+import { MAX_SUGERIDOS_NA_COLETA, cargosDaColeta } from '../src/cargos/abrangidos.ts';
 import { decidirEncerramentos, type ConsultaDoDia, type VagaVerificavel } from '../src/coleta/encerramento.ts';
 
 const args = process.argv.slice(2);
@@ -45,8 +46,22 @@ const [buscas, ufs] = await Promise.all([
   db.selectTodos<{ cidade_slug: string | null; uf: string | null }>('jobs', 'select=cidade_slug,uf&uf=not.is.null&order=id'),
 ]);
 
+// Cargos sugeridos na landing (migration 0014): entram como pré-carga, DEPOIS
+// da fixa — se a madrugada não der conta do InfoJobs, quem cai são eles. Sem a
+// migration, a coleta segue só com a pré-carga.
+let sugeridos: Array<{ id: number; cargo: string }> = [];
+try {
+  sugeridos = await db.select<{ id: number; cargo: string }>(
+    'cargos_sugeridos',
+    `select=id,cargo&order=criado_em.desc&limit=${MAX_SUGERIDOS_NA_COLETA}`,
+  );
+} catch (erro) {
+  console.error(`cargos_sugeridos ilegível (a migration 0014 foi aplicada?): ${String(erro).slice(0, 200)}`);
+}
+const cargosDoDia = cargosDaColeta(CARGOS_PRE_CARGA, sugeridos.map((s) => s.cargo));
+
 const pares = montarPares({
-  cargos: CARGOS_PRE_CARGA,
+  cargos: cargosDoDia,
   cidades: CIDADES_PRE_CARGA,
   buscas,
   ufPorSlug: ufMaisFrequente(ufs),
@@ -65,11 +80,13 @@ const consultasGupy = [
 ];
 
 const consultasDoDia: ConsultaDoDia[] = [];
+const achadasPorConsulta: Array<{ cargo: string; vagas: number }> = [];
 
 for (const c of consultasGupy) {
   const r = await buscarNaGupy({ cargo: c.cargo, cidade: c.cidade, soRemoto: c.soRemoto, limite: 500 });
   // A Gupy recusa rajada (achado 35): uma pausa curta entre consultas.
   await new Promise((ok) => setTimeout(ok, 500));
+  achadasPorConsulta.push({ cargo: c.cargo, vagas: r.vagas.length });
   consultasDoDia.push({ cargo: c.cargo, cidade: c.cidade, soRemoto: c.soRemoto, completa: r.completa, idsVistos: r.idsVistos });
   if (r.falhou && r.vagas.length === 0) { placar.gupy.falhou++; continue; }
   placar.gupy.ok++;
@@ -78,6 +95,30 @@ for (const c of consultasGupy) {
   await registrarColeta(db, c.cargo, c.cidade, c.soRemoto, r.vistos, g.vagasGravadas, GUPY);
   placar.gupy.gravadas += g.vagasGravadas;
 }
+// Quantas vagas cada sugerido achou: é o que decide se ele aparece na landing.
+// Conta vagas encontradas (não só as novas): cargo de verdade que já estava no
+// cache também é cargo de verdade.
+if (!seco && sugeridos.length > 0) {
+  const chave = (c: string) => c.trim().toLowerCase();
+  const porCargo = new Map<string, number>();
+  for (const s of sugeridos) porCargo.set(chave(s.cargo), 0);
+  for (const r of achadasPorConsulta) {
+    if (porCargo.has(chave(r.cargo))) porCargo.set(chave(r.cargo), porCargo.get(chave(r.cargo))! + r.vagas);
+  }
+  try {
+    for (const s of sugeridos) {
+      await db.update('cargos_sugeridos', `id=eq.${s.id}`, {
+        coletado_em: agora.toISOString(),
+        vagas_ultima_coleta: porCargo.get(chave(s.cargo)) ?? 0,
+      });
+    }
+  } catch (erro) {
+    console.error(`Falha ao marcar cargos sugeridos: ${String(erro).slice(0, 200)}`);
+  }
+  const comVaga = sugeridos.filter((s) => (porCargo.get(chave(s.cargo)) ?? 0) > 0).length;
+  console.log(`Sugeridos: ${sugeridos.length} coletados, ${comVaga} com vaga (aparecem na landing)`);
+}
+
 console.log(`Gupy: ${placar.gupy.ok} ok, ${placar.gupy.falhou} falharam, ${placar.gupy.gravadas} vagas novas — ${minutos()} min`);
 
 // --- Vagas encerradas: a Gupy deixou de listar (migration 0011) --------------
