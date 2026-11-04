@@ -784,6 +784,7 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
   - ~~Vagas "em Todo Brasil" do InfoJobs~~ — **decidido em 22/10: entram, só as de home office** (achado 39). **Aplicar `migrations/0009_contrato_e_pagina_html.sql` antes de rodar o `web/`** — o feed passou a ler `tipo_contrato`, e sem a coluna a consulta falha.
   - **Bug corrigido em 21/10 (`f6985be`):** busca do InfoJobs sem UF virava estadual (`sao-paulo`) ou nacional (`belo-horizonte`). As "39 cortadas por local" eram o estado inteiro, não região metropolitana.
   - **Buraco que nenhuma das quatro fecha:** tech fora das capitais.
+- **Cargos abrangidos na landing (03/11).** Carrossel logo abaixo do hero + modal com a lista e a opção de sugerir cargo. Lista = pré-carga + `cargos_sugeridos` (migration `0014`, **aplicada em 03/11**). Sugerido entra na coleta diária (até 20 por noite, depois da pré-carga fixa) e **só aparece na lista pública depois que a Gupy achou vaga para ele** — o texto vem de qualquer visitante. Teto de 3 sugestões por pessoa por dia, na policy de insert. Primeira rodada: Garçom 1, Eletricista 2, Cozinheiro 6 vagas.
 - **Teste de saúde das fontes** (achado 38). A Gupy ficou em 404 por semanas sem ninguém saber. Uma consulta conhecida por fonte, rodando sozinha, falhando alto.
 - **Trava 4 em xeque** (achado 38): medir ritmo e retentativa na página pública do LinkedIn antes de construir em cima dela.
 - **Greenhouse como fonte** (achado 36): descobrir slugs brasileiros por SERP. A sobreposição com `jobs` saiu quase nula, com amostra fraca.

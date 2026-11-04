@@ -1,6 +1,7 @@
 import { cidadeDoFormulario, lerPerfil } from '../lib/perfil.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
 import { carregarVitrine } from '../lib/vitrine.ts';
+import { carregarCargosAbrangidos } from '../lib/cargos.ts';
 import { FormularioDeBusca, FormularioDeEntrada } from './formularios.tsx';
 import { Landing } from './landing.tsx';
 
@@ -15,10 +16,16 @@ export default async function Pagina() {
 
   // Sem sessão só acontece se os logins anônimos estiverem desligados no
   // Supabase: aí a landing pede e-mail no lugar da busca.
-  if (!usuario) return <Landing formulario={<FormularioDeEntrada />} />;
+  if (!usuario) {
+    return <Landing formulario={<FormularioDeEntrada />} cargos={await carregarCargosAbrangidos()} />;
+  }
 
   // Quem já buscou chega com o formulário preenchido com a última busca.
-  const [perfil, vitrine] = await Promise.all([lerPerfil(usuario.id), carregarVitrine()]);
+  const [perfil, vitrine, cargos] = await Promise.all([
+    lerPerfil(usuario.id),
+    carregarVitrine(),
+    carregarCargosAbrangidos(),
+  ]);
   const formulario = perfil ? (
     <FormularioDeBusca
       hero
@@ -29,5 +36,5 @@ export default async function Pagina() {
     />
   ) : undefined;
 
-  return <Landing vitrine={vitrine} {...(formulario ? { formulario } : {})} />;
+  return <Landing vitrine={vitrine} cargos={cargos} {...(formulario ? { formulario } : {})} />;
 }

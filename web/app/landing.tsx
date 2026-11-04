@@ -2,6 +2,7 @@ import { JANELA_DIAS } from '../lib/feed.ts';
 import { LIMITE_GRATUITO, LIMITE_VISITANTE } from '../lib/limites.ts';
 import type { CartaoDaVitrine, Vitrine } from '../lib/vitrine.ts';
 import { Check } from './check.tsx';
+import { CargosAbrangidos } from './cargos-abrangidos.tsx';
 import { FormularioDeBusca } from './formularios.tsx';
 
 /**
@@ -19,9 +20,12 @@ import { FormularioDeBusca } from './formularios.tsx';
 export function Landing({
   formulario,
   vitrine = { vagasNaJanela: null, cartoes: [] },
+  cargos = [],
 }: {
   formulario?: React.ReactNode;
   vitrine?: Vitrine;
+  /** Cargos que a coleta diária cobre (pré-carga + sugeridos com vaga). */
+  cargos?: string[];
 }) {
   const { vagasNaJanela, cartoes } = vitrine;
 
@@ -64,6 +68,8 @@ export function Landing({
           </li>
         </ul>
       </section>
+
+      {cargos.length > 0 ? <CargosAbrangidos cargos={cargos} /> : null}
 
       {/* ---------- janela do produto, com vagas reais ---------- */}
       {cartoes.length > 0 ? (
