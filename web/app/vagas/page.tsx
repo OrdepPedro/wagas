@@ -20,6 +20,7 @@ const NOME_DA_FONTE: Record<Vaga['fonte'], string> = {
   linkedin_job: 'LinkedIn',
   linkedin_post: 'post no LinkedIn',
   ats_gupy: 'Gupy',
+  ats_inhire: 'InHire',
   portal_infojobs: 'InfoJobs',
 };
 

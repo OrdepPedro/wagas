@@ -61,16 +61,16 @@ function erro(candidato: Candidato, detalhe: string, classificador: string): Dec
 }
 
 /**
- * Empresa a partir do subdomínio da Gupy, quando o modelo não achou nome.
+ * Empresa a partir do subdomínio da Gupy ou da InHire, quando o modelo não achou nome.
  *
  * Serve para exibição, NÃO resolve dedup entre fontes: `carreirasomie` não casa
  * com "Omie" vinda de um post. A dedup semântica (pgvector) é que fecha esse
  * caso — está registrada como requisito de lançamento, não foi feita aqui.
  */
-export function empresaDoSubdominioGupy(urlCanonica: string): string | null {
+export function empresaDoSubdominio(urlCanonica: string): string | null {
   try {
     const host = new URL(urlCanonica).hostname;
-    const sub = host.replace(/\.gupy\.io$/, '');
+    const sub = host.replace(/\.(gupy\.io|inhire\.app)$/, '');
     if (sub === host || sub === '' || sub === 'portal' || sub === 'www') return null;
     return sub;
   } catch {
@@ -86,7 +86,7 @@ export function empresaDoSubdominioGupy(urlCanonica: string): string | null {
  *                  "vagas similares" (achado 1), então fica de fora.
  *   linkedin_post  título reescrito pelo Google ("Publicação de Fulano"); o
  *                  sinal está no snippet, que é o começo do texto do post.
- *   ats_gupy       os dois servem.
+ *   ats_gupy       os dois servem. Idem ats_inhire.
  */
 function textoConfiavel(candidato: Candidato): string[] {
   if (candidato.fonte === 'linkedin_job') return [candidato.titulo];
@@ -98,7 +98,7 @@ function completarExtracao(candidato: Candidato, extraido: Extracao): Extracao {
   return {
     empresa:
       extraido.empresa ??
-      (candidato.fonte === 'ats_gupy' ? empresaDoSubdominioGupy(candidato.urlCanonica) : null),
+      (candidato.fonte === 'ats_gupy' || candidato.fonte === 'ats_inhire' ? empresaDoSubdominio(candidato.urlCanonica) : null),
     cargo: extraido.cargo ?? (candidato.fonte === 'linkedin_post' ? null : candidato.titulo),
     senioridade: extraido.senioridade ?? senioridadeDoTitulo(candidato.titulo),
     // O modelo é a metade da composição do feed (presencial/híbrido na cidade +
