@@ -11,10 +11,12 @@ name: coleta-diaria
 # e-mail. É o teste de saúde que faltou quando a Gupy ficou em 404 (achado 38).
 on:
   schedule:
-    # 03h17 de Brasília. Minuto quebrado de propósito: na hora cheia em UTC a fila
-    # do GitHub atrasa ou pula o disparo (23 e 24/10 saíram com 5h de atraso).
-    # O InfoJobs leva horas, e assim termina antes do dia começar.
-    - cron: '17 6 * * *'
+    # 00h17 de Brasília (03h17 UTC; o Brasil não tem horário de verão desde 2019).
+    # Começa logo depois da virada para o InfoJobs, que leva horas, terminar
+    # antes do dia útil começar. Minuto quebrado de propósito: perto da hora
+    # cheia em UTC a fila do GitHub atrasa ou pula o disparo (23 e 24/10 saíram
+    # com 5h de atraso).
+    - cron: '17 3 * * *'
   workflow_dispatch:
     inputs:
       seco:
