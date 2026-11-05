@@ -11,7 +11,16 @@
  * criaria uma segunda tradução da regra de família, e duas traduções que
  * divergem produzem feed vazio sem causa aparente.
  */
+import { after } from 'next/server';
 import { chaveDeFamilia } from '../../src/classificar/familia.ts';
+import {
+  avisoDoPedido,
+  dispararColeta,
+  lerPedido,
+  marcarFalha,
+  pedirOutraFonte,
+  type AvisoDaOutraFonte,
+} from '../../src/coleta/outra-fonte.ts';
 import { consultaDeFeed, JANELA_DIAS } from '../../src/feed/consulta.ts';
 import { colapsarRepetidas } from '../../src/feed/colapsar.ts';
 import { preencherSeNecessario, type MotivoDoPreenchimento } from '../../src/fontes/sob-demanda.ts';
@@ -57,6 +66,8 @@ export interface ResultadoDoFeed {
   coleta: MotivoDoPreenchimento | 'desligada' | 'ja_visto_na_sessao' | 'limite_atingido';
   vagasNovas: number;
   soRemoto: boolean;
+  /** Coleta da outra fonte pedida por esta busca (ou por outra pessoa, no mesmo par). */
+  outraFonte: AvisoDaOutraFonte | null;
 }
 
 /**
@@ -102,6 +113,10 @@ export async function carregarFeed(
     vagasNovas = preenchimento.vagasGravadas;
   }
 
+  const outraFonte = soRemoto
+    ? null
+    : await acompanharOutraFonte(cargo, cidade, coleta === 'limite_atingido' || coleta === 'ja_visto_na_sessao');
+
   const supabase = await clienteDoServidor();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
@@ -136,7 +151,44 @@ export async function carregarFeed(
     coleta,
     vagasNovas,
     soRemoto,
+    outraFonte,
   };
+}
+
+/**
+ * Pede a coleta do par na outra fonte (InfoJobs) e diz o que a tela mostra.
+ *
+ * Só PEDE: grava em `pedidos_outra_fonte` e dispara o workflow depois da
+ * resposta (`after`), para a busca não esperar a API do GitHub. Quem abre o
+ * InfoJobs é o Actions. Repetição na sessão e teto estourado só leem o estado.
+ *
+ * Qualquer falha some em silêncio: sem a migration 0017 ou sem o token, o feed
+ * funciona como antes.
+ */
+async function acompanharOutraFonte(
+  cargo: string,
+  cidade: string,
+  soLer: boolean,
+): Promise<AvisoDaOutraFonte | null> {
+  const token = process.env['GITHUB_DISPATCH_TOKEN']?.trim();
+  if (!token || !coletaSobDemandaDisponivel()) return null;
+
+  try {
+    const db = clienteAdministrativo();
+    const agora = new Date();
+    if (soLer) return avisoDoPedido(await lerPedido(db, cargo, cidade), agora);
+
+    const { pedido, novo } = await pedirOutraFonte(db, { cargo, cidade }, agora);
+    if (novo && pedido) {
+      const repo = process.env['GITHUB_REPO']?.trim() || 'OrdepPedro/wagas';
+      after(async () => {
+        if (!(await dispararColeta({ token, repo }))) await marcarFalha(db, pedido, 'disparo do workflow falhou');
+      });
+    }
+    return avisoDoPedido(pedido, agora);
+  } catch {
+    return null;
+  }
 }
 
 /**

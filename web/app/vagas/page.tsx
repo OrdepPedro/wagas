@@ -10,6 +10,7 @@ import { sair, voltarParaBusca } from '../actions.ts';
 import { redirect } from 'next/navigation';
 import { FormularioDeBusca } from '../formularios.tsx';
 import { AvisoDeTeto } from '../teto-modal.tsx';
+import { FaixaDaOutraFonte } from '../outra-fonte.tsx';
 
 export const dynamic = 'force-dynamic';
 
@@ -276,7 +277,7 @@ async function Feed({
   // ORDEM QUE IMPORTA: o teto é consultado ANTES de `carregarFeed`, porque é
   // ela que dispara a coleta na fonte externa. Checar depois gastaria a
   // varredura e só então diria "não pode".
-  const { vagas, cidadeSlug, naCidade, remotas } = await carregarFeed(cargo, cidade, {
+  const { vagas, cidadeSlug, naCidade, remotas, outraFonte } = await carregarFeed(cargo, cidade, {
     ...(soRemoto ? { soRemoto: true } : {}),
     ...(limite.estourou ? { apenasCache: true } : {}),
   });
@@ -287,7 +288,11 @@ async function Feed({
       <>
         <BuscasSalvas limite={limite} cargo={cargo} cidade={cidade} />
         {limite.estourou ? <LimiteEstourado limite={limite} /> : null}
-        <FeedVazio cargo={cargo} cidade={cidade} soRemoto={soRemoto} />
+        <FaixaDaOutraFonte inicial={outraFonte} />
+        {/* Enquanto a outra fonte é consultada, "ainda não cobrimos" seria cedo demais. */}
+        {outraFonte?.tipo === 'consultando' ? null : (
+          <FeedVazio cargo={cargo} cidade={cidade} soRemoto={soRemoto} />
+        )}
       </>
     );
   }
@@ -300,6 +305,7 @@ async function Feed({
     <>
       <BuscasSalvas limite={limite} cargo={cargo} cidade={cidade} />
       {limite.estourou ? <LimiteEstourado limite={limite} /> : null}
+      <FaixaDaOutraFonte inicial={outraFonte} />
       <p className="resumo">
         {vagas.length} {vagas.length === 1 ? 'vaga' : 'vagas'} —{' '}
         {soRemoto

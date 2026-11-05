@@ -223,6 +223,57 @@ button.discreto:hover:not(:disabled) {
   border-color: transparent;
 }
 
+/* Faixa da coleta em segundo plano, sobre o feed. */
+.caixa.outra-fonte {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+}
+
+.caixa.outra-fonte > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.caixa.outra-fonte p {
+  margin: 0;
+}
+
+.caixa.outra-fonte p + p {
+  margin-top: 2px;
+  font-size: 0.875rem;
+}
+
+.caixa.outra-fonte button {
+  flex-shrink: 0;
+}
+
+.girando {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--borda);
+  border-top-color: var(--acento);
+  border-radius: 50%;
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .girando {
+    animation: none;
+    border-top-color: var(--borda);
+    background: var(--acento-fraco);
+  }
+}
+
 /* --- feed --- */
 
 .resumo {
