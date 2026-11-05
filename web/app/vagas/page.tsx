@@ -4,6 +4,7 @@ import { estadoDoLimite, LIMITE_GRATUITO, type EstadoDoLimite } from '../../lib/
 import { cidadeDoFormulario, lerPerfil } from '../../lib/perfil.ts';
 import { chaveDoPar } from '../../../src/feed/pares-do-dia.ts';
 import { slugCidade } from '../../../src/normalize/local.ts';
+import { vagaAdaptavel } from '../../../src/curriculo/adaptar.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
 import { sair, voltarParaBusca } from '../actions.ts';
 import { redirect } from 'next/navigation';
@@ -98,6 +99,12 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
         Ver vaga <span aria-hidden="true">↗</span>
         <span className="sr-only"> (abre em nova aba)</span>
       </a>
+      {/* Só com descrição de verdade: snippet do LinkedIn não tem o que adaptar. */}
+      {vagaAdaptavel(vaga) ? (
+        <a className="adaptar" href={`/adaptar/${vaga.id}`}>
+          Adaptar meu currículo
+        </a>
+      ) : null}
     </li>
   );
 }
@@ -354,12 +361,19 @@ export default async function PaginaDoFeed({
         </div>
         {/* Visitante não tem "Sair": sair apagaria a sessão anônima, o proxy
             criaria outra no próximo acesso, e o teto zeraria com um clique. */}
+        {/* "Meu currículo" fica aqui e não no topo: no celular o topo já não
+            cabe em 375 px, e o link a mais o deixava 59 px mais largo. */}
         {usuario.visitante ? null : (
-          <form action={sair}>
-            <button type="submit" className="discreto">
-              Sair
-            </button>
-          </form>
+          <div className="cabecalho-acoes">
+            <a href="/curriculo" className="link-feed">
+              Meu currículo
+            </a>
+            <form action={sair}>
+              <button type="submit" className="discreto">
+                Sair
+              </button>
+            </form>
+          </div>
         )}
       </div>
 

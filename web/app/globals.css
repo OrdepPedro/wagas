@@ -2347,3 +2347,131 @@ button.botao-secundario:hover:not(:disabled) {
 .modal-sugestao .ok {
   color: var(--acento);
 }
+
+/* --- currículo adaptado --- */
+
+.vaga a.adaptar {
+  margin-left: 14px;
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--acento);
+  text-decoration: none;
+}
+
+.vaga a.adaptar:hover {
+  text-decoration: underline;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--texto);
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  resize: vertical;
+}
+
+textarea:focus {
+  border-color: var(--acento);
+}
+
+input.arquivo {
+  display: block;
+  font: inherit;
+  font-size: 0.875rem;
+  margin-bottom: 4px;
+  max-width: 100%;
+}
+
+a.botao {
+  display: inline-block;
+  font-weight: 500;
+  padding: 10px 18px;
+  border-radius: var(--raio);
+  background: var(--acento);
+  color: var(--sobre-acento);
+  text-decoration: none;
+}
+
+a.botao:hover {
+  background: var(--acento-forte);
+}
+
+.acoes-cv {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.caixa ul {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.caixa h3,
+.cv h3 {
+  font-size: 0.9375rem;
+  margin: 0 0 8px;
+}
+
+.cv {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  padding: 24px;
+  font-size: 0.9375rem;
+}
+
+.cv h2 {
+  margin: 0;
+  font-size: 1.375rem;
+}
+
+.cv h3 {
+  margin-top: 20px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--borda);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 0.8125rem;
+}
+
+.cv-titulo {
+  margin: 2px 0 4px;
+}
+
+.cv-bloco {
+  margin-bottom: 12px;
+}
+
+.cv-bloco ul {
+  margin: 4px 0 0;
+  padding-left: 20px;
+}
+
+details.descricao {
+  font-size: 0.875rem;
+  color: var(--texto-fraco);
+}
+
+details.descricao summary {
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+details.descricao p {
+  white-space: pre-line;
+}
+
+.cabecalho-acoes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
