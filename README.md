@@ -1,14 +1,86 @@
-# wagas — coletor e classificador (Passos 2 e 3)
+# wagas — ajuda gratuita para quem procura vaga
 
-**Coletor.** Busca vagas dos últimos 7 dias em três blocos — LinkedIn Jobs, posts do LinkedIn e Gupy —, normaliza, deduplica e grava em `raw_results`.
+O wagas começou como agregador de vagas e virou um **hub gratuito para quem está procurando emprego**. A pessoa informa cargo e cidade e recebe as vagas dos últimos 7 dias. Em volta do feed há ferramentas para buscar por conta própria e para deixar o currículo pronto para cada vaga.
 
-**Classificador.** Lê `raw_results`, decide o que é vaga de verdade do cargo buscado, extrai empresa/cargo/senioridade e grava em `jobs`. Duas etapas: um pré-filtro determinístico que custa zero e um LLM em tier gratuito só no que sobrou.
+O diferencial não está em nenhuma ferramenta isolada. Adaptar currículo com IA virou commodity, e qualquer pessoa cola vaga e CV no ChatGPT. O que o wagas oferece é **o encaixe**: a vaga certa e o currículo adaptado a ela no mesmo lugar, sem copiar e colar. Se o feed for ruim, o resto vira só um wrapper de LLM. Por isso o feed continua sendo o centro do produto.
 
-**Harness.** 120 casos rotulados a partir de SERP real, em 6 cargos e 3 fontes. É ele que diz se o classificador pode ir para o feed — não a impressão de que "pareceu certo".
+> Contexto, decisões e medições estão em [CLAUDE.md](CLAUDE.md). Este README descreve o que existe e como rodar.
 
-Zero dependência de runtime. Node 24 executa TypeScript direto (type stripping), então não há build, não há `npm ci` no CI e os testes rodam sem instalar nada.
+## O que a pessoa encontra
 
-> **A Google Programmable Search morreu.** Fechada a novos projetos em 2025, desligada em 01/01/2027. A fonte de produção agora é a **Serper.dev**. Ver o CLAUDE.md para o histórico e as alternativas avaliadas.
+| | O que faz | Precisa de conta? | Teto diário |
+|---|---|---|---|
+| **Feed de vagas** (`/vagas`) | Cargo + cidade → vagas dos últimos 7 dias: presenciais e híbridas na cidade, remotas de todo o Brasil. Toggle "Só vagas remotas". Um clique leva ao anúncio original | não | visitante: 2 buscas salvas por 7 dias · com e-mail: 10 pares/dia |
+| **Gerador de buscas avançadas** (`/funcionalidades/dorks`) | Monta a busca do Google com operadores (`site:`, aspas, período) para LinkedIn, posts e 10 portais brasileiros, pronta para abrir | não | sem limite: roda no navegador |
+| **Medidor de currículo para ATS** (`/funcionalidades/ats`) | Nota de 0 a 100 numa rubrica de 8 critérios: se o ATS lê o arquivo, se o CV mostra o que o cargo pede, se convence quem lê. Lista o que mais aumenta a nota | não | visitante 3 · conta 10 |
+| **Currículo para LinkedIn e Gupy** (`/funcionalidades/estruturar`) | Reescreve cada campo do perfil do jeito que a plataforma lê, pronto para colar. O LinkedIn serve para ser encontrado; a Gupy, para ser bem ordenado na candidatura | não | visitante 3 · conta 10 |
+| **Currículo adaptado à vaga** (`/curriculo`, `/adaptar/[id]`) | O CV fica salvo com consentimento. A partir de qualquer vaga do feed com descrição completa, a IA o reescreve para aquela vaga e entrega um PDF de uma coluna, legível por ATS. Avisa quando o texto gerado traz algo que não estava no CV | **sim**, com e-mail | 5 adaptações |
+
+A landing (`/`) mostra uma amostra do feed e o carrossel de **cargos abrangidos**. Esse carrossel junta a pré-carga da coleta diária e os cargos sugeridos por visitantes. Um cargo sugerido só aparece na lista depois que a coleta encontra vaga para ele.
+
+**Todas as ferramentas são gratuitas para quem usa.** Os tetos existem porque cada medição ou adaptação consome cota de tier gratuito de LLM compartilhada pelo produto inteiro. Sem teto, uma pessoa recarregando a página esgotaria a ferramenta para todo mundo.
+
+## Privacidade do currículo
+
+Currículo é dado pessoal, e cada ferramenta segue uma regra explícita:
+
+- **Medidor e estruturador são efêmeros.** O currículo é processado em memória e descartado. As tabelas `medicoes_curriculo` e `estruturacoes_curriculo` guardam só o evento: nota, contagens, hash não reversível da entrada e o "isso foi útil?". O texto nunca é gravado.
+- **O currículo adaptado é salvo**, só para quem tem conta com e-mail, com consentimento gravado e um botão que apaga o CV e todas as adaptações.
+- **O CV salvo vai só para o Groq.** Os termos do tier gratuito do Gemini permitem que o Google use o conteúdo enviado, então a adaptação não cai para ele. O medidor e o estruturador ainda usam o Gemini. Qual regra vale para o produto inteiro ainda não foi decidido.
+- **O visitante anônimo some depois de 30 dias sem acesso** (migration 0010). Buscas e cliques continuam, mas anonimizados.
+
+## Como o feed é montado
+
+A regra que sustenta o custo é esta: **busca nunca é disparada pelo request do usuário quando a fonte é paga.** A coleta popula o cache e o usuário lê o cache. Os filtros de cargo, cidade, modelo e janela são aplicados no Postgres.
+
+| Fonte | Como entra | Quando |
+|---|---|---|
+| **Gupy** | API pública do portal, sem chave | coleta diária + sob demanda quando aparece um par novo |
+| **InfoJobs** | página pública, lendo o JSON-LD `JobPosting`, 1 req/s | coleta diária + em segundo plano quando aparece um par novo (`outra-fonte.yml`) |
+| **LinkedIn Jobs** | SERP pela Serper.dev (crédito finito); data lida da página pública, 1 GET a cada 20 s | manual, por fila de demanda |
+| **Posts do LinkedIn, InHire** | SERP pela Serper.dev | manual; fontes secundárias |
+
+O pipeline tem estas etapas:
+
+1. **Coleta.** Normaliza a URL, deduplica por hash e grava em `raw_results`.
+2. **Classificação.** Um pré-filtro determinístico corta sem custo o que não serve. As fontes da SERP passam depois por um LLM (Gemini Flash-Lite, com Groq de reserva) que confirma se é vaga, se o cargo é da família buscada e se o local serve. O resultado vai para `jobs`.
+3. **Exibição.** Família de cargo vira SQL (`familia.ts`: Product Owner entra em Product Manager), a cidade sai normalizada e o feed colapsa anúncios repetidos. A mesma vaga nunca aparece duas vezes, e vaga que a fonte deixou de listar sai sozinha do feed.
+
+Cada busca grava uma linha em `buscas` com a contagem de resultados. A view `demanda_descoberta` ordena os pares que voltaram vazios por número de pessoas distintas, e é essa fila que decide onde gastar crédito da Serper. O clique em "ver vaga" passa por `/ir/[id]`, que grava o clique no servidor. Essa é a métrica que decide o produto.
+
+## Estrutura
+
+```
+src/                       núcleo em TypeScript, compartilhado pelo coletor e pelo web/
+  collect.ts               coletor da SERP: reserva crédito → busca → normaliza → dedup → grava
+  classify.ts              classificador: pré-filtro → LLM → jobs
+  fontes/                  Gupy, InfoJobs, página do LinkedIn, coleta sob demanda
+  coleta/                  pares da coleta diária, outra fonte em segundo plano, vaga encerrada
+  classificar/             família de cargo, pré-filtro, prompt, LLM, harness
+  feed/                    consulta do feed, colapso de duplicatas, teto de pares
+  curriculo/               medidor (rubrica + prompt), estruturador LinkedIn/Gupy, adaptação à vaga, leitura de PDF/DOCX
+  dorks/gerador.ts         gerador de buscas avançadas (sites e moldes)
+  cargos/abrangidos.ts     lista de cargos da landing e validação de sugestões
+  normalize/               URL canônica, datas, local (cidade/UF/país), texto
+  serper/  alerts/         fonte paga (Serper) e Google Alerts
+  config/                  alvos da SERP, pré-carga da coleta diária, alertas
+  db/  quota/              PostgREST em fetch puro, saldo de créditos
+web/                       Next.js 16 (App Router) + Supabase Auth
+  app/vagas                feed
+  app/funcionalidades/     dorks, ats, estruturar
+  app/curriculo, adaptar/  CV salvo e currículo adaptado (PDF em adaptar/[id]/pdf)
+  app/ir/[id]              redirecionamento que conta o clique
+  lib/                     sessão, limites, feed, leitura de currículo, geração de PDF
+migrations/                SQL do Supabase, aplicado em ordem (0001–0017)
+scripts/                   coleta diária, InfoJobs, datação do LinkedIn, medições
+harness/golden.jsonl       casos rotulados para medir o classificador
+test/                      382 testes
+.github/workflows/         coleta-diaria (cron), outra-fonte (disparada pela busca), coletor e classificador (manuais)
+```
+
+O `web/` importa `../src` em vez de copiar código. Uma segunda implementação da regra de família ou da normalização de cidade divergiria da primeira, e o sintoma seria feed vazio sem causa aparente.
+
+O núcleo não tem dependência de runtime. O Node 24 executa TypeScript direto (type stripping), então os testes rodam sem instalar nada.
 
 ## Rodar
 
@@ -16,239 +88,73 @@ Zero dependência de runtime. Node 24 executa TypeScript direto (type stripping)
 npm test
 ```
 
-Medir o classificador contra o golden set, sem chave e sem custo:
+```bash
+npm run typecheck
+```
+
+O site, local (precisa de `web/.env.local`, modelo em [web/.env.example](web/.env.example)):
+
+```bash
+npm install --prefix web
+```
+
+```bash
+npm run web
+```
+
+A coleta diária de Gupy e InfoJobs, sem gastar crédito pago:
+
+```bash
+npm run diaria
+```
+
+O classificador, só com o pré-filtro, sem gastar cota de LLM:
+
+```bash
+npm run classify -- --so-prefiltro
+```
+
+O harness do classificador, sem chave:
 
 ```bash
 npm run harness:prefiltro
 ```
 
-Comparar a fonte atual com o que o Passo 1 mediu à mão (10 créditos):
+Todo script que gasta crédito aceita `--dry-run`, que imprime o plano sem chamar nada.
+
+## Configuração
+
+**Coletor e scripts:** copiar [.env.example](.env.example) para `.env`. As variáveis são `SERPER_KEY`, `SUPABASE_URL` e `SUPABASE_SERVICE_KEY`, e para classificar `GEMINI_KEY` (opcional: `GROQ_KEY`).
+
+**Site:** copiar [web/.env.example](web/.env.example) para `web/.env.local`.
+
+- `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` vêm com a chave **pública**. A leitura do feed passa pela RLS.
+- `SUPABASE_SERVICE_KEY` é server-only e serve para a coleta sob demanda gravar.
+- `GEMINI_KEY` liga o medidor e o estruturador.
+- `GROQ_KEY` liga o currículo adaptado. No console do Groq, ligue Zero Data Retention.
+- `GITHUB_DISPATCH_TOKEN` dispara a coleta do InfoJobs em segundo plano.
+
+Sem cada uma delas, a ferramenta correspondente responde "fora do ar" e o resto continua funcionando.
+
+**A `sb_secret_…` nunca vai para o navegador.** Ela ignora a RLS e entregaria o acervo inteiro a qualquer visitante.
+
+**Banco:** projeto Supabase `wagas` (`sa-east-1`). Aplique as migrations em ordem no SQL Editor. O plano free pausa projeto ocioso: se a coleta falhar na conexão depois de semanas parado, despause pelo dashboard.
+
+**Actions:** a `coleta-diaria` roda em cron de madrugada, e só no branch padrão. O `outra-fonte` é disparado pela própria busca. `coletor` e `classificador` são manuais:
 
 ```bash
-node --env-file-if-exists=.env scripts/comparar-passo1.ts
+gh workflow run coletor.yml --repo OrdepPedro/wagas -f paginas=1 -f dry_run=true
 ```
 
-Checar se os dorks generalizam para outros cargos (~16 créditos por cargo):
+## Créditos da Serper
 
-```bash
-node --env-file-if-exists=.env scripts/testar-cargos.ts --paginas=3
-```
+São 2.500 créditos gratuitos que **não renovam** e vencem por volta de 22/02/2027. Restavam 2.074 em 30/10. Uma varredura de par cargo×cidade custa ~16 a 18 créditos. Cada execução reserva saldo antes de chamar (`api_saldo`, com `SELECT … FOR UPDATE`) e devolve o que não usou. O último passo de `coletar-demanda.ts` continua manual de propósito: automatizá-lo esvaziaria o saldo sem ninguém notar.
 
-Ler os feeds do Google Alerts, sem Node e sem chave:
+## O que está medido e o que não está
 
-```bash
-./scripts/alertas.sh -v
-```
+- **Classificador** (golden set, `gemini-3.5-flash-lite`): precisão 100%, recall 95%. Uma rodada só e 20 negativos, então o intervalo é largo. O mesmo lote classificado duas vezes dá resultados diferentes mesmo com `temperature: 0`.
+- **Data real:** 100% das vagas da janela vêm de Gupy e InfoJobs (22/10). O LinkedIn Jobs ganha a data pela página e fica sem empresa em ~31% e sem modelo em ~37%.
+- **Currículo adaptado:** 6 rodadas em 2 segmentos sem alerta de invenção, depois que o prompt passou a proibir acréscimos. O resultado fiel é modesto: muda título, resumo, ordem e a lista de lacunas. A capacidade é de ~1 adaptação por minuto para o produto inteiro, por causa do tier gratuito do Groq.
+- **Ainda não medido:** uso real. Não há deploy na Vercel nem SMTP próprio. O acesso de visitante depende de ligar o Anonymous Sign-ins no Supabase; sem ele, a landing pede e-mail. Clique por usuário por semana e retenção no dia 7, as métricas que decidem o produto, só existem depois disso.
 
-Todo script aceita `--dry-run`, que imprime o plano sem gastar crédito.
-
-## Fontes
-
-| | Serper.dev | Google Alerts |
-|---|---|---|
-| Entrega | acervo, sob demanda | só o que surge depois de criar o alerta |
-| Consulta nova | chamada HTTP | criação manual, sem API |
-| Operadores | `site:`, aspas, `tbs` | `site:`, aspas, negativos |
-| Custo | 2.500 grátis (uma vez), depois ~$1/1.000 | grátis, sem cota |
-
-A Serper é a fonte de produção. O Alerts é complemento gratuito para um conjunto fixo de buscas — não escala para cargo arbitrário.
-
-## Como as consultas são montadas
-
-O usuário informa **cargo + cidade**. Cada bloco vira duas consultas:
-
-```
-site:linkedin.com/jobs/view "<cargo>" "<cidade>"          → presencial e híbrido na cidade
-site:linkedin.com/jobs/view "<cargo>" ("remoto" OR ...)   → remoto no Brasil inteiro
-```
-
-Todas com janela de 7 dias (`tbs=qdr:w`). Isso **não é só** uma restrição de produto: sem o filtro de data, um terço do que o índice devolve tem mais de 90 dias, e a ordenação por relevância esconde a vaga nova. Com o filtro, o volume de vagas recentes decuplica.
-
-## Controle de créditos
-
-Os 2.500 créditos gratuitos são **saldo único** com validade de 6 meses, não cota que zera por dia. Cada execução reserva antes de chamar e devolve o que não usou — inclusive quando quebra no meio.
-
-Em produção o contador vive na tabela `api_saldo` (chave `serper`), com reserva atômica via `SELECT … FOR UPDATE`. Rodando com `--no-db`, ele cai em `.quota/serper.json` local — os dois são independentes e não se sincronizam sozinhos.
-
-Retry consome crédito; falha de rede não. `402` (sem crédito) e `401` (chave errada) não fazem retry, porque não melhoram com insistência.
-
-## Estrutura
-
-```
-src/
-  collect.ts              coletor:      reserva → busca → normaliza → dedup → grava
-  classify.ts             classificador: lê pendentes → pré-filtro → LLM → grava em jobs
-  config/alvos.ts         alvos de produção (cargo × cidade) + templates  ← edite aqui
-  config/searches.ts      os 5 dorks do Passo 1, congelados como referência
-  config/alertas.ts       os 5 alertas e as URLs dos feeds
-  serper/cliente.ts       rate limit, retry, contabilidade de créditos   ← fonte de produção
-  serper/normalizar.ts    resultado orgânico → linha de raw_results
-  alerts/feed.ts          parser Atom do Google Alerts
-  alerts/url.ts           desembrulha o redirect google.com/url?...
-  alerts/normalizar.ts    entrada de feed → linha de raw_results
-  normalize/url.ts        URL canônica + hash sha256   ← base da dedup
-  normalize/datas.ts      data de publicação e sua origem
-  normalize/texto.ts      limpeza de título e snippet
-  classificar/familia.ts       regra genérica de família de cargo   ← o coração do Passo 3
-  classificar/prefiltro.ts     as decisões que custam zero
-  classificar/prompt.ts        prompt e contrato JSON estrito
-  classificar/llm.ts           Gemini Flash-Lite + Groq de reserva
-  classificar/classificador.ts orquestra os dois estágios
-  classificar/persistencia.ts  lê raw_results, grava jobs
-  classificar/harness.ts       precisão, recall, F1 por estágio
-  dedupe.ts               dedup por hash + chave empresa+cargo usada em jobs
-  quota/store.ts          reserva/devolução de saldo
-  db/supabase.ts          PostgREST em fetch puro
-  pse/tipos.ts            formato com pagemap; caminho alternativo, ver o arquivo
-migrations/               SQL para o SQL Editor do Supabase, em ordem
-harness/golden.jsonl      120 casos rotulados   ← edite aqui para corrigir um rótulo
-scripts/harness.ts        roda o harness e imprime o relatório
-scripts/                  medições
-```
-
-Rodar o coletor:
-
-```bash
-node --env-file-if-exists=.env src/collect.ts --dry-run
-```
-
-Aceita `--alvo=<id>`, `--paginas=N`, `--limite=N` e `--no-db` (usa contador em arquivo e não grava).
-
-Só a camada de fonte é específica. `normalize/`, `dedupe`, `db` e as migrations são as mesmas para qualquer origem — foi o que permitiu trocar a fonte sem reescrever o pipeline.
-
-## Setup
-
-**Já feito** (24/08/2026): projeto Supabase `wagas` criado (`dvaflqmvnrelpuzhhmrr`, sa-east-1), migrations aplicadas, `.env` local preenchido. O coletor grava.
-
-Para refazer do zero em outro ambiente:
-
-1. Criar conta em [serper.dev](https://serper.dev) e pôr a chave em `SERPER_KEY` no `.env`
-2. Aplicar `migrations/0001_*.sql`, `0002_*.sql` e `0003_*.sql` no SQL Editor do Supabase
-3. Copiar a URL do projeto e a **secret key** (Settings → API Keys) para o `.env`
-4. Secrets no repositório: `SERPER_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_KEY` e, para classificar, `GEMINI_KEY` (opcional: `GROQ_KEY`)
-
-A chave secreta ignora RLS: só em secret do Actions e em `.env` local, nunca no frontend. Serve tanto a nova `sb_secret_…` quanto a legacy `service_role`.
-
-**A coleta roda sob demanda, não em cron.** Repo privado em [OrdepPedro/wagas](https://github.com/OrdepPedro/wagas), com os três secrets cadastrados. Uma execução real foi validada pelo Actions: 4 consultas, 16 resultados já conhecidos deduplicados e 10 novos gravados.
-
-Para disparar:
-
-```bash
-gh workflow run coletor.yml --repo OrdepPedro/wagas -f paginas=2
-```
-
-Aceita também `-f dry_run=true`, `-f alvo=<id>` e `-f limite=N`.
-
-**Custo por rodada.** Com 7 alvos, 3 blocos, 2 recortes e 2 páginas são **84 créditos**. O saldo gratuito é de 2.500 e não renova, então cada disparo conta. Enquanto não houver front-end lendo o banco, coletar em cron seria gastar para ninguém — por isso o `schedule` está comentado no workflow, pronto para religar.
-
-> Sem coleta periódica o projeto do Supabase fica ocioso, e o plano free **pausa projeto ocioso**. Se voltar depois de algumas semanas e a coleta falhar na conexão, é isso: despause pelo dashboard e rode de novo.
-
-## Classificador (Passo 3)
-
-```bash
-npm run classify -- --dry-run      # decide e imprime, não grava
-npm run classify -- --so-prefiltro # sem gastar cota de LLM
-npm run classify
-```
-
-Dois estágios, e a ordem é o desenho de custo:
-
-| estágio | custo | o que decide |
-|---|---|---|
-| pré-filtro | zero | página de listagem da Gupy, vaga fora dos 7 dias, cargo de outra família pelo título |
-| LLM | cota de tier gratuito | é vaga mesmo? o cargo bate? **o local serve?** empresa, cargo, senioridade, modelo |
-
-**O local é a promessa do produto, não preferência:** presencial e híbrido só na cidade buscada; remoto vale o Brasil inteiro. Cidade que aparece no nome da empresa, no perfil de quem publicou ou em hashtag **não** é o local da vaga — uma vaga home office anunciada por empresa de Aracaju continua servindo para quem busca em São Paulo. O portão só fecha com evidência: local não mencionado passa, senão a maioria das vagas cairia por silêncio do título.
-
-**O pré-filtro nunca filtra post por título.** O `title` que a API devolve para `linkedin_post` não é o `<title>` da página — o Google reescreve para "Publicação de Fulano". Esse filtro já foi aplicado na origem, pelo `intitle:` do dork; aplicar de novo aqui descartaria vaga boa.
-
-**Família de cargo é regra genérica, não lista de exceções.** `familia.ts` decompõe qualquer título em senioridade + função + domínio. Dois cargos são da mesma família quando compartilham o domínio e a *classe* da função. Daí sai, sem nenhuma linha citando esses cargos: Product Owner bate com Product Manager, Assistente Administrativo bate com Auxiliar Administrativo, Product Designer **não** bate com Product Manager. Cargo novo no produto não deve exigir mexer no léxico — se exigir, a regra está errada.
-
-**Erro de infraestrutura não vira veredito.** Cota estourada, rede caindo ou resposta ilegível marcam o item como `erro` e **não** marcam `processado`: ele volta na próxima rodada. Aprovar ou reprovar por omissão gravaria uma decisão que ninguém tomou.
-
-**Sem empresa identificada, a chave de dedup cai para o id da fonte.** Usar `empresa + cargo` com empresa vazia colapsaria todas as vagas do mesmo cargo numa só. `jobs.dedup_por_empresa` registra quando isso aconteceu, para não confundir "não deduplicou" com "não havia duplicata".
-
-## Harness de avaliação
-
-```bash
-npm run harness:prefiltro          # sem chave, sem custo
-npm run harness                    # inclui o LLM, se houver chave
-npm run harness -- --json=saida.json
-```
-
-O golden set (`harness/golden.jsonl`) tem **120 casos** vindos de SERP real: 95 da medição de generalização por cargo (23/08) e 25 da reprodução do Passo 1 (22/08). Seis cargos, três fontes, dois recortes. Para corrigir um rótulo, edite a linha — o arquivo é a fonte de verdade, não um artefato gerado.
-
-Rótulo = **é uma vaga aberta E o cargo é da família do cargo buscado**. Três valores: `relevante` (77), `irrelevante` (20), `indeterminado` (23).
-
-**A métrica que manda é recall, não precisão.** Falso negativo — vaga boa descartada — é invisível para o usuário e irreversível, porque a linha já foi marcada como processada. Falso positivo é visível e o usuário perdoa um ou dois. Por isso o recall aparece por estágio: **o recall do pré-filtro é o teto do produto inteiro**, já que o LLM não recupera o que o pré-filtro cortou.
-
-### O que está medido hoje (24/08/2026)
-
-Golden set com **124 casos**. Eixo de cargo ("é vaga E o cargo bate?"), sobre os 99 rotuláveis, com `gemini-3.5-flash-lite`:
-
-| estágio | precisão | recall | F1 |
-|---|---|---|---|
-| pré-filtro isolado | 87% | 100% | 93% |
-| **pipeline completo** | **100%** | **95%** | **97%** |
-
-Por fonte, no pipeline completo: `ats_gupy` 100/100, `linkedin_job` 100/97, `linkedin_post` 100/84.
-
-Eixo de local, medido separado (`rotuloLocal`: 35 `sim`, 3 `nao`, 86 `indeterminado`):
-
-```
-casos avaliáveis: 36   acertos: 35
-fechou numa vaga de local bom (some com a vaga): 0
-deixou passar vaga de outra cidade (lixo no feed): 1
-```
-
-**Os dois eixos são separados de propósito.** Rejeição por `local_nao_serve` não conta como falso negativo de cargo — ao ligar o portão sem essa separação, o recall aparente caiu de 95% para 84% e parecia que o classificador tinha piorado; era o portão funcionando, contado no eixo errado.
-
-O LLM derrubou **todos os 11 falsos positivos** que o pré-filtro tinha deixado passar — inclusive "Global Product Line Manager — Screens" e "[TEAM PRODUCT] Flutter flow Lead PL", as classes que o Passo 1 tinha nomeado. Zero lixo chegaria ao feed nesta amostra.
-
-Custo: 14 chamadas para 111 candidatos, lote de 8. Tier gratuito, nenhum centavo.
-
-**Os 4 falsos negativos, um a um** — é o erro caro, então vale olhar:
-
-| caso | motivo | leitura |
-|---|---|---|
-| Analista de Engenharia de Dados | `cargo_de_outra_familia` | discordância de rótulo: eu marquei como adjacente, o modelo diz que não. Decisão de produto, não defeito |
-| Analista de Business Intelligence | `confianca_baixa` (0,40) | post sem snippet no golden set |
-| VAGA ADMINISTRATIVA VIA LINKEDIN | `confianca_baixa` (0,40) | post sem snippet no golden set |
-| Enfermeiro(a) Auditor(a) | `confianca_baixa` (0,40) | título curto, sem snippet |
-
-Três dos quatro são o mesmo problema: **falta de snippet no golden set**, não erro de julgamento.
-
-**O canal de confiança está funcionando.** Dos 17 itens reprovados por `confianca_baixa`, 14 são exatamente os casos que eu não consegui rotular à mão — o modelo chegou sozinho ao mesmo conjunto de "não dá para saber". O limiar de 0,6 é o que separa "estou vendo a vaga" de "estou chutando", e custa 3 vagas boas em 77. Com precisão em 100%, há folga para baixá-lo; é decisão de produto.
-
-### O que ainda NÃO está medido, e por quê
-
-**Uma rodada não é uma medição.** Duas execuções do mesmo golden set deram 4 falsos negativos cada, mas **não os mesmos quatro** — mesmo com `temperature: 0`. Antes de tratar 95% como número, rodar três vezes e olhar a variação.
-
-**Precisão de 100% saiu de 20 negativos.** Vinte casos irrelevantes. O intervalo de confiança é largo: esse resultado é compatível com uma precisão verdadeira bem abaixo de 100%. Negativo é raro na amostra porque a SERP de origem já tinha ~90% de precisão.
-
-**O golden set não tem snippet.** As medições de 22 e 23/08 guardaram só título e URL, e é isso que explica 3 dos 4 falsos negativos e 14 dos 17 `confianca_baixa`. Em produção o snippet existe — então o número de `linkedin_post` aqui (89% de recall) é **piso**, não estimativa. Recoletar guardando o snippet é o próximo passo do harness.
-
-**O pré-filtro corta pouco: 9 de 120 (7,5%).** A economia de cota que justifica o estágio não está demonstrada, e o golden set não é amostra aleatória (6 títulos por cargo×bloco), então 7,5% não estima produção. A taxa real precisa sair de `raw_results` — é para isso que `classificacao_motivo` existe na migration 0003.
-
-**Localização não é medida.** O rótulo responde "é vaga e o cargo bate?". Remoto dos EUA vs. remoto do Brasil segue sem número, e o produto promete remoto **do Brasil**.
-
-**O Groq nunca rodou.** É a reserva para quando a cota diária do Gemini estourar, e está testado só contra `fetch` injetado. O id de modelo padrão pode estar velho — foi exatamente o que aconteceu com o Gemini: `gemini-2.5-flash-lite` respondeu `404 — no longer available to new users`.
-
-## Decisões que estão no código por um motivo
-
-**Canonicalização agressiva por fonte.** A mesma vaga chega como `br.linkedin.com/jobs/view/product-manager-at-acme-4012345678?refId=…` e como `www.linkedin.com/jobs/view/4012345678`. As duas viram a mesma URL. O subdomínio da Gupy é preservado — ele identifica a empresa.
-
-**`autocorrect: false` na Serper.** Ligado, o Google reescreve o dork e você mede outra consulta.
-
-**Dupla decodificação de entidades.** Um `&` do texto chega como `&amp;amp;` e as tags de destaque como `&lt;b&gt;`. Decodificar `&lt;`/`&gt;` antes de remover tags, e passar em `&amp;` duas vezes.
-
-**Alerts e Serper rodam o mesmo dork.** Um teste compara `alertas.consulta` com `combo.dork` por id. Já divergiu uma vez — o alerta de post ficou sem `intitle:` — e isso faria a comparação medir dork diferente em vez de fonte diferente.
-
-**`jobs` existe e fica vazia.** O coletor não escreve nela. Está aqui porque `dedup_key = empresa + cargo normalizado` é decisão de schema, e retrofit custa migração.
-
-## O que estes passos não resolvem
-
-- **Posts precisam de solução melhor.** Funcionam e generalizam, mas o título vem reescrito e a extração de empresa/cargo exige buscar o corpo da página — uma requisição a mais por item.
-- **Dedup semântica.** A mesma vaga anunciada na Gupy e repostada como post tem URLs diferentes e, quando o nome da empresa sai diferente nas duas, `dedup_key` também não pega. Precisa de pgvector sobre o texto extraído.
-- **Gupy é fonte única de ATS.** Risco registrado, não resolvido.
-- **Nada lê o banco ainda.** `jobs` só vira produto no Passo 4.
+Detalhes, números e o histórico de cada decisão estão nos achados do [CLAUDE.md](CLAUDE.md).
