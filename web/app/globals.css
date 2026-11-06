@@ -2535,3 +2535,16 @@ details.descricao p {
   align-items: center;
   gap: 10px;
 }
+
+/* Texto corrido (política de privacidade). */
+.texto-longo h2 {
+  font-size: 1.125rem;
+  margin: 28px 0 8px;
+}
+.texto-longo ul {
+  padding-left: 20px;
+  margin: 0 0 12px;
+}
+.texto-longo li {
+  margin-bottom: 6px;
+}

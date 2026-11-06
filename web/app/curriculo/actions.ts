@@ -109,7 +109,7 @@ export async function adaptarAcao(
     .maybeSingle();
   if (!vaga || !vagaAdaptavel(vaga)) return { erro: 'Esta vaga não tem descrição suficiente para adaptar.' };
 
-  const resultado = await adaptar(usuario.id, jobId, curriculo, vaga);
+  const resultado = await adaptar(usuario.id, { jobId }, curriculo, vaga);
   if (!resultado.ok) return { erro: MENSAGEM_DA_FALHA[resultado.falha] };
 
   redirect(`/adaptar/${jobId}` as Route);

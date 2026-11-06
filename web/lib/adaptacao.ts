@@ -171,20 +171,55 @@ export async function adaptacoesHoje(userId: string): Promise<number> {
   }
 }
 
+/**
+ * Adaptação de vaga colada (extensão), pelo id. A linha precisa ser deste
+ * usuário (RLS) e deste CV: trocou o CV, a adaptação antiga não vale mais.
+ */
+export async function lerAdaptacaoColada(
+  userId: string,
+  curriculo: Curriculo,
+  filtro: { id: number } | { vagaHash: string },
+): Promise<(Adaptacao & { cargo: string }) | null> {
+  const supabase = await clienteDoServidor();
+  let consulta = supabase
+    .from('adaptacoes')
+    .select('id, resultado, criado_em, vaga_cargo')
+    .eq('user_id', userId)
+    .eq('origem', 'colada')
+    .eq('curriculo_hash', curriculo.hash)
+    .eq('ok', true)
+    .not('resultado', 'is', null);
+  consulta = 'id' in filtro ? consulta.eq('id', filtro.id) : consulta.eq('vaga_hash', filtro.vagaHash);
+  const { data } = await consulta.order('criado_em', { ascending: false }).limit(1).maybeSingle();
+  if (!data) return null;
+  const { adaptado: resultado, corrigidos } = corrigirNomes(curriculo.texto, data.resultado as CurriculoAdaptado);
+  return {
+    id: data.id,
+    resultado,
+    alertas: verificarFidelidade(curriculo.texto, resultado),
+    corrigidos,
+    criadoEm: data.criado_em,
+    cargo: data.vaga_cargo ?? '',
+  };
+}
+
 export type FalhaDaAdaptacao = 'indisponivel' | 'cota' | 'resposta';
+
+/** Vaga do feed, ou vaga colada na extensão (sem `job_id`; o texto não é gravado). */
+export type AlvoDaAdaptacao = { jobId: number } | { colada: { cargo: string; empresa: string; hash: string } };
 
 /**
  * Chama o modelo e grava a tentativa — com sucesso ou não.
  *
- * Só roda dentro de Server Action, nunca no render: é escrita no banco e custo
- * de cota, e render repete (achado 25).
+ * Só roda dentro de Server Action ou Route Handler, nunca no render: é escrita
+ * no banco e custo de cota, e render repete (achado 25).
  */
 export async function adaptar(
   userId: string,
-  jobId: number,
+  alvo: AlvoDaAdaptacao,
   curriculo: Curriculo,
   vaga: VagaParaAdaptar,
-): Promise<{ ok: true } | { ok: false; falha: FalhaDaAdaptacao }> {
+): Promise<{ ok: true; id: number | null } | { ok: false; falha: FalhaDaAdaptacao }> {
   const chave = process.env['GROQ_KEY']?.trim();
   if (!chave) return { ok: false, falha: 'indisponivel' };
 
@@ -200,7 +235,22 @@ export async function adaptar(
   });
   const supabase = await clienteDoServidor();
   const inicio = Date.now();
-  const base = { user_id: userId, job_id: jobId, curriculo_hash: curriculo.hash, provedor: provedor.nome };
+  const base = {
+    user_id: userId,
+    curriculo_hash: curriculo.hash,
+    provedor: provedor.nome,
+    // Vaga do feed não manda `origem` (o default da 0018 é 'feed'): assim a
+    // adaptação do feed continua funcionando num banco ainda sem a 0018.
+    ...('jobId' in alvo
+      ? { job_id: alvo.jobId }
+      : {
+          job_id: null,
+          origem: 'colada',
+          vaga_cargo: alvo.colada.cargo,
+          vaga_empresa: alvo.colada.empresa,
+          vaga_hash: alvo.colada.hash,
+        }),
+  };
 
   try {
     const bruto = await provedor.julgar(montarPrompt(curriculo.texto, vaga), null);
@@ -208,14 +258,18 @@ export async function adaptar(
     // O nome que vai para o PDF é o do CV, não o dele.
     const { adaptado: resultado } = corrigirNomes(curriculo.texto, interpretarResposta(bruto));
     const alertas = verificarFidelidade(curriculo.texto, resultado);
-    await supabase.from('adaptacoes').insert({
-      ...base,
-      ok: true,
-      resultado,
-      alertas: alertas.length,
-      duracao_ms: Date.now() - inicio,
-    });
-    return { ok: true };
+    const { data } = await supabase
+      .from('adaptacoes')
+      .insert({
+        ...base,
+        ok: true,
+        resultado,
+        alertas: alertas.length,
+        duracao_ms: Date.now() - inicio,
+      })
+      .select('id')
+      .maybeSingle();
+    return { ok: true, id: data?.id ?? null };
   } catch (erro) {
     await supabase.from('adaptacoes').insert({
       ...base,
