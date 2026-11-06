@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>wagas</title>
+  <link rel="stylesheet" href="painel.css">
+</head>
+<body>
+  <header class="topo">
+    <img src="icone.png" alt="" width="22" height="22">
+    <strong>wagas</strong>
+    <span class="fraco">currículo para esta vaga</span>
+  </header>
+
+  <main id="tela">
+    <p class="fraco">Carregando…</p>
+  </main>
+
+  <template id="t-sem-sessao">
+    <section class="caixa">
+      <p>Entre no wagas com seu e-mail para adaptar o seu currículo às vagas que você encontrar.</p>
+      <button class="botao" data-abrir="/">Entrar no wagas</button>
+      <p class="fraco">Depois de entrar, volte aqui e clique em <em>Já entrei</em>.</p>
+      <button class="link" data-recarregar>Já entrei</button>
+    </section>
+  </template>
+
+  <template id="t-sem-curriculo">
+    <section class="caixa">
+      <p>Primeiro, guarde o seu currículo no wagas. Você guarda uma vez e adapta para qualquer vaga.</p>
+      <button class="botao" data-abrir="/curriculo">Guardar meu currículo</button>
+      <button class="link" data-recarregar>Já guardei</button>
+    </section>
+  </template>
+
+  <template id="t-indisponivel">
+    <section class="caixa aviso">
+      <p>A adaptação está desligada neste ambiente.</p>
+    </section>
+  </template>
+
+  <template id="t-erro-rede">
+    <section class="caixa aviso">
+      <p>Não consegui falar com o wagas. <span id="erro-rede-detalhe"></span></p>
+      <button class="link" data-recarregar>Tentar de novo</button>
+    </section>
+  </template>
+
+  <template id="t-formulario">
+    <form id="form" class="caixa">
+      <p class="fraco">Copie da página da vaga e cole aqui. O seu currículo salvo é adaptado a ela.</p>
+      <label>Cargo
+        <input name="cargo" required maxlength="150" placeholder="Ex.: Analista de Marketing">
+      </label>
+      <label>Empresa <span class="fraco">(opcional)</span>
+        <input name="empresa" maxlength="150">
+      </label>
+      <label>Descrição da vaga
+        <textarea name="descricao" required rows="12" placeholder="Atividades, requisitos, diferenciais…"></textarea>
+      </label>
+      <p class="contador fraco" id="contador"></p>
+      <p class="erro" id="erro" hidden></p>
+      <button class="botao" type="submit" id="enviar">Adaptar meu currículo</button>
+      <p class="limite fraco" id="restantes"></p>
+      <p class="fraco pequeno">A descrição colada vai para a IA e não é guardada. A IA não inventa experiência: o que a vaga pede e o seu currículo não mostra aparece numa lista à parte.</p>
+    </form>
+  </template>
+
+  <template id="t-resultado">
+    <section>
+      <div class="acoes">
+        <button class="botao" id="baixar">Baixar PDF</button>
+        <button class="link" id="outra">Adaptar outra vaga</button>
+      </div>
+      <p class="fraco" id="corrigidos" hidden></p>
+      <div class="caixa aviso" id="alertas" hidden>
+        <p><strong>Confira antes de enviar.</strong> Estes trechos citam algo que não encontrei no seu currículo original:</p>
+        <ul></ul>
+        <p class="fraco">Se não for verdade, não envie: corrija o currículo salvo e adapte de novo.</p>
+      </div>
+      <div class="caixa" id="mudancas" hidden>
+        <h3>O que mudou</h3>
+        <ul></ul>
+      </div>
+      <div class="caixa" id="lacunas" hidden>
+        <h3>O que a vaga pede e o seu currículo não mostra</h3>
+        <p class="fraco">Ficou de fora de propósito. Se você tem, acrescente ao currículo salvo; se não tem, prepare a resposta para a entrevista.</p>
+        <ul></ul>
+      </div>
+      <div class="caixa" id="previa">
+        <h3>Título e resumo</h3>
+        <p><strong id="titulo"></strong></p>
+        <p id="resumo"></p>
+      </div>
+    </section>
+  </template>
+
+  <footer class="rodape">
+    <button class="link" data-abrir-fixo="/privacidade">Política de privacidade</button>
+  </footer>
+
+  <script type="module" src="painel.js"></script>
+</body>
+</html>

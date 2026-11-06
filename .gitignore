@@ -13,3 +13,6 @@ backup-jobs-*.json
 
 # Pastas que o app do Claude Code cria para cada sessao com worktree.
 .claude/worktrees/
+
+# Zip da extensão gerado por `npm run extensao`.
+dist/

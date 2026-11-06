@@ -20,6 +20,12 @@ A landing (`/`) mostra uma amostra do feed e o carrossel de **cargos abrangidos*
 
 **Todas as ferramentas são gratuitas para quem usa.** Os tetos existem porque cada medição ou adaptação consome cota de tier gratuito de LLM compartilhada pelo produto inteiro. Sem teto, uma pessoa recarregando a página esgotaria a ferramenta para todo mundo.
 
+### Extensão do Chrome (`extensao/`)
+
+Painel lateral para adaptar o CV salvo a uma vaga que a pessoa está vendo em qualquer site. **Ela não lê a página:** a pessoa cola cargo, empresa e descrição. Não pede permissão de aba nem injeta script, então o LinkedIn logado nunca é tocado (restrição 2). Não guarda token: chama `/api/extensao/*` com o cookie de sessão do site, e quem não está logado é mandado para o site. Usa o mesmo teto diário e o mesmo caminho da adaptação do feed (só Groq, correção de nomes, alerta de fidelidade). A descrição colada vai ao modelo e não é gravada; `adaptacoes.origem = 'colada'` separa essas adaptações das do feed.
+
+Para testar: aplicar `migrations/0018_adaptacao_vaga_colada.sql`, rodar o `web/` em `localhost:3000`, entrar com e-mail e guardar um CV. Depois, em `chrome://extensions`, ligar o modo desenvolvedor, clicar em *Carregar sem compactação* e escolher a pasta `extensao/`. Para outro endereço, trocar `extensao/config.js` e `host_permissions` no `manifest.json`. Para publicar na Chrome Web Store: `npm run extensao -- --site=https://<site>` gera o zip, e [extensao/loja/LOJA.md](extensao/loja/LOJA.md) tem todo o texto do painel, as justificativas de permissão, as imagens e o passo a passo (inclusive `EXTENSAO_ID` depois da primeira publicação). A política de privacidade está em `/privacidade`.
+
 ## Privacidade do currículo
 
 Currículo é dado pessoal, e cada ferramenta segue uma regra explícita:

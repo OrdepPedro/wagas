@@ -319,7 +319,7 @@ export function Landing({
 
       <footer className="rodape-landing">
         <span>wagas · vagas dos últimos {JANELA_DIAS} dias</span>
-        <a href="#privacidade">Privacidade</a>
+        <a href="/privacidade">Política de privacidade</a>
       </footer>
     </div>
   );

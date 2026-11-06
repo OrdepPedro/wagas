@@ -1,0 +1,114 @@
+<!doctype html>
+<!--
+  Fonte das imagens da Chrome Web Store (como gerar: extensao/loja/LOJA.md).
+  ?tela=formulario | resultado | tile | icone
+
+  O painel é o painel.css de verdade com a marcação do painel.html; só os dados
+  são de exemplo (vaga e pessoa fictícias). A vaga à esquerda é uma página
+  genérica, sem marca de site real.
+-->
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../painel.css">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { width: 1280px; height: 800px; overflow: hidden; display: flex; background: #e9edf4; }
+  .pagina { flex: 1; padding: 40px 56px; font: 15px/1.6 system-ui, 'Segoe UI', sans-serif; color: #1f2937; background: #fff; }
+  .pagina .navegador { height: 36px; margin: -40px -56px 32px; background: #f1f3f6; border-bottom: 1px solid #dde2ea; display: flex; align-items: center; padding: 0 16px; gap: 8px; }
+  .pagina .navegador span { width: 10px; height: 10px; border-radius: 50%; background: #c9cfd8; }
+  .pagina .navegador .barra { flex: 1; height: 22px; margin-left: 12px; border-radius: 11px; background: #fff; border: 1px solid #dde2ea; }
+  .pagina h1 { font-size: 26px; margin: 0 0 4px; }
+  .pagina .empresa { color: #6b7280; margin-bottom: 24px; }
+  .pagina h2 { font-size: 16px; margin: 20px 0 6px; }
+  .pagina ul { margin: 0; padding-left: 20px; }
+  .selecionado { background: #cfe0ff; }
+  .lateral { width: 400px; height: 800px; overflow: hidden; border-left: 1px solid #d5dbe5; background: var(--fundo); }
+  .lateral body, .lateral > .conteudo { padding: 12px 14px; }
+  .lateral textarea { min-height: 0; height: 250px; }
+  .legenda { position: absolute; left: 56px; bottom: 32px; background: #1d4ed8; color: #fff; font: 600 18px/1.3 system-ui, sans-serif; padding: 12px 18px; border-radius: 10px; max-width: 640px; }
+
+  body.tile { width: 440px; height: 280px; background: #0f1220; color: #f2f4f8; flex-direction: column; justify-content: center; padding: 0 36px; box-sizing: border-box; font-family: system-ui, 'Segoe UI', sans-serif; }
+  .tile .marca { display: flex; align-items: center; gap: 12px; font-size: 30px; font-weight: 700; margin-bottom: 14px; }
+  .tile p { font-size: 19px; line-height: 1.35; margin: 0; color: #c9d5ee; }
+  .tile strong { color: #6e9eff; }
+
+  body.icone { width: 128px; height: 128px; background: transparent; display: block; }
+</style>
+</head>
+<body>
+<script>
+const SVG = (t) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${t}" height="${t}"><rect width="64" height="64" rx="14" fill="#0F1220"/><path transform="translate(12 16.75) scale(0.769) translate(-6 -12)" fill="#6E9EFF" d="M8 21a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V33L25.5 35.5V17a3 3 0 0 1 3-3H35.5a3 3 0 0 1 3 3V35.5L43 33V21a3 3 0 0 1 3-3H53a3 3 0 0 1 3 3V47a3 3 0 0 1-3 3H11a3 3 0 0 1-3-3Z"/></svg>`;
+const tela = new URLSearchParams(location.search).get('tela') ?? 'formulario';
+
+const DESCRICAO = `Sobre a vaga
+Buscamos Analista de Marketing para planejar e executar campanhas de e-mail e mídia paga.
+
+Atividades
+• Planejar a régua de relacionamento por e-mail
+• Acompanhar métricas de conversão e propor testes A/B
+• Gerir orçamento de mídia paga
+
+Requisitos
+• Experiência com CRM e automação de marketing
+• Google Analytics e Excel avançado`;
+
+const pagina = (selecionado) => `
+<div class="pagina">
+  <div class="navegador"><span></span><span></span><span></span><div class="barra"></div></div>
+  <h1>Analista de Marketing Pleno</h1>
+  <div class="empresa">Empresa Exemplo · Belo Horizonte, MG · Híbrido</div>
+  <div class="${selecionado ? 'selecionado' : ''}">
+    <h2>Sobre a vaga</h2>
+    <p>Buscamos Analista de Marketing para planejar e executar campanhas de e-mail e mídia paga.</p>
+    <h2>Atividades</h2>
+    <ul><li>Planejar a régua de relacionamento por e-mail</li><li>Acompanhar métricas de conversão e propor testes A/B</li><li>Gerir orçamento de mídia paga</li></ul>
+    <h2>Requisitos</h2>
+    <ul><li>Experiência com CRM e automação de marketing</li><li>Google Analytics e Excel avançado</li></ul>
+  </div>
+</div>`;
+
+const topo = `<header class="topo">${SVG(22)}<strong>wagas</strong><span class="fraco">currículo para esta vaga</span></header>`;
+
+const formulario = `
+<div class="lateral"><div class="conteudo">${topo}
+<form class="caixa">
+  <p class="fraco">Copie da página da vaga e cole aqui. O seu currículo salvo é adaptado a ela.</p>
+  <label>Cargo<input value="Analista de Marketing Pleno"></label>
+  <label>Empresa <span class="fraco">(opcional)</span><input value="Empresa Exemplo"></label>
+  <label>Descrição da vaga<textarea>${DESCRICAO}</textarea></label>
+  <p class="contador fraco">${DESCRICAO.length} caracteres.</p>
+  <button class="botao" type="button">Adaptar meu currículo</button>
+  <p class="limite fraco">5 de 5 adaptações restantes hoje.</p>
+</form></div></div>`;
+
+const resultado = `
+<div class="lateral"><div class="conteudo">${topo}
+<div class="acoes"><button class="botao">Baixar PDF</button><button class="link">Adaptar outra vaga</button></div>
+<div class="caixa"><h3>O que mudou</h3><ul>
+  <li>Título reescrito para Analista de Marketing com foco em CRM</li>
+  <li>Experiência com régua de e-mail e conversão subiu para o topo</li>
+  <li>Orçamento de mídia paga destacado no resumo</li></ul></div>
+<div class="caixa"><h3>O que a vaga pede e o seu currículo não mostra</h3>
+  <p class="fraco">Ficou de fora de propósito. Se você tem, acrescente ao currículo salvo; se não tem, prepare a resposta para a entrevista.</p>
+  <ul><li>Testes A/B</li><li>Excel avançado</li></ul></div>
+<div class="caixa"><h3>Título e resumo</h3>
+  <p><strong>Analista de Marketing · CRM e mídia paga</strong></p>
+  <p>Analista de Marketing com experiência em régua de e-mail, aumento de conversão e gestão de orçamento de mídia.</p></div>
+</div></div>`;
+
+if (tela === 'tile') {
+  document.body.className = 'tile';
+  document.body.innerHTML = `<div class="marca">${SVG(44)}wagas</div><p>Seu currículo adaptado <strong>à vaga que você está vendo</strong>, em PDF.</p>`;
+} else if (tela === 'icone') {
+  document.body.className = 'icone';
+  document.body.innerHTML = SVG(128);
+} else {
+  const legenda = tela === 'resultado'
+    ? 'Receba o currículo adaptado em PDF, com o que mudou e o que a vaga pede e você não mostrou.'
+    : 'Cole a vaga que você está vendo. Seu currículo salvo no wagas é adaptado a ela.';
+  document.body.innerHTML = pagina(tela === 'formulario') + (tela === 'resultado' ? resultado : formulario) + `<div class="legenda">${legenda}</div>`;
+}
+</script>
+</body>
+</html>
