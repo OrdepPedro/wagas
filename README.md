@@ -11,7 +11,7 @@ O diferencial não está em nenhuma ferramenta isolada. Adaptar currículo com I
 | | O que faz | Precisa de conta? | Teto diário |
 |---|---|---|---|
 | **Feed de vagas** (`/vagas`) | Cargo + cidade → vagas dos últimos 7 dias: presenciais e híbridas na cidade, remotas de todo o Brasil. Toggle "Só vagas remotas". Um clique leva ao anúncio original | não | visitante: 2 buscas salvas por 7 dias · com e-mail: 10 pares/dia |
-| **Gerador de buscas avançadas** (`/funcionalidades/dorks`) | Monta a busca do Google com operadores (`site:`, aspas, período) para LinkedIn, posts e 10 portais brasileiros, pronta para abrir | não | sem limite: roda no navegador |
+| **Gerador de buscas avançadas** (`/funcionalidades/dorks`) | Monta a busca do Google com operadores (`site:`, aspas, período) para LinkedIn, posts e 11 portais brasileiros, pronta para abrir | não | sem limite: roda no navegador |
 | **Medidor de currículo para ATS** (`/funcionalidades/ats`) | Nota de 0 a 100 numa rubrica de 8 critérios: se o ATS lê o arquivo, se o CV mostra o que o cargo pede, se convence quem lê. Lista o que mais aumenta a nota | não | visitante 3 · conta 10 |
 | **Currículo para LinkedIn e Gupy** (`/funcionalidades/estruturar`) | Reescreve cada campo do perfil do jeito que a plataforma lê, pronto para colar. O LinkedIn serve para ser encontrado; a Gupy, para ser bem ordenado na candidatura | não | visitante 3 · conta 10 |
 | **Currículo adaptado à vaga** (`/curriculo`, `/adaptar/[id]`) | O CV fica salvo com consentimento. A partir de qualquer vaga do feed com descrição completa, a IA o reescreve para aquela vaga e entrega um PDF de uma coluna, legível por ATS. Avisa quando o texto gerado traz algo que não estava no CV | **sim**, com e-mail | 5 adaptações |
