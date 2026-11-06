@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation';
 import { lerCurriculo } from '../../lib/adaptacao.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
 import { FormularioDeEntrada } from '../formularios.tsx';
@@ -13,11 +12,12 @@ export default async function PaginaDoCurriculo({
   searchParams: Promise<{ vaga?: string; lido?: string; apagado?: string }>;
 }) {
   const usuario = await usuarioAtual();
-  if (!usuario) redirect('/');
   const { vaga, lido, apagado } = await searchParams;
   const voltar = vaga && /^\d+$/.test(vaga) ? `/adaptar/${vaga}` : null;
 
-  if (usuario.visitante) {
+  // Sem sessão nenhuma é o mesmo caso do visitante: a página é porta de
+  // entrada pelo menu Funcionalidades, e mandar para `/` perderia o destino.
+  if (!usuario || usuario.visitante) {
     return (
       <>
         <h1>Seu currículo</h1>

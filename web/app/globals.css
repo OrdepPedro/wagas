@@ -2388,6 +2388,66 @@ input.arquivo {
   max-width: 100%;
 }
 
+/* Campo de arquivo com cara de input de texto. O input nativo fica invisível
+   por cima da linha: clicar e soltar arquivo caem nele, sem reimplementar o drop. */
+.arquivo-linha {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 4px;
+  color: var(--texto-fraco);
+  background: var(--superficie);
+  border: 1px dashed var(--borda);
+  border-radius: var(--raio);
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.arquivo-linha:hover,
+.arquivo-linha.arrastando {
+  border-color: var(--acento);
+  background: var(--acento-fraco);
+}
+
+.arquivo-linha.com-arquivo {
+  border-style: solid;
+  color: var(--texto);
+}
+
+.arquivo-linha:has(input:focus-visible) {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+.arquivo-linha input[type='file'] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.arquivo-linha svg {
+  flex: none;
+  color: var(--acento);
+}
+
+.arquivo-linha-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.arquivo-linha-acao {
+  flex: none;
+  color: var(--acento);
+  font-weight: 600;
+}
+
 a.botao {
   display: inline-block;
   font-weight: 500;

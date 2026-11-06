@@ -29,6 +29,12 @@ const SECOES = [
         descricao: 'Receba cada campo do perfil reescrito do jeito que a plataforma lê, pronto para colar.',
         icone: 'perfil',
       },
+      {
+        href: '/curriculo',
+        titulo: 'Currículo adaptado à vaga',
+        descricao: 'Guarde seu currículo uma vez e a IA o reescreve para cada vaga do feed, em PDF.',
+        icone: 'adaptar',
+      },
     ],
   },
 ];
@@ -91,6 +97,13 @@ export function MenuFuncionalidades() {
                           <circle cx="9" cy="10" r="2" />
                           <path d="M6 16a3 3 0 0 1 6 0" />
                           <path d="M15 9h3M15 13h3" />
+                        </>
+                      ) : item.icone === 'adaptar' ? (
+                        <>
+                          <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z" />
+                          <path d="M14 3v5h5" />
+                          <path d="M9 13h6M9 17h3" />
+                          <path d="m16.5 15.5 1 1 2-2" />
                         </>
                       ) : (
                         <>
