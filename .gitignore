@@ -10,3 +10,6 @@ node_modules/
 # tabela. E artefato de seguranca de uma execucao, nao medicao: nao ha nada
 # nele que outra pessoa precise reproduzir.
 backup-jobs-*.json
+
+# Pastas que o app do Claude Code cria para cada sessao com worktree.
+.claude/worktrees/
