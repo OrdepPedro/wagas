@@ -87,6 +87,13 @@ export const SITES: Site[] = [
   { id: 'trabalhabrasil', nome: 'Trabalha Brasil', grupo: 'Portais brasileiros', medido: true, montar: molde('trabalhabrasil.com.br', 'intitle:"Vaga de"') },
   { id: 'empregos', nome: 'Empregos.com.br', grupo: 'Portais brasileiros', medido: true, montar: molde('empregos.com.br/vaga') },
   { id: 'solides', nome: 'Sólides Vagas', grupo: 'Portais brasileiros', medido: true, montar: molde('vagas.solides.com.br', 'inurl:vaga', '-blog') },
+
+  // InHire: mesmo molde da Gupy (`site:inhire.app "<cargo>"`), o que o coletor
+  // usa no bloco `ats_inhire`. NÃO medido: nem a fração de página de vaga contra
+  // página de carreira (`<empresa>.inhire.app/vagas` sem id), nem volume. Sem
+  // filtro de URL de propósito: um `inurl:` sem medição pode cortar os
+  // subdomínios por empresa.
+  { id: 'inhire', nome: 'InHire', grupo: 'Portais brasileiros', medido: false, montar: molde('inhire.app') },
 ];
 
 export interface PedidoDeDork {
