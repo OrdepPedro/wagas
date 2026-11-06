@@ -63,4 +63,10 @@ describe('portais brasileiros', () => {
     const [s] = gerarDorks({ cargo: 'Vendedor', sites: ['solides'], periodo: 'semana', remoto: true });
     assert.ok(s!.consulta.endsWith('-blog'), s!.consulta);
   });
+
+  it('InHire usa o mesmo site: do coletor, marcado como não medido', () => {
+    const [d] = gerarDorks({ cargo: 'Vendedor', sites: ['inhire'], periodo: 'semana', cidade: 'Recife' });
+    assert.equal(d!.consulta, montarDork('ats_inhire', 'Vendedor', 'cidade', 'Recife'));
+    assert.equal(d!.site.medido, false);
+  });
 });
