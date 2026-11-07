@@ -215,7 +215,7 @@ O feed responde hoje, com janela de 7 dias, em São Paulo: Auxiliar Administrati
 
 **A data é dita com a procedência.** Com `data_publicacao` null em 192 de 192, o cartão escreve "vista em 24/08", não "publicada há 2 dias". A segunda frase seria invenção: com `qdr:w`, item coletado ontem podia ter até sete dias.
 
-**O que a tela ainda NÃO tem:** deploy na Vercel, e SMTP próprio. O remetente padrão do Supabase tem limite baixo de e-mails por hora — serve para um usuário, não para as dez pessoas do Passo 5.
+~~**O que a tela ainda NÃO tem:** deploy na Vercel, e SMTP próprio.~~ **Feitos em 06/11** — ver "Domínio e e-mail" nas pendências.
 
 ---
 
@@ -803,10 +803,15 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 - **Ligar Anonymous Sign-ins no Supabase** (trava 7). O caminho já está pronto no código — `is_anonymous` lido, teto aplicado. Falta o botão no dashboard.
 - **Região metropolitana determinística** (trava 6, achado 22). `cidade_slug` + tabela de municípios por RM.
 - **Segunda fonte gratuita brasileira** (trava 10). A Gupy sustenta o caso de cargo novo sozinha, o que é risco de fonte única. Nenhum candidato foi verificado; a sonda mede **sobreposição com o acervo atual**, não volume.
-- **Medir se post converte — mas só no Passo 5.** Posts são 19 de 248 itens (7,7%) com a MAIOR taxa de aprovação de todas as fontes (95%): quando aparece, é vaga boa. Cliques por usuário por semana não existem porque não há deploy. Com o post rebaixado (trava 1), essa medição deixou de ser urgente: ela decide se vale reinvestir na fonte, não se o produto entrega feed. `/ir/[id]` já grava o clique.
+- **Medir se post converte — mas só no Passo 5.** Posts são 19 de 248 itens (7,7%) com a MAIOR taxa de aprovação de todas as fontes (95%): quando aparece, é vaga boa. Cliques por usuário por semana não existem porque ainda não há usuário (o deploy existe desde 06/11). Com o post rebaixado (trava 1), essa medição deixou de ser urgente: ela decide se vale reinvestir na fonte, não se o produto entrega feed. `/ir/[id]` já grava o clique.
 - **Fechar a conta do achado 27 custa 1 crédito** e continua sem ser feito. Repetir a sonda da frase exata do post e ver quando ele aparece no índice. Não é mais caminho crítico — é a diferença entre "o Google demora" e "o Google não indexa", que muda o que se escreve sobre a fonte, não o que se constrói.
 - **Telemetria escreve durante o render** (achado 25). A janela de 60s remenda o dobro; a correção estrutural é tirar a escrita do render.
-- **Deploy da tela e SMTP próprio.** `web/` roda local e o build passa, mas não está na Vercel. E o remetente padrão do Supabase limita e-mails por hora: serve para um usuário testando, não para as dez pessoas do Passo 5.
+- ~~**Deploy da tela e SMTP próprio.**~~ **Feito em 06/11. Domínio e e-mail:**
+  - **`www.wagas.com.br`** no projeto `wagas` da Vercel, HTTPS emitido; `wagas.com.br` redireciona 308 para o www. Domínio no Registro.br, DNS no **modo avançado** (servidores `a.sec.dns.br`/`c.sec.dns.br`): A `216.198.79.1` e `64.29.17.1` na raiz, CNAME `www` para a Vercel.
+  - **Envio: Resend** (região sa-east-1) como SMTP próprio do Supabase Auth, remetente `login@wagas.com.br`. Registros `resend._domainkey`, CNAME `send` e `rsend`, `_dmarc` com `p=none`. **Teto do plano gratuito: 100 e-mails por dia** — sobra para dez pessoas; se o link mágico parar de chegar, olhar os logs do Resend primeiro.
+  - **Recebimento: ImprovMX**, MX `mx1`/`mx2` + SPF na raiz, encaminhando para o Gmail do Pedro. O plano gratuito não envia.
+  - Site URL e Redirect URLs do Supabase apontam para `https://www.wagas.com.br`.
+  - Cloudflare Email Routing (previsto na arquitetura para a ingestão por e-mail) exigiria mover os nameservers para a Cloudflare e refazer a zona. Fica para quando a ingestão for construída.
 - **`data_publicacao` continua null na prática,** e enquanto isso a janela de 7 dias é uma janela de até 14. O fix da regex da Gupy recupera 9 de 57 na próxima coleta; o LinkedIn não tem sinal na SERP (achado 19), mas tem na página (trava 4).
 - **58% das vagas sem modelo de trabalho,** e a leitura determinística recuperou 0 (achado 20). Sem modelo, a vaga não entra no balde remoto do feed. Resolvido pela trava 4.
 - **30% das vagas gravadas ficaram sem empresa** e aparecem como `"não identificada"`. Ruim de mostrar no feed e impede dedup entre fontes. Resolvido pela trava 4.
@@ -829,8 +834,8 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 | 1 — Validação manual com Google Dorks | ✅ concluído (com correção sobre filtro de data) |
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
-| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **funcionando local, sem deploy.** Migrations 0004–0007, `web/` com Auth por link mágico, busca de qualquer cargo pela API pública da Gupy, toggle Só Remoto, teto diário, clique em `/ir/[id]` e fila de coleta paga |
-| 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente. Inclui Vercel, SMTP próprio e Anonymous Sign-ins |
+| 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **no ar em www.wagas.com.br desde 06/11.** Migrations 0004–0007, `web/` com Auth por link mágico, busca de qualquer cargo pela API pública da Gupy, toggle Só Remoto, teto diário, clique em `/ir/[id]` e fila de coleta paga |
+| 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente. Vercel e SMTP próprio feitos em 06/11; falta Anonymous Sign-ins |
 
 **O Passo 4 fecha com três condições, e só com elas** (trava 3, 28/08): `data_publicacao` real na maioria das linhas, zero duplicata no feed, Telegram medido. Melhoria fora dessas três é o Passo 4 não terminando nunca — o resto vai para o Passo 5.
 
