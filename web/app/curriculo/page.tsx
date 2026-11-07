@@ -1,5 +1,6 @@
 import { lerCurriculo } from '../../lib/adaptacao.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
+import { ExtensaoChrome } from '../extensao-chrome.tsx';
 import { FormularioDeEntrada } from '../formularios.tsx';
 import { apagarCurriculoAcao } from './actions.ts';
 import { FormularioDeCurriculo } from './formularios.tsx';
@@ -65,6 +66,8 @@ export default async function PaginaDoCurriculo({
           <p style={{ margin: 0 }}>Currículo e adaptações apagados.</p>
         </div>
       ) : null}
+
+      <ExtensaoChrome />
 
       <FormularioDeCurriculo texto={curriculo?.texto ?? ''} voltar={voltar} />
 

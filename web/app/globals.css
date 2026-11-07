@@ -2548,3 +2548,95 @@ details.descricao p {
 .texto-longo li {
   margin-bottom: 6px;
 }
+
+/* Extensão do Chrome: faixa na landing e chamada compacta nas telas de currículo. */
+.extensao.destaque {
+  margin: 72px 0 0;
+  /* Mesmo azul fixo da chamada final, para ler igual nos dois temas. */
+  background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 40px 24px;
+}
+
+.extensao.destaque .extensao-texto {
+  max-width: 60ch;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.extensao.destaque h2 {
+  margin: 0 auto 12px;
+  max-width: 26ch;
+}
+
+.extensao.destaque p {
+  opacity: 0.88;
+  margin: 0 0 24px;
+}
+
+.extensao-selo {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 16px !important;
+  opacity: 1 !important;
+}
+
+a.extensao-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 12px 22px;
+  border-radius: var(--raio);
+  background: #ffffff;
+  color: #1d4ed8;
+}
+
+a.extensao-botao:hover {
+  opacity: 0.92;
+}
+
+.extensao.destaque .extensao-nota {
+  font-size: 0.8125rem;
+  opacity: 0.75;
+  margin: 12px 0 0;
+}
+
+.extensao.compacta {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  background: var(--acento-fraco);
+  border-radius: var(--raio);
+  padding: 16px 18px;
+  margin: 0 0 24px;
+}
+
+.extensao.compacta p {
+  margin: 0 0 6px;
+  font-size: 0.9375rem;
+}
+
+.extensao.compacta a {
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.extensao.compacta .extensao-icone {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--superficie);
+  color: var(--acento);
+}
