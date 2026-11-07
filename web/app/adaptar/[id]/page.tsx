@@ -9,6 +9,7 @@ import {
   type Adaptacao,
 } from '../../../lib/adaptacao.ts';
 import { clienteDoServidor, usuarioAtual } from '../../../lib/supabase.ts';
+import { ExtensaoChrome } from '../../extensao-chrome.tsx';
 import { FormularioDeEntrada } from '../../formularios.tsx';
 import { BotaoDeAdaptar } from '../../curriculo/formularios.tsx';
 
@@ -135,6 +136,8 @@ function Resultado({ jobId, adaptacao }: { jobId: number; adaptacao: Adaptacao }
           </ul>
         </div>
       ) : null}
+
+      <ExtensaoChrome />
 
       <Previa cv={cv} />
     </>

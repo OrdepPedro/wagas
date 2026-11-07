@@ -3,6 +3,7 @@ import { LIMITE_GRATUITO, LIMITE_VISITANTE } from '../lib/limites.ts';
 import type { CartaoDaVitrine, Vitrine } from '../lib/vitrine.ts';
 import { Check } from './check.tsx';
 import { CargosAbrangidos } from './cargos-abrangidos.tsx';
+import { ExtensaoChrome } from './extensao-chrome.tsx';
 import { FormularioDeBusca } from './formularios.tsx';
 
 /**
@@ -10,8 +11,9 @@ import { FormularioDeBusca } from './formularios.tsx';
  *
  * Estrutura inspirada na JobStep (hero de impacto, janela do produto, passos,
  * blocos com mockup, privacidade, FAQ, chamada final), com uma diferença de
- * princípio: aqui só entra o que o wagas FAZ HOJE. Nada de currículo, carta ou
- * planos que não existem, e nada de prova social inventada — o selo é a
+ * princípio: aqui só entra o que o wagas FAZ HOJE (a extensão do Chrome entrou
+ * quando foi para a loja). Nada de carta ou planos que não existem, e nada de
+ * prova social inventada — o selo é a
  * contagem viva do acervo e os cartões da janela são vagas reais do banco.
  *
  * A busca fica no hero, não atrás de um "Começar": a premissa do produto é
@@ -95,6 +97,8 @@ export function Landing({
         Coletamos todo dia de <strong>Gupy</strong> · <strong>InfoJobs</strong> ·{' '}
         <strong>LinkedIn Jobs</strong>
       </p>
+
+      <ExtensaoChrome variante="destaque" />
 
       {/* ---------- passos ---------- */}
       <section className="secao" aria-labelledby="passos-titulo">
