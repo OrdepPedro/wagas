@@ -29,6 +29,7 @@ Tudo o que o painel de desenvolvedor pede, pronto para colar. Os textos descreve
 | Ícone da loja (128×128) | `extensao/loja/icone-128.png` |
 | Capturas de tela (1280×800) | `extensao/loja/print-1-colar.png`, `extensao/loja/print-2-resultado.png` |
 | Bloco promocional pequeno (440×280) | `extensao/loja/tile-440x280.png` |
+| Bloco promocional de letreiro (1400×560) | `extensao/loja/letreiro-1400x560.png` |
 | Site oficial | `https://www.wagas.com.br` |
 | URL de suporte | `https://www.wagas.com.br/privacidade` (tem o contato) |
 
@@ -113,5 +114,5 @@ O login é por link mágico, então o revisor usa o próprio e-mail. Isso depend
 
 ```powershell
 $chrome = "C:\Program Files\Google\Chrome\Application\chrome.exe"; $base = (Resolve-Path extensao\loja\prints.html).Path -replace '\\','/'; $out = (Resolve-Path extensao\loja).Path
-foreach ($a in @(@('formulario','print-1-colar.png','1280,800'), @('resultado','print-2-resultado.png','1280,800'), @('tile','tile-440x280.png','440,280'), @('icone','icone-128.png','128,128'))) { & $chrome --headless=new --hide-scrollbars --force-device-scale-factor=1 --default-background-color=00000000 "--user-data-dir=$env:TEMP\wagas-headless" "--window-size=$($a[2])" "--screenshot=$out\$($a[1])" "file:///$base`?tela=$($a[0])" }
+foreach ($a in @(@('formulario','print-1-colar.png','1280,800'), @('resultado','print-2-resultado.png','1280,800'), @('tile','tile-440x280.png','440,280'), @('letreiro','letreiro-1400x560.png','1400,560'), @('icone','icone-128.png','128,128'))) { & $chrome --headless=new --hide-scrollbars --force-device-scale-factor=1 --default-background-color=00000000 "--user-data-dir=$env:TEMP\wagas-headless" "--window-size=$($a[2])" "--screenshot=$out\$($a[1])" "file:///$base`?tela=$($a[0])" }
 ```
