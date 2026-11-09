@@ -22,6 +22,7 @@ import {
   type CurriculoAdaptado,
   type VagaParaAdaptar,
 } from '../../src/curriculo/adaptar.ts';
+import { clienteAdministrativo } from './admin.ts';
 import { ArquivoIlegivel, extrairArquivo } from './curriculo.ts';
 import { inicioDoDiaBrasilia } from './limites.ts';
 import { clienteDoServidor } from './supabase.ts';
@@ -79,16 +80,25 @@ export async function salvarCurriculo(userId: string, texto: string, origem: 'pd
 /**
  * "Apagar meu currículo": o CV e o conteúdo de todas as adaptações.
  * A linha da adaptação fica sem `resultado` — sobra a contagem, que é métrica.
+ *
+ * O `resultado` é zerado pela chave de servidor: desde a 0019 a pessoa não
+ * altera as próprias adaptações, senão zerava o teto diário pelo PostgREST.
+ * O `userId` vem de `usuarioAtual()` (token validado no servidor), nunca do
+ * formulário.
  */
 export async function apagarCurriculo(userId: string): Promise<boolean> {
   const supabase = await clienteDoServidor();
   const { error: e1 } = await supabase.from('curriculos').delete().eq('user_id', userId);
-  const { error: e2 } = await supabase
-    .from('adaptacoes')
-    .update({ resultado: null })
-    .eq('user_id', userId)
-    .not('resultado', 'is', null);
-  return !e1 && !e2;
+  try {
+    await clienteAdministrativo().update(
+      'adaptacoes',
+      `user_id=eq.${encodeURIComponent(userId)}&resultado=not.is.null`,
+      { resultado: null },
+    );
+  } catch {
+    return false;
+  }
+  return !e1;
 }
 
 /**
