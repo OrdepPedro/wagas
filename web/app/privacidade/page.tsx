@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   description: 'O que o wagas e a extensão do Chrome fazem com os seus dados.',
 };
 
-const ATUALIZADA_EM = '06/11/2026';
+const ATUALIZADA_EM = '10/11/2026';
 
 export default function Privacidade() {
   const contato = process.env['NEXT_PUBLIC_CONTATO_PRIVACIDADE']?.trim();
@@ -94,7 +94,9 @@ export default function Privacidade() {
           reescrita para LinkedIn e Gupy, que não ficam guardados por nós.
         </li>
         <li>
-          <strong>Vercel</strong> (hospedagem do site), que processa as requisições.
+          <strong>Vercel</strong> (hospedagem do site), que processa as requisições e conta as visitas: qual
+          página foi aberta, de onde a visita veio, país, navegador e tipo de aparelho. A contagem não usa
+          cookie e não identifica você de um dia para o outro nem em outros sites.
         </li>
       </ul>
 

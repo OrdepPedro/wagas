@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { LIMITE_GRATUITO } from '../lib/limites.ts';
@@ -51,6 +52,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
         </header>
         <main>{children}</main>
+        {/* Contagem de páginas da Vercel: sem cookie, e só envia em produção. */}
+        <Analytics />
       </body>
     </html>
   );
