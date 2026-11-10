@@ -12,7 +12,7 @@
  * divergem produzem feed vazio sem causa aparente.
  */
 import { after } from 'next/server';
-import { chaveDeFamilia } from '../../src/classificar/familia.ts';
+import { chaveDeFamilia, termoDeEngenharia } from '../../src/classificar/familia.ts';
 import {
   avisoDoPedido,
   dispararColeta,
@@ -21,7 +21,7 @@ import {
   pedirOutraFonte,
   type AvisoDaOutraFonte,
 } from '../../src/coleta/outra-fonte.ts';
-import { consultaDeFeed, JANELA_DIAS } from '../../src/feed/consulta.ts';
+import { consultaDeFeed, consultaPorDescricao, JANELA_DIAS } from '../../src/feed/consulta.ts';
 import { colapsarRepetidas } from '../../src/feed/colapsar.ts';
 import { preencherSeNecessario, type MotivoDoPreenchimento } from '../../src/fontes/sob-demanda.ts';
 import { clienteAdministrativo, coletaSobDemandaDisponivel } from './admin.ts';
@@ -51,6 +51,8 @@ export interface Vaga {
   tipo_contrato: string | null;
   /** Anúncios idênticos que este cartão representa (trava 5). Não vem do banco. */
   repeticoes?: number;
+  /** Entrou porque a descrição cita a tecnologia buscada, não pelo título. Não vem do banco. */
+  pelaDescricao?: boolean;
 }
 
 /** Teto de cartões no feed. Era o `limit` padrão da consulta. */
@@ -140,7 +142,15 @@ export async function carregarFeed(
   }
 
   // Trava 5: a mesma vaga, vinda de fontes diferentes, aparece uma vez só.
-  const vagas = colapsarRepetidas((await resposta.json()) as Vaga[]).vagas.slice(0, MOSTRAR);
+  let vagas: Vaga[] = colapsarRepetidas((await resposta.json()) as Vaga[]).vagas.slice(0, MOSTRAR);
+
+  // Segunda via: vaga que só cita a tecnologia na descrição. Vem DEPOIS das de
+  // título, porque é a metade menos certa (83% medido contra ~100%).
+  if (vagas.length < MOSTRAR) {
+    const extras = await vagasPelaDescricao(cargo, cidade, soRemoto, token);
+    const vistas = new Set(vagas.map((v) => v.id));
+    vagas = [...vagas, ...extras.filter((v) => !vistas.has(v.id))].slice(0, MOSTRAR);
+  }
   const naCidade = vagas.filter((v) => v.cidade_slug === consulta.cidadeSlug).length;
 
   return {
@@ -153,6 +163,42 @@ export async function carregarFeed(
     soRemoto,
     outraFonte,
   };
+}
+
+/**
+ * As vagas que citam a tecnologia buscada só na descrição ("Python" numa vaga
+ * de "Desenvolvedor Backend Pleno"). Os portões e a medição estão em
+ * `src/classificar/familia.ts`; aqui só se aplicam.
+ *
+ * Qualquer falha devolve vazio: é a segunda via, e perdê-la deixa o feed como
+ * era antes dela, não quebrado.
+ */
+async function vagasPelaDescricao(
+  cargo: string,
+  cidade: string,
+  soRemoto: boolean,
+  token: string,
+): Promise<Vaga[]> {
+  const consulta = consultaPorDescricao({ cargo, cidade, soRemoto, limite: MOSTRAR * 3 });
+  if (!consulta) return [];
+
+  const ler = async <T,>(query: string): Promise<T[]> => {
+    const resposta = await fetch(`${SUPABASE_URL()}/rest/v1/jobs?${query}`, {
+      headers: { apikey: SUPABASE_ANON(), authorization: `Bearer ${token}` },
+      cache: 'no-store',
+    });
+    if (!resposta.ok) throw new Error(`descrição ${resposta.status}`);
+    return (await resposta.json()) as T[];
+  };
+
+  try {
+    const titulos = await ler<{ familia_classes: string[] | null }>(consulta.titulos);
+    if (!termoDeEngenharia(titulos.map((t) => t.familia_classes ?? []))) return [];
+    const vagas = await ler<Vaga>(consulta.vagas);
+    return colapsarRepetidas(vagas).vagas.map((v) => ({ ...v, pelaDescricao: true }));
+  } catch {
+    return [];
+  }
 }
 
 /**

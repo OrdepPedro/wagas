@@ -59,7 +59,7 @@ function textoDoContrato(bruto: string): string {
   return bruto.split(/\s+-\s+/)[0]!.trim();
 }
 
-function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) {
+function CartaoDeVaga({ vaga, cidadeSlug, cargo }: { vaga: Vaga; cidadeSlug: string; cargo: string }) {
   const naCidade = vaga.cidade_slug === cidadeSlug;
 
   return (
@@ -79,6 +79,11 @@ function CartaoDeVaga({ vaga, cidadeSlug }: { vaga: Vaga; cidadeSlug: string }) 
       </a>
       {vaga.localizacao ? <p className="local">{vaga.localizacao}</p> : null}
       <div className="etiquetas">
+        {/* Honestidade sobre a segunda via: o título não diz a tecnologia, a
+            descrição só a cita — às vezes como "desejável". */}
+        {vaga.pelaDescricao ? (
+          <span className="etiqueta incerta">cita “{cargo}” na descrição</span>
+        ) : null}
         {vaga.modelo ? (
           <span className={`etiqueta${vaga.modelo === 'remoto' ? ' destaque' : ''}`}>
             {NOME_DO_MODELO[vaga.modelo]}
@@ -297,6 +302,8 @@ async function Feed({
     );
   }
 
+  const pelaDescricao = vagas.filter((v) => v.pelaDescricao).length;
+
   // Página fora do intervalo (link velho, feed que encolheu) cai na última.
   const paginas = Math.ceil(vagas.length / POR_PAGINA);
   const atual = Math.min(pagina, paginas);
@@ -312,10 +319,13 @@ async function Feed({
           ? `${remotas} ${remotas === 1 ? 'remota' : 'remotas'} em todo o Brasil`
           : `${naCidade} em ${cidade}, ${remotas} ${remotas === 1 ? 'remota no Brasil' : 'remotas no Brasil'}`}
         .
+        {pelaDescricao > 0
+          ? ` ${pelaDescricao === vagas.length ? 'Todas' : pelaDescricao} ${pelaDescricao === 1 ? 'cita' : 'citam'} “${cargo}” só na descrição.`
+          : null}
       </p>
       <ul className="vagas">
         {vagas.slice((atual - 1) * POR_PAGINA, atual * POR_PAGINA).map((vaga) => (
-          <CartaoDeVaga key={vaga.id} vaga={vaga} cidadeSlug={cidadeSlug} />
+          <CartaoDeVaga key={vaga.id} vaga={vaga} cidadeSlug={cidadeSlug} cargo={cargo} />
         ))}
       </ul>
       <Paginacao atual={atual} total={paginas} />
