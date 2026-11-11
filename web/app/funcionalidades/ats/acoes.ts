@@ -2,11 +2,12 @@
 
 import { createHash } from 'node:crypto';
 
-import { LlmIndisponivel, ProvedorGemini } from '../../../../src/classificar/llm.ts';
+import { LlmIndisponivel, LlmSobrecarregado } from '../../../../src/classificar/llm.ts';
 import { CurriculoSemTexto, medirCurriculo } from '../../../../src/curriculo/medir.ts';
 import type { Extracao, ResultadoDaMedicao } from '../../../../src/curriculo/tipos.ts';
 import { log } from '../../../../src/logger.ts';
 import { clienteAdministrativo } from '../../../lib/admin.ts';
+import { provedorDeCurriculo } from '../../../lib/gemini-curriculo.ts';
 import { ArquivoIlegivel, extrairArquivo } from '../../../lib/curriculo.ts';
 import { inicioDoDiaBrasilia } from '../../../lib/limites.ts';
 import { usuarioAtual } from '../../../lib/supabase.ts';
@@ -137,16 +138,7 @@ export async function medir(_anterior: EstadoDaMedicao, form: FormData): Promise
   };
 
   const inicio = Date.now();
-  const provedor = new ProvedorGemini({
-    chave,
-    modelo: process.env['GEMINI_MODELO']?.trim() || 'gemini-3.5-flash-lite',
-    intervaloMs: 0,
-    // O 503 do Gemini é sobrecarga e dura mais que o ~1 s do backoff padrão:
-    // em 11/11 duas tentativas seguidas falharam. Três, com 3 s e 6 s de espera,
-    // cabem no maxDuration de 120 s da página.
-    tentativas: 3,
-    backoffBaseMs: 3_000,
-  });
+  const provedor = provedorDeCurriculo(chave);
 
   try {
     const resultado = await medirCurriculo({ extracao, cargo, vaga }, provedor);
@@ -171,6 +163,7 @@ export async function medir(_anterior: EstadoDaMedicao, form: FormData): Promise
     }
     await registrar({ ...base, modelo: provedor.nome, erro: String(erro).slice(0, 300), duracao_ms: Date.now() - inicio });
     log.error('falha na medição de currículo', { erro: String(erro) });
+    if (erro instanceof LlmSobrecarregado) return { erro: 'A IA que avalia o currículo está sobrecarregada agora. Tente de novo em alguns minutos.' };
     if (erro instanceof LlmIndisponivel) return { erro: 'O medidor atingiu o limite de uso por agora. Tente de novo mais tarde.' };
     return { erro: 'A avaliação falhou. Tente de novo em instantes.' };
   }
