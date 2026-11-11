@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { metadataDaPagina } from '../../lib/site.ts';
 
 /**
  * Política de privacidade do site e da extensão do Chrome.
@@ -11,10 +12,11 @@ import type { Metadata } from 'next';
  * O contato vem de `NEXT_PUBLIC_CONTATO_PRIVACIDADE`: a LGPD pede um canal para
  * o titular, e o endereço é decisão de quem opera o site, não do código.
  */
-export const metadata: Metadata = {
-  title: 'Privacidade — wagas',
-  description: 'O que o wagas e a extensão do Chrome fazem com os seus dados.',
-};
+export const metadata: Metadata = metadataDaPagina(
+  '/privacidade',
+  'Política de privacidade',
+  'O que o wagas e a extensão do Chrome fazem com os seus dados.',
+);
 
 const ATUALIZADA_EM = '10/11/2026';
 

@@ -59,7 +59,10 @@ function deveCriarVisitante(requisicao: NextRequest): boolean {
   if (requisicao.method !== 'GET') return false;
   // O medidor de currículo também precisa de `user_id`: é ele que conta o teto
   // diário de chamadas ao Gemini.
-  if (!PAGINAS_QUE_CRIAM_VISITANTE.has(requisicao.nextUrl.pathname)) return false;
+  // `/vagas-de/...` é porta de entrada pelo Google: quem chega ali e clica em
+  // "Ver o feed completo" precisa de sessão para a busca valer.
+  const caminho = requisicao.nextUrl.pathname;
+  if (!PAGINAS_QUE_CRIAM_VISITANTE.has(caminho) && !caminho.startsWith('/vagas-de/')) return false;
   const h = requisicao.headers;
   if (h.get('next-router-prefetch') || h.get('purpose') === 'prefetch') return false;
   if (h.get('sec-purpose')?.includes('prefetch')) return false;
