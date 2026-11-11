@@ -705,6 +705,25 @@ O redirect resolve com um GET ao Google, que devolve 302 com a URL real no `Loca
 - **A página não resolve empresa nem modelo.** Os números de 31% e 37% continuam os da SERP: a trava 4 fechou só a data.
 - Feed de Product Manager em São Paulo: 28 vagas, 8 sem data real (as da Gupy via Serper e os posts). Aparece "ZENVIA" e "Zenvia Jobs" com o mesmo cargo: a regra (b) de colapso não pega grafias diferentes da empresa.
 
+**43. Primeiros visitantes de fora, e a busca de tecnologia pela descrição (10/11).** Web Analytics ligado à 01h05 de 10/11; antes disso, o histórico do banco é quase todo o Pedro testando. Em 10/11: 20 visitantes, ~11 buscaram, ~7 clicaram em vaga, 2 adaptaram currículo (3 adaptações, 0 foram à vaga depois). Público vindo da rede do Pedro (LinkedIn, link direto) e **quase todo tech, com "Só remoto" ligado** — não é amostra do público-alvo.
+
+As buscas específicas voltaram vazias: Python 0, "Desenvolvedor Javascript" 0, node 1, php 1. **Não era o filtro**: nenhuma vaga com o termo no título ficou de fora. Era a forma da busca — a pessoa busca a stack, e nenhuma fonte põe a stack no título:
+
+| | Gupy remoto, 7 dias | InfoJobs SP | Greenhouse (12 empresas) | descrição no banco |
+|---|---|---|---|---|
+| Python | 0 | 1 (bolsa de mestrado) | 0 de 155 recentes | **17** |
+| Javascript | 1 | 0 | 0 | **16** |
+
+Pôr stacks na pré-carga foi medido e descartado: 22 stacks na Gupy somaram 53 vagas, quase todas já no banco.
+
+**Implementado: segunda via do feed, pela descrição** (`termosDaDescricao`, `termoDeEngenharia` em `familia.ts`; `consultaPorDescricao` em `consulta.ts`). Dois portões, os dois medidos:
+1. **O termo é de engenharia no próprio acervo** — dos títulos que o contêm, ≥ 2/3 são de engenharia. Separa sem léxico: Python 78%, Java 93%, React 100% contra Marketing 0%, Financeiro 1%, "dados" 3%, "software" 50%. Sem ele, "Enfermeiro" puxava técnico de enfermagem que "auxilia o enfermeiro" (**0 acertos em 26**) e "Marketing" ganhava 48 cartões de "graduação em marketing". Com ele, 20 buscas com função testadas ("Analista de Marketing", "Engenheiro Eletricista"...) ganharam zero.
+2. **Título com função da classe da busca** (ou engenharia/análise, se a busca não tem função).
+
+**Precisão: 52 de 63 (83%)**, rotuladas à mão em 5 stacks remotas. O erro é quase todo "desejável: React Native" ou "Python para scripts internos". Por isso o cartão diz "cita “Python” na descrição" e essas vagas vêm depois das de título. Python remoto: 0 → 16.
+
+**O que NÃO está medido:** a precisão com cidade (Python/São Paulo traz 54, não rotuladas); o portão com 1 título só (Javascript, Typescript) é evidência fina; e a coleta continua cortando pelo título — a Gupy e o InfoJobs descartam na origem a vaga que só cita a stack, então a segunda via só acha o que entrou por outra busca.
+
 ---
 
 ## As dez travas — decididas em 28/08/2026

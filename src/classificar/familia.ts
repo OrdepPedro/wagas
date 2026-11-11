@@ -512,6 +512,97 @@ export function chaveDeFamilia(cargo: string): string {
 }
 
 /**
+ * Busca de TECNOLOGIA pela descrição.
+ *
+ * Existe por um defeito medido no primeiro uso real (10/11): quem chegou pela
+ * rede do Pedro buscou "Python", "Javascript", "React", "Node" — tecnologia,
+ * não cargo. Nenhuma fonte põe a stack no título ("Desenvolvedor Backend
+ * Pleno", "Engenheiro de Software"): no acervo da semana, Python estava no
+ * título de 0 vagas remotas e na descrição de 17. O feed voltava vazio com a
+ * vaga dentro do banco.
+ *
+ * A regra de família continua sendo de título. Esta é uma segunda via,
+ * estreita de propósito, com dois portões — os dois saíram de medição em 10/11:
+ *
+ *   1. O termo é de engenharia NO PRÓPRIO ACERVO: dos títulos que o contêm, ao
+ *      menos dois terços são de engenharia (`termoDeEngenharia`). Separa sem
+ *      léxico: Python 78%, Java 93%, React 100% contra Marketing 0%, Financeiro
+ *      1%, Enfermeiro 0%, "dados" 3%, "sistemas" 20%, "software" 50%. Sem este
+ *      portão, "Marketing" ganhava 48 cartões de "graduação em marketing" e
+ *      "Enfermeiro" puxava todo técnico de enfermagem que "auxilia o
+ *      enfermeiro" (0 acertos em 26). Com ele, 20 buscas com função testadas
+ *      ("Analista de Marketing", "Engenheiro Eletricista", "Assistente
+ *      Administrativo"...) ganharam zero vaga pela descrição; só as de stack
+ *      ganharam.
+ *   2. O título da vaga tem função da MESMA classe da busca ("Desenvolvedor
+ *      Javascript" -> engenharia) ou, se a busca não tem função ("Python"),
+ *      engenharia ou análise (`CLASSES_QUE_CITAM_TECNOLOGIA`). Tira o "UX
+ *      Designer" que cita Node.js.
+ *
+ * Medido sobre 64 vagas rotuladas à mão (Python, Javascript, React, Node,
+ * Typescript, remoto): 52 de 63 certas, 83%. O erro que sobra é quase todo
+ * "desejável: React Native" ou "Python para scripts internos" — a vaga é de
+ * dev, a stack é secundária. Por isso a tela diz que a vaga só CITA o termo, e
+ * essas vêm depois das de título.
+ */
+export const CLASSES_QUE_CITAM_TECNOLOGIA: ClasseFuncao[] = ['engenharia', 'analise'];
+
+/** Fração mínima de títulos de engenharia para o termo ativar a busca na descrição. */
+export const PARTE_MINIMA_DE_ENGENHARIA = 2 / 3;
+
+/**
+ * As palavras que a descrição precisa conter: o cargo sem função, senioridade
+ * e ruído. Vazio quando não sobra assunto ("Desenvolvedor Júnior").
+ *
+ * Sem `aplicarVariantes`, como `semSenioridade`: as variantes servem para
+ * comparar títulos e estragam texto corrido — "Dados" viraria "data", que casa
+ * "data de início" em toda descrição.
+ */
+export function termosDaDescricao(cargo: string): string[] {
+  const tokens = normalizarTexto(cargo).split(' ').filter((t) => t !== '');
+  return [
+    ...new Set(
+      tokens.filter((t) => !RUIDO.has(t) && !SENIORIDADES.has(t) && !FUNCOES.has(t) && t.length >= 2),
+    ),
+  ];
+}
+
+/** A descrição cita TODAS as palavras, como palavra inteira. "java" não casa "javascript". */
+export function citaNaDescricao(termos: string[], descricao: string): boolean {
+  if (termos.length === 0) return false;
+  const texto = ` ${normalizarTexto(descricao)} `;
+  return termos.every((t) => texto.includes(` ${t} `));
+}
+
+const ACENTOS: Record<string, string> = {
+  a: '[aáàâãä]',
+  e: '[eéèêë]',
+  i: '[iíìîï]',
+  o: '[oóòôõö]',
+  u: '[uúùûü]',
+  c: '[cç]',
+  n: '[nñ]',
+};
+
+/**
+ * O mesmo teste de `citaNaDescricao`, como expressão regular do Postgres (para
+ * `imatch`). A descrição no banco tem acento e caixa alta; o termo já chega
+ * normalizado, então cada vogal vira a classe das suas formas acentuadas.
+ * `\m` e `\M` são início e fim de palavra no Postgres.
+ */
+export function regexDaDescricao(termo: string): string {
+  const corpo = [...termo].map((ch) => ACENTOS[ch] ?? ch).join('');
+  return `\\m${corpo}\\M`;
+}
+
+/** O termo é de engenharia no acervo? Recebe as classes dos títulos que o contêm. */
+export function termoDeEngenharia(classesDosTitulos: string[][]): boolean {
+  if (classesDosTitulos.length === 0) return false;
+  const deEngenharia = classesDosTitulos.filter((c) => c.includes('engenharia')).length;
+  return deEngenharia / classesDosTitulos.length >= PARTE_MINIMA_DE_ENGENHARIA;
+}
+
+/**
  * O cargo sem os termos de senioridade, preservando a ordem das palavras.
  *
  * Existe para a consulta a fontes que casam por SUBSTRING, como a API da Gupy.

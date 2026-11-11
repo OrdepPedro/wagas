@@ -20,7 +20,12 @@
  * Traduzido: `cidade_slug = <a dele>` OU (`modelo = remoto` E o país não é
  * comprovadamente outro).
  */
-import { filtroDeFamilia } from '../classificar/familia.ts';
+import {
+  CLASSES_QUE_CITAM_TECNOLOGIA,
+  filtroDeFamilia,
+  regexDaDescricao,
+  termosDaDescricao,
+} from '../classificar/familia.ts';
 import { slugCidade } from '../normalize/local.ts';
 
 /** A promessa do produto. Não existe seletor de período — ver CLAUDE.md. */
@@ -93,34 +98,14 @@ export const COLUNAS_DO_FEED = [
  */
 export function consultaDeFeed(pedido: PedidoDeFeed): ConsultaDeFeed {
   const { dominio, classes } = filtroDeFamilia(pedido.cargo);
-  const cidadeSlug = slugCidade(pedido.cidade);
-
-  const agora = pedido.agora ?? new Date();
-  const janela = pedido.janelaDias ?? JANELA_DIAS;
-  const desde = new Date(agora.getTime() - janela * 24 * 60 * 60 * 1000).toISOString();
-
-  const partes = [
-    `select=${COLUNAS_DO_FEED}`,
-    'ativo=is.true',
-    // Vaga que a fonte deixou de listar (migration 0011): fechada, não velha.
-    'encerrada_em=is.null',
-    `data_referencia=gte.${desde}`,
-  ];
+  const { partes, cidadeSlug, desde, local } = base(pedido);
 
   if (dominio.length > 0) partes.push(`familia_tokens=cs.${lista(dominio)}`);
 
   // Os dois grupos de OR vão dentro de um único `and=(…)`. O PostgREST ANDeia
   // parâmetros de topo, mas repetir a chave `or` duas vezes na mesma URL é
   // ambíguo — a árvore explícita não é.
-  const grupos = [
-    // Composição de local. `pais_br.not.is.false` deixa passar Brasil
-    // confirmado E não-sei; barra só o que foi identificado como de fora — é
-    // assim que a vaga remota da França sai do feed sem levar junto as vagas
-    // brasileiras cuja localização o anúncio não qualificou.
-    pedido.soRemoto
-      ? `and(modelo.eq.remoto,pais_br.not.is.false)`
-      : `or(cidade_slug.eq.${cidadeSlug},and(modelo.eq.remoto,pais_br.not.is.false))`,
-  ];
+  const grupos = [local];
   // Busca sem domínio não tem a saída do título sem função: a função é a única
   // âncora (ver `cargoBateNoTitulo`).
   if (classes.length > 0 && dominio.length === 0) {
@@ -134,6 +119,77 @@ export function consultaDeFeed(pedido: PedidoDeFeed): ConsultaDeFeed {
   partes.push(`limit=${pedido.limite ?? 100}`);
 
   return { query: partes.join('&'), cidadeSlug, dominio, classes, desde };
+}
+
+/** Janela, vaga aberta e composição de local: o que toda consulta do feed tem. */
+function base(pedido: PedidoDeFeed) {
+  const cidadeSlug = slugCidade(pedido.cidade);
+  const agora = pedido.agora ?? new Date();
+  const janela = pedido.janelaDias ?? JANELA_DIAS;
+  const desde = new Date(agora.getTime() - janela * 24 * 60 * 60 * 1000).toISOString();
+
+  const partes = [
+    `select=${COLUNAS_DO_FEED}`,
+    'ativo=is.true',
+    // Vaga que a fonte deixou de listar (migration 0011): fechada, não velha.
+    'encerrada_em=is.null',
+    `data_referencia=gte.${desde}`,
+  ];
+
+  // Composição de local. `pais_br.not.is.false` deixa passar Brasil
+  // confirmado E não-sei; barra só o que foi identificado como de fora — é
+  // assim que a vaga remota da França sai do feed sem levar junto as vagas
+  // brasileiras cuja localização o anúncio não qualificou.
+  const local = pedido.soRemoto
+    ? `and(modelo.eq.remoto,pais_br.not.is.false)`
+    : `or(cidade_slug.eq.${cidadeSlug},and(modelo.eq.remoto,pais_br.not.is.false))`;
+
+  return { partes, cidadeSlug, desde, local };
+}
+
+export interface ConsultaPorDescricao {
+  /** Classes dos títulos que contêm o termo, no acervo inteiro: alimenta `termoDeEngenharia`. */
+  titulos: string;
+  /** As vagas que só citam o termo na descrição. Já exclui as que batem pelo título. */
+  vagas: string;
+  /** As palavras procuradas na descrição. */
+  termos: string[];
+}
+
+/**
+ * A segunda via do feed: vaga que cita a tecnologia na descrição (os três
+ * portões e a medição estão em familia.ts, sobre `CLASSES_QUE_CITAM_TECNOLOGIA`).
+ *
+ * Devolve null quando a busca não tem assunto ("Desenvolvedor"). O portão do
+ * acervo (o termo é de engenharia nos títulos) depende de uma leitura, então
+ * quem decide é o chamador, com `titulos` e `termoDeEngenharia`; esta função só
+ * monta as duas consultas.
+ */
+export function consultaPorDescricao(pedido: PedidoDeFeed): ConsultaPorDescricao | null {
+  const termos = termosDaDescricao(pedido.cargo);
+  const { dominio, classes } = filtroDeFamilia(pedido.cargo);
+  if (termos.length === 0 || dominio.length === 0) return null;
+  // Busca com função exige título da mesma classe; sem função, quem costuma
+  // citar tecnologia: engenharia e análise.
+  const aceitas = classes.length > 0 ? classes : CLASSES_QUE_CITAM_TECNOLOGIA;
+
+  const titulos = [
+    'select=familia_classes',
+    'ativo=is.true',
+    `familia_tokens=cs.${lista(dominio)}`,
+    'limit=200',
+  ].join('&');
+
+  const { partes, local } = base(pedido);
+  // O que bate pelo título já está na primeira consulta.
+  partes.push(`familia_tokens=not.cs.${lista(dominio)}`);
+  partes.push(`and=(${local},familia_classes.ov.${lista(aceitas)})`);
+  // Um filtro por palavra, na mesma coluna: o PostgREST faz AND.
+  for (const termo of termos) partes.push(`descricao=imatch.${encodeURIComponent(regexDaDescricao(termo))}`);
+  partes.push('order=data_referencia.desc');
+  partes.push(`limit=${pedido.limite ?? 100}`);
+
+  return { titulos, vagas: partes.join('&'), termos };
 }
 
 /** Array literal do PostgREST: `{a,b}`. Item com vírgula ou aspas vai entre aspas. */
