@@ -2,9 +2,11 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import {
+  CadeiaDeProvedores,
   cadeiaDoAmbiente,
   LlmErro,
   LlmIndisponivel,
+  LlmSobrecarregado,
   ProvedorGemini,
   ProvedorGroq,
 } from '../src/classificar/llm.ts';
@@ -131,5 +133,64 @@ describe('cadeiaDoAmbiente', () => {
 
   it('só o Groq configurado, a cadeia é só ele', () => {
     assert.equal(cadeiaDoAmbiente({ ...base, geminiKey: '', groqKey: 'b' })?.nome, 'groq/q');
+  });
+});
+
+describe('sobrecarga do modelo (503)', () => {
+  const semEspera = async () => {};
+
+  it('503 em todas as tentativas vira LlmSobrecarregado', async () => {
+    const { fn, chamadas } = fetchFalso([() => resposta({ error: { message: 'high demand' } }, 503)]);
+    const provedor = new ProvedorGemini({ chave: 'k', modelo: 'm', tentativas: 2, fetchImpl: fn, sleepImpl: semEspera });
+
+    await assert.rejects(() => provedor.julgar('p', null), LlmSobrecarregado);
+    assert.equal(chamadas.length, 2);
+  });
+
+  it('500 em todas as tentativas continua LlmErro comum: só o 503 é sobrecarga', async () => {
+    const { fn } = fetchFalso([() => resposta({}, 500)]);
+    const provedor = new ProvedorGemini({ chave: 'k', modelo: 'm', tentativas: 2, fetchImpl: fn, sleepImpl: semEspera });
+
+    await assert.rejects(
+      () => provedor.julgar('p', null),
+      (erro) => erro instanceof LlmErro && !(erro instanceof LlmSobrecarregado),
+    );
+  });
+
+  it('a cadeia cai para o modelo de reserva e registra quem respondeu', async () => {
+    const principal = fetchFalso([() => resposta({}, 503)]);
+    const reserva = fetchFalso([() => resposta(textoGemini('{"ok":true}'))]);
+    const cadeia = new CadeiaDeProvedores([
+      new ProvedorGemini({ chave: 'k', modelo: 'principal', tentativas: 2, fetchImpl: principal.fn, sleepImpl: semEspera }),
+      new ProvedorGemini({ chave: 'k', modelo: 'reserva', tentativas: 2, fetchImpl: reserva.fn, sleepImpl: semEspera }),
+    ]);
+
+    assert.equal(await cadeia.julgar('p', null), '{"ok":true}');
+    assert.equal(cadeia.nome, 'gemini/reserva');
+  });
+
+  it('todos sobrecarregados não vira "limite de uso": a tela diz outra coisa', async () => {
+    const { fn } = fetchFalso([() => resposta({}, 503)]);
+    const cadeia = new CadeiaDeProvedores([
+      new ProvedorGemini({ chave: 'k', modelo: 'a', tentativas: 1, fetchImpl: fn }),
+      new ProvedorGemini({ chave: 'k', modelo: 'b', tentativas: 1, fetchImpl: fn }),
+    ]);
+
+    await assert.rejects(
+      () => cadeia.julgar('p', null),
+      (erro) => erro instanceof LlmSobrecarregado && !(erro instanceof LlmIndisponivel),
+    );
+  });
+
+  it('resposta sem texto não desce: é defeito do lote, e gastaria a reserva', async () => {
+    const principal = fetchFalso([() => resposta({ candidates: [] })]);
+    const reserva = fetchFalso([() => resposta(textoGemini('{}'))]);
+    const cadeia = new CadeiaDeProvedores([
+      new ProvedorGemini({ chave: 'k', modelo: 'a', fetchImpl: principal.fn }),
+      new ProvedorGemini({ chave: 'k', modelo: 'b', fetchImpl: reserva.fn }),
+    ]);
+
+    await assert.rejects(() => cadeia.julgar('p', null), LlmErro);
+    assert.equal(reserva.chamadas.length, 0);
   });
 });

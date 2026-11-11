@@ -37,6 +37,20 @@ export class LlmErro extends Error {
   }
 }
 
+/**
+ * O modelo respondeu 503 em todas as tentativas: sobrecarga do lado do Google
+ * ("This model is currently experiencing high demand"). Não é cota nossa nem
+ * defeito do lote, então trocar de modelo resolve onde insistir não resolve —
+ * em 11/11 o gemini-3.5-flash-lite falhou em 5 de 9 chamadas enquanto o
+ * gemini-3.1-flash-lite respondeu 4 de 4.
+ */
+export class LlmSobrecarregado extends LlmErro {
+  constructor(mensagem: string) {
+    super(mensagem);
+    this.name = 'LlmSobrecarregado';
+  }
+}
+
 export interface Provedor {
   /** `gemini/gemini-2.5-flash-lite`. Vai para `jobs.classificador`. */
   readonly nome: string;
@@ -90,6 +104,7 @@ abstract class ProvedorHttp implements Provedor {
   async julgar(prompt: string, schema: unknown): Promise<string> {
     const { url, init } = this.requisicao(prompt, schema);
     let ultimoErro: unknown = null;
+    let ultimoStatus = 0;
 
     for (let tentativa = 1; tentativa <= this.#tentativas; tentativa++) {
       await this.#respeitarIntervalo();
@@ -100,6 +115,7 @@ abstract class ProvedorHttp implements Provedor {
         resposta = await this.#fetch(url, { ...init, signal: AbortSignal.timeout(60_000) });
       } catch (erro) {
         ultimoErro = erro;
+        ultimoStatus = 0;
         log.warn('falha de rede no LLM', { provedor: this.nome, tentativa });
         if (tentativa < this.#tentativas) await this.#sleep(this.#atraso(tentativa));
         continue;
@@ -130,11 +146,14 @@ abstract class ProvedorHttp implements Provedor {
       }
 
       ultimoErro = new LlmErro(`${this.nome} ${resposta.status}`);
+      ultimoStatus = resposta.status;
       log.warn('resposta retentável do LLM', { provedor: this.nome, status: resposta.status });
       if (tentativa < this.#tentativas) await this.#sleep(this.#atraso(tentativa));
     }
 
-    throw new LlmErro(`${this.nome} falhou após ${this.#tentativas} tentativas: ${String(ultimoErro)}`);
+    const mensagem = `${this.nome} falhou após ${this.#tentativas} tentativas: ${String(ultimoErro)}`;
+    if (ultimoStatus === 503) throw new LlmSobrecarregado(mensagem);
+    throw new LlmErro(mensagem);
   }
 
   async #respeitarIntervalo(): Promise<void> {
@@ -270,8 +289,9 @@ export class ProvedorGroq extends ProvedorHttp {
 /**
  * Encadeia provedores: o primeiro que responder ganha o lote.
  *
- * Só `LlmIndisponivel` (cota ou credencial) faz descer para o próximo. Erro de
- * formato ou de rede já foi retentado dentro do provedor; insistir noutro
+ * Descem para o próximo: `LlmIndisponivel` (cota ou credencial) e
+ * `LlmSobrecarregado` (503 em todas as tentativas — o modelo, não o lote). Erro
+ * de formato ou de rede já foi retentado dentro do provedor; insistir noutro
  * provedor gastaria a cota dele com o mesmo lote defeituoso.
  *
  * `nome` muda a cada lote, para `jobs.classificador` registrar quem de fato
@@ -300,10 +320,10 @@ export class CadeiaDeProvedores implements Provedor {
         return texto;
       } catch (erro) {
         ultimoErro = erro;
-        if (erro instanceof LlmIndisponivel) {
+        if (erro instanceof LlmIndisponivel || erro instanceof LlmSobrecarregado) {
           log.warn('provedor indisponível, caindo para o próximo', {
             provedor: provedor.nome,
-            status: erro.status,
+            status: erro instanceof LlmIndisponivel ? erro.status : 503,
           });
           continue;
         }
@@ -311,6 +331,10 @@ export class CadeiaDeProvedores implements Provedor {
       }
     }
 
+    // Todos sobrecarregados não é "limite de uso": a tela diz coisas diferentes.
+    if (ultimoErro instanceof LlmSobrecarregado) {
+      throw new LlmSobrecarregado(`todos os provedores sobrecarregados: ${String(ultimoErro)}`);
+    }
     throw new LlmIndisponivel(
       `todos os provedores indisponíveis: ${String(ultimoErro)}`,
       429,
