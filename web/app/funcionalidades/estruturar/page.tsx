@@ -1,7 +1,7 @@
 import { Estruturador } from './estruturador.tsx';
 
 /** Uma chamada ao Gemini leva de 5 a 20 s; com uma retentativa, até um minuto. */
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 export default function PaginaDoEstruturador() {
   return (

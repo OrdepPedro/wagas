@@ -34,12 +34,16 @@ function numero(nome: string, padrao: number): number {
 
 const MIN_TEXTO = 300;
 
-/** Só conta o que chegou ao LLM: arquivo recusado na extração não gastou cota. */
+/**
+ * Só conta o que o LLM entregou. Arquivo recusado na extração não gastou cota, e
+ * falha do provedor (o 503 de sobrecarga do Gemini em 11/11) não entregou nada:
+ * contá-la tirava da pessoa, por defeito nosso, medições do teto do dia.
+ */
 async function medicoesHoje(userId: string): Promise<number> {
   try {
     const linhas = await clienteAdministrativo().select<{ id: string }>(
       'medicoes_curriculo',
-      `select=id&user_id=eq.${userId}&modelo=not.is.null&criado_em=gte.${encodeURIComponent(inicioDoDiaBrasilia())}`,
+      `select=id&user_id=eq.${userId}&modelo=not.is.null&erro=is.null&criado_em=gte.${encodeURIComponent(inicioDoDiaBrasilia())}`,
     );
     return linhas.length;
   } catch {
@@ -137,7 +141,11 @@ export async function medir(_anterior: EstadoDaMedicao, form: FormData): Promise
     chave,
     modelo: process.env['GEMINI_MODELO']?.trim() || 'gemini-3.5-flash-lite',
     intervaloMs: 0,
-    tentativas: 2,
+    // O 503 do Gemini é sobrecarga e dura mais que o ~1 s do backoff padrão:
+    // em 11/11 duas tentativas seguidas falharam. Três, com 3 s e 6 s de espera,
+    // cabem no maxDuration de 120 s da página.
+    tentativas: 3,
+    backoffBaseMs: 3_000,
   });
 
   try {
