@@ -1,3 +1,4 @@
+import { caminhoDaPagina, PAGINAS_PUBLICAS, type PaginaPublica } from '../../src/feed/paginas-publicas.ts';
 import { JANELA_DIAS } from '../lib/feed.ts';
 import { LIMITE_GRATUITO, LIMITE_VISITANTE } from '../lib/limites.ts';
 import type { CartaoDaVitrine, Vitrine } from '../lib/vitrine.ts';
@@ -268,6 +269,8 @@ export function Landing({
         </div>
       </section>
 
+      <VagasPorCidade />
+
       {/* ---------- FAQ ---------- */}
       <section className="secao" aria-labelledby="faq-titulo">
         <p className="sobretitulo">Dúvidas</p>
@@ -326,6 +329,37 @@ export function Landing({
         <a href="/privacidade">Política de privacidade</a>
       </footer>
     </div>
+  );
+}
+
+/**
+ * Links para as páginas públicas por cargo × cidade. Servem a quem lê ("vagas
+ * de Vendedor em Curitiba" a um clique) e ao Google, que descobre página por
+ * link: sem eles, as 60 páginas só existiriam no sitemap.
+ */
+function VagasPorCidade() {
+  const porCargo = new Map<string, PaginaPublica[]>();
+  for (const p of PAGINAS_PUBLICAS) porCargo.set(p.cargo, [...(porCargo.get(p.cargo) ?? []), p]);
+
+  return (
+    <section className="secao" aria-labelledby="por-cidade-titulo">
+      <p className="sobretitulo">Atalhos</p>
+      <h2 id="por-cidade-titulo">Vagas por cargo e cidade</h2>
+      <div className="atalhos">
+        {[...porCargo].map(([cargo, paginas]) => (
+          <div key={cargo} className="atalho-grupo">
+            <h3>{cargo}</h3>
+            <ul>
+              {paginas.map((p) => (
+                <li key={p.cidadeSlug}>
+                  <a href={caminhoDaPagina(p)}>{p.cidade ? p.cidade.nome : 'Remoto'}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 

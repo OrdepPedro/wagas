@@ -1,4 +1,12 @@
+import type { Metadata } from 'next';
+import { metadataDaPagina } from '../../../lib/site.ts';
 import { GeradorDeDorks } from './gerador.tsx';
+
+export const metadata: Metadata = metadataDaPagina(
+  '/funcionalidades/dorks',
+  'Gerador de buscas avançadas no Google para vagas de emprego',
+  'Monte buscas com os operadores do Google (site:, aspas, período) para achar vagas no LinkedIn, Gupy e outros sites. Pronta para abrir, grátis e sem limite.',
+);
 import estilos from './pagina.module.css';
 
 export default function PaginaDeDorks() {
