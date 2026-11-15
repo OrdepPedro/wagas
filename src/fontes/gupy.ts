@@ -41,7 +41,7 @@
  */
 import dns from 'node:dns';
 import { cargoBateNoTitulo, semSenioridade } from '../classificar/familia.ts';
-import { normalizarLocal, slugCidade, type Modelo } from '../normalize/local.ts';
+import { normalizarLocal, slugCidade, type LocalNormalizado, type Modelo } from '../normalize/local.ts';
 import { log } from '../logger.ts';
 
 // Ambiente com DNS que devolve AAAA inalcançável derruba o fetch antes de sair.
@@ -96,6 +96,11 @@ export interface VagaDaGupy {
   tipoContrato?: string | null;
   /** Sobrepõe a origem de data da fonte, quando a vaga veio por outro caminho. */
   origemData?: 'pagina_html';
+  /**
+   * Os locais que a vaga atende, já normalizados, quando a fonte anuncia mais de
+   * um. Só o Greenhouse preenche. Sem ele, a gravação normaliza `localizacao`.
+   */
+  locais?: Array<LocalNormalizado & { localizacao: string | null }>;
 }
 
 const MODELOS: Record<string, Modelo> = {

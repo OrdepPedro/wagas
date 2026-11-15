@@ -1,4 +1,4 @@
-// Coleta diária: Gupy + InfoJobs para a pré-carga e a demanda real.
+// Coleta diária: Gupy + Greenhouse + InfoJobs para a pré-carga e a demanda real.
 //
 // A janela de 7 dias só existe com coleta contínua. Sem ela, em 21/10 o feed
 // servia 79 de 373 linhas — o resto tinha expirado porque nada coletava.
@@ -6,6 +6,9 @@
 //   npm run diaria                 # roda tudo
 //   npm run diaria -- --seco       # monta a lista e mede, sem gravar
 //   npm run diaria -- --so-gupy    # pula o InfoJobs (rápido, para testar)
+//
+// O Greenhouse não entra nos pares: baixa o quadro inteiro de cada empresa da
+// lista (`src/config/greenhouse.ts`), uma requisição por quadro, e o feed filtra.
 //
 // Ordem: Gupy para todos os pares primeiro (segundos cada), InfoJobs depois
 // (minutos cada), dentro de um orçamento de tempo. Se o tempo acabar, o que cai
@@ -24,6 +27,7 @@ import { montarPares, ufMaisFrequente, type BuscaRegistrada } from '../src/colet
 import { buscarNaGupy, vagaFechadaNaGupy } from '../src/fontes/gupy.ts';
 import { buscarNoInfojobs } from '../src/fontes/infojobs.ts';
 import { GUPY, INFOJOBS, gravarNoCache, registrarColeta, ultimaColeta } from '../src/fontes/gupy-cache.ts';
+import { coletarGreenhouse, type PlacarGreenhouse } from '../src/coleta/greenhouse.ts';
 import { MAX_SUGERIDOS_NA_COLETA, cargosDaColeta } from '../src/cargos/abrangidos.ts';
 import { decidirEncerramentos, type ConsultaDoDia, type VagaVerificavel } from '../src/coleta/encerramento.ts';
 
@@ -173,6 +177,19 @@ try {
   console.error(`Encerramento falhou (a migration 0011 foi aplicada?): ${String(erro).slice(0, 300)}`);
 }
 
+// --- Greenhouse: quadro inteiro por empresa, ~15 s no total ------------------
+// Erro na gravação (a migration 0022 não aplicada, por exemplo) não derruba a
+// coleta do InfoJobs: vira problema de saúde no fim, e o job falha alto.
+let greenhouse: PlacarGreenhouse | null = null;
+let erroGreenhouse: string | null = null;
+try {
+  greenhouse = await coletarGreenhouse(db, { seco, agora });
+  console.log(`Greenhouse: ${greenhouse.ok} quadros ok, ${greenhouse.falhou} falharam, ${greenhouse.naJanela} vagas na janela, ${greenhouse.gravadas} linhas novas, ${greenhouse.encerradas} encerradas — ${minutos()} min`);
+} catch (erro) {
+  erroGreenhouse = String(erro).slice(0, 300);
+  console.error(`Greenhouse falhou (a migration 0022 foi aplicada?): ${erroGreenhouse}`);
+}
+
 // --- InfoJobs: por par, dentro do orçamento de tempo -------------------------
 if (!soGupy) {
   for (const p of pares) {
@@ -201,6 +218,8 @@ if (!soGupy) {
 const doente = (ok: number, falhou: number) => falhou > 0 && falhou >= ok;
 const problemas = [
   doente(placar.gupy.ok, placar.gupy.falhou) && `Gupy falhou em ${placar.gupy.falhou} de ${placar.gupy.ok + placar.gupy.falhou} consultas`,
+  erroGreenhouse && `Greenhouse: ${erroGreenhouse}`,
+  greenhouse && doente(greenhouse.ok, greenhouse.falhou) && `Greenhouse falhou em ${greenhouse.falhou} de ${greenhouse.ok + greenhouse.falhou} quadros`,
   !soGupy && doente(placar.infojobs.ok, placar.infojobs.falhou) && `InfoJobs falhou em ${placar.infojobs.falhou} de ${placar.infojobs.ok + placar.infojobs.falhou} pares`,
 ].filter(Boolean);
 

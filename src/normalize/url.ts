@@ -155,6 +155,14 @@ export function canonicalizarUrl(bruta: string): UrlCanonica | null {
     };
   }
 
+  if (host === 'job-boards.greenhouse.io' || host === 'boards.greenhouse.io') {
+    // `/<empresa>/jobs/<id>`. Os dois hosts servem a mesma vaga; o `gh_src` é tracking.
+    const m = /^\/([^/]+)\/jobs\/(\d+)/.exec(url.pathname);
+    if (m) {
+      return { url: `https://job-boards.greenhouse.io/${m[1]}/jobs/${m[2]}`, fonte: 'ats_greenhouse', fonteId: m[2]! };
+    }
+  }
+
   if (host === 'infojobs.com.br' || host.endsWith('.infojobs.com.br')) {
     // `/vaga-de-<titulo>-em-<cidade>__12110964.aspx`: o slug do título muda se o
     // anunciante editar; o número não. Canonicaliza pelo número.
