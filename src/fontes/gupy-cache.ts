@@ -158,9 +158,11 @@ function linhaJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache
     descricao: vaga.descricao,
     data_publicacao: vaga.dataPublicacao,
     data_publicacao_origem: vaga.origemData ?? origem.origemData,
-    // Só entra na linha quando a fonte informa: a Gupy grava sem a coluna, e
-    // assim continua funcionando num banco ainda sem a migration 0009.
-    ...(vaga.tipoContrato ? { tipo_contrato: vaga.tipoContrato } : {}),
+    // Sempre presente, null quando a fonte não informa. O insert em lote do
+    // PostgREST exige as MESMAS chaves em todos os objetos (PGRST102): com a
+    // chave condicional, um lote do InfoJobs com contrato em umas vagas e não
+    // em outras derrubava a coleta diária inteira (13 a 15/11).
+    tipo_contrato: vaga.tipoContrato ?? null,
     // Explícito, ainda que igual ao default: nesta rota "agora" é mesmo a hora
     // da coleta, e deixar implícito esconderia a diferença para a rota da SERP,
     // onde o default estava errado.
