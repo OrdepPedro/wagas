@@ -98,3 +98,13 @@ test('adaptacoes: os leitores enxergam o que as duas 0019 deixaram sem a 0020', 
   assert.equal(temPrivilegio(sql, 'adaptacoes', 'delete', 'authenticated'), false);
   assert.equal(temPrivilegio(sql, 'adaptacoes', 'update', 'anon'), false);
 });
+
+test('adaptacao_correcoes: a pessoa só lê e insere, sem update, delete nem truncate (0022)', () => {
+  const comandos = migrations();
+  assert.deepEqual([...policiesFinais(comandos, 'adaptacao_correcoes').values()].sort(), ['insert', 'select']);
+  for (const papel of ['anon', 'authenticated']) {
+    for (const privilegio of ['update', 'delete', 'truncate']) {
+      assert.equal(temPrivilegio(comandos, 'adaptacao_correcoes', privilegio, papel), false, `${papel} termina com ${privilegio}`);
+    }
+  }
+});

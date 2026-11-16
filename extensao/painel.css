@@ -108,3 +108,66 @@ input:focus, textarea:focus { outline: 2px solid var(--acento); outline-offset: 
 .limite { text-align: center; font-size: 12px; }
 
 .rodape { text-align: center; font-size: 12px; margin-top: 8px; }
+
+/* Prévia do currículo na revisão. */
+.cv h2 { font-size: 17px; margin: 0; }
+.cv h4 {
+  margin: 14px 0 6px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--borda);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.cv p { margin: 0 0 6px; }
+.cv .cv-titulo { margin-top: 2px; }
+.cv-bloco { margin-bottom: 10px; }
+.cv-bloco ul { margin: 4px 0 0; padding-left: 18px; }
+
+/* Chat de ajuste. */
+.conversa { list-style: none; margin: 8px 0 10px; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.conversa p { margin: 0; padding: 6px 10px; border-radius: 8px; white-space: pre-line; }
+.conversa .conversa-pedido { background: var(--acento); color: var(--sobre-acento); margin-left: 24px; }
+.conversa .conversa-resposta { background: var(--fundo); margin: 4px 24px 0 0; }
+#form-ajuste textarea { min-height: 70px; margin: 0 0 8px; }
+.caixa.boa { border-color: var(--acento); }
+
+/* Chat fixo no pé do painel. A página ganha espaço embaixo para o fim do currículo não ficar atrás dele. */
+body.com-chat { padding-bottom: 72px; }
+body.com-chat-aberto { padding-bottom: 300px; }
+.chat-fixo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  background: var(--superficie);
+  border-top: 1px solid var(--borda);
+  box-shadow: 0 -6px 18px rgb(15 27 45 / 0.12);
+}
+.chat-fixo-topo {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border: 0;
+  background: none;
+  color: var(--texto);
+  font: inherit;
+  cursor: pointer;
+}
+#chat-corpo { padding: 0 14px 10px; }
+.chat-rolagem { max-height: 28vh; overflow-y: auto; }
+.chat-rolagem > p { margin: 0 0 8px; }
+.chat-fixo .conversa { margin-top: 0; }
+.chat-fixo textarea { min-height: 52px; margin: 0 0 8px; }
+.chat-fixo .limite { margin: 6px 0 0; }
+.conversa-nota { align-self: center; font-size: 12px; color: var(--texto-fraco); }
+
+/* Edição manual. */
+.editar-topo { display: flex; justify-content: flex-end; margin-bottom: -4px; }
+.editor h4 { margin: 14px 0 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+.editor fieldset { border: 1px solid var(--borda); border-radius: 8px; padding: 8px 10px; margin: 0 0 8px; }
+.editor label { font-weight: 500; font-size: 13px; }
+.link.remover { color: var(--erro); padding: 0; font-size: 12px; }

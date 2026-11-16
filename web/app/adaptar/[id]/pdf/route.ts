@@ -19,7 +19,8 @@ export async function GET(_requisicao: Request, contexto: { params: Promise<{ id
 
   const curriculo = await lerCurriculo(usuario.id);
   const adaptacao = curriculo ? await lerAdaptacao(usuario.id, jobId, curriculo) : null;
-  if (!adaptacao) return NextResponse.redirect(new URL(`/adaptar/${jobId}`, base));
+  // Sem confirmar a versão atual, volta para a revisão: o PDF só sai depois de lido.
+  if (!adaptacao || !adaptacao.confirmada) return NextResponse.redirect(new URL(`/adaptar/${jobId}#baixar`, base));
 
   const supabase = await clienteDoServidor();
   const { data: vaga } = await supabase.from('jobs').select('cargo').eq('id', jobId).maybeSingle();

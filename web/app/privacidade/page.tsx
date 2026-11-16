@@ -47,7 +47,8 @@ export default function Privacidade() {
         </li>
         <li>
           <strong>Currículo salvo.</strong> Só se você tiver conta com e-mail e marcar a caixa de consentimento.
-          Guardamos o texto do currículo, quando você o salvou e as versões adaptadas que você gerou.
+          Guardamos o texto do currículo, quando você o salvou, as versões adaptadas que você gerou e os
+          pedidos de ajuste que você escreveu à IA na revisão, com as respostas dela.
         </li>
         <li>
           <strong>Medidor e reescrita para LinkedIn e Gupy.</strong> O currículo enviado a essas ferramentas é
@@ -115,7 +116,7 @@ export default function Privacidade() {
       <h2>Seus direitos (LGPD)</h2>
       <p>
         Você pode ver, corrigir e apagar o seu currículo quando quiser, em <a href="/curriculo">Seu currículo</a>
-        . O botão de apagar remove o currículo e o conteúdo de todas as versões adaptadas. Para acessar ou
+        . O botão de apagar remove o currículo, o conteúdo de todas as versões adaptadas e os pedidos de ajuste. Para acessar ou
         apagar qualquer outro dado, ou a conta inteira,{' '}
         {contato ? (
           <>

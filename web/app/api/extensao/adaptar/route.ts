@@ -5,20 +5,10 @@ import {
   lerAdaptacaoColada,
   lerCurriculo,
   LIMITE_ADAPTACOES,
-  type Adaptacao,
+  MENSAGEM_DA_FALHA,
 } from '../../../../lib/adaptacao.ts';
-import { conferirOrigem, json, preflight, recusada } from '../../../../lib/extensao.ts';
+import { conferirOrigem, corpoDaAdaptacao, json, preflight, recusada } from '../../../../lib/extensao.ts';
 import { usuarioAtual } from '../../../../lib/supabase.ts';
-
-const MENSAGEM_DA_FALHA = {
-  indisponivel: 'A adaptação está desligada neste ambiente.',
-  cota: 'O serviço de IA está no limite agora. Tente de novo em alguns minutos.',
-  resposta: 'A IA devolveu uma resposta que não consegui usar. Tente de novo.',
-} as const;
-
-function corpo(a: Adaptacao & { cargo: string }) {
-  return { id: a.id, cargo: a.cargo, resultado: a.resultado, alertas: a.alertas, corrigidos: a.corrigidos };
-}
 
 /**
  * Adapta o CV salvo a uma vaga que a pessoa COLOU na extensão.
@@ -49,7 +39,7 @@ export async function POST(requisicao: Request) {
 
   // Mesma vaga colada de novo (duplo clique, ou voltou depois): não gasta cota.
   const existente = await lerAdaptacaoColada(usuario.id, curriculo, { vagaHash: lida.hash });
-  if (existente) return json(corpo(existente), h);
+  if (existente) return json(await corpoDaAdaptacao(usuario.id, existente), h);
 
   if ((await adaptacoesHoje(usuario.id)) >= LIMITE_ADAPTACOES) {
     return json({ erro: `Você já adaptou ${LIMITE_ADAPTACOES} currículos hoje. O contador zera à meia-noite.` }, h, 429);
@@ -65,7 +55,7 @@ export async function POST(requisicao: Request) {
 
   const feita = await lerAdaptacaoColada(usuario.id, curriculo, r.id ? { id: r.id } : { vagaHash: lida.hash });
   if (!feita) return json({ erro: 'Adaptei, mas não consegui ler o resultado. Tente de novo.' }, h, 500);
-  return json(corpo(feita), h);
+  return json(await corpoDaAdaptacao(usuario.id, feita), h);
 }
 
 export const OPTIONS = preflight;

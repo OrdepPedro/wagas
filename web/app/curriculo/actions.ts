@@ -4,14 +4,21 @@ import type { Route } from 'next';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { problemaNoCurriculo, vagaAdaptavel } from '../../../src/curriculo/adaptar.ts';
+import { problemaNoPedido } from '../../../src/curriculo/corrigir.ts';
 import {
   adaptacoesHoje,
   adaptar,
   apagarCurriculo,
+  confirmar,
+  corrigir,
+  correcoesHoje,
   lerAdaptacao,
   lerCurriculo,
   LIMITE_ADAPTACOES,
+  LIMITE_CORRECOES,
+  MENSAGEM_DA_FALHA,
   salvarCurriculo,
+  salvarEdicao,
   textoDoArquivo,
 } from '../../lib/adaptacao.ts';
 import { clienteDoServidor, usuarioAtual } from '../../lib/supabase.ts';
@@ -75,12 +82,6 @@ export async function apagarCurriculoAcao(): Promise<void> {
   redirect('/curriculo?apagado=1' as Route);
 }
 
-const MENSAGEM_DA_FALHA = {
-  indisponivel: 'A adaptação está desligada neste ambiente.',
-  cota: 'O serviço de IA está no limite agora. Tente de novo em alguns minutos.',
-  resposta: 'A IA devolveu uma resposta que não consegui usar. Tente de novo.',
-} as const;
-
 export async function adaptarAcao(
   _anterior: EstadoDoCurriculo,
   form: FormData,
@@ -113,4 +114,91 @@ export async function adaptarAcao(
   if (!resultado.ok) return { erro: MENSAGEM_DA_FALHA[resultado.falha] };
 
   redirect(`/adaptar/${jobId}` as Route);
+}
+
+export interface EstadoDoAjuste {
+  erro?: string;
+  /** Devolvido no erro para a caixa não perder o que a pessoa escreveu. */
+  pedido?: string;
+  /** Muda a cada envio que deu certo: a tela usa como `key` para limpar a caixa. */
+  enviado?: number;
+}
+
+/** Um pedido no chat de revisão da adaptação de uma vaga do feed. */
+export async function corrigirAcao(_anterior: EstadoDoAjuste, form: FormData): Promise<EstadoDoAjuste> {
+  const usuario = await usuarioAtual();
+  if (!usuario || usuario.visitante) return { erro: 'Sua sessão expirou. Entre de novo.' };
+
+  const jobId = Number(form.get('jobId'));
+  if (!Number.isInteger(jobId) || jobId < 1) return { erro: 'Vaga inválida.' };
+  const pedido = String(form.get('pedido') ?? '');
+  const problema = problemaNoPedido(pedido);
+  if (problema) return { erro: problema, pedido };
+
+  const curriculo = await lerCurriculo(usuario.id);
+  if (!curriculo) redirect(`/curriculo?vaga=${jobId}` as Route);
+  const adaptacao = await lerAdaptacao(usuario.id, jobId, curriculo);
+  if (!adaptacao) redirect(`/adaptar/${jobId}` as Route);
+
+  if ((await correcoesHoje(usuario.id)) >= LIMITE_CORRECOES) {
+    return { erro: `Você já fez ${LIMITE_CORRECOES} ajustes hoje. O contador zera à meia-noite.`, pedido };
+  }
+
+  const supabase = await clienteDoServidor();
+  const { data: vaga } = await supabase.from('jobs').select('cargo, empresa').eq('id', jobId).maybeSingle();
+
+  const r = await corrigir(usuario.id, adaptacao, curriculo, vaga ?? { cargo: '', empresa: '' }, pedido);
+  if (!r.ok) return { erro: MENSAGEM_DA_FALHA[r.falha], pedido };
+
+  revalidatePath(`/adaptar/${jobId}`);
+  return { enviado: Date.now() };
+}
+
+/** "Revisei": libera o PDF da versão que estava na tela. */
+export async function confirmarAcao(form: FormData): Promise<void> {
+  const usuario = await usuarioAtual();
+  if (!usuario || usuario.visitante) redirect('/');
+
+  const jobId = Number(form.get('jobId'));
+  const versao = Number(form.get('versao'));
+  if (!Number.isInteger(jobId) || jobId < 1 || !Number.isInteger(versao) || versao < 0) redirect('/vagas');
+
+  const curriculo = await lerCurriculo(usuario.id);
+  const adaptacao = curriculo ? await lerAdaptacao(usuario.id, jobId, curriculo) : null;
+  if (adaptacao) await confirmar(usuario.id, adaptacao.id, versao);
+
+  revalidatePath(`/adaptar/${jobId}`);
+  redirect(`/adaptar/${jobId}` as Route);
+}
+
+export interface EstadoDaEdicao {
+  erro?: string;
+  /** Muda a cada edição salva: a tela usa para sair do modo de edição. */
+  salvo?: number;
+}
+
+/** O currículo editado à mão vira a versão nova da adaptação (sem IA, sem teto). */
+export async function salvarEdicaoAcao(_anterior: EstadoDaEdicao, form: FormData): Promise<EstadoDaEdicao> {
+  const usuario = await usuarioAtual();
+  if (!usuario || usuario.visitante) return { erro: 'Sua sessão expirou. Entre de novo.' };
+
+  const jobId = Number(form.get('jobId'));
+  if (!Number.isInteger(jobId) || jobId < 1) return { erro: 'Vaga inválida.' };
+  let editado: unknown;
+  try {
+    editado = JSON.parse(String(form.get('curriculo') ?? ''));
+  } catch {
+    return { erro: 'Edição inválida.' };
+  }
+
+  const curriculo = await lerCurriculo(usuario.id);
+  if (!curriculo) redirect(`/curriculo?vaga=${jobId}` as Route);
+  const adaptacao = await lerAdaptacao(usuario.id, jobId, curriculo);
+  if (!adaptacao) redirect(`/adaptar/${jobId}` as Route);
+
+  const r = await salvarEdicao(usuario.id, adaptacao, editado);
+  if ('erro' in r) return { erro: r.erro };
+
+  revalidatePath(`/adaptar/${jobId}`);
+  return { salvo: Date.now() };
 }

@@ -2,14 +2,20 @@
 
 import { useActionState, useState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { adaptarAcao, salvarCurriculoAcao, type EstadoDoCurriculo } from './actions.ts';
+import {
+  adaptarAcao,
+  corrigirAcao,
+  salvarCurriculoAcao,
+  type EstadoDoAjuste,
+  type EstadoDoCurriculo,
+} from './actions.ts';
 
 const VAZIO: EstadoDoCurriculo = {};
 
-function Enviar({ children, pendente }: { children: string; pendente: string }) {
+function Enviar({ children, pendente, desligado }: { children: string; pendente: string; desligado?: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <button type="submit" disabled={pending}>
+    <button type="submit" disabled={pending || desligado}>
       {pending ? pendente : children}
     </button>
   );
@@ -95,6 +101,42 @@ export function BotaoDeAdaptar({ jobId, rotulo }: { jobId: number; rotulo: strin
       {estado.erro ? <p className="erro">{estado.erro}</p> : null}
       {/* Leva de 10 a 30 segundos; dizer isso evita o clique duplo. */}
       <Enviar pendente="Adaptando… leva uns 20 segundos">{rotulo}</Enviar>
+    </form>
+  );
+}
+
+/**
+ * A caixa do chat de revisão. A conversa em si é renderizada pelo servidor
+ * (vem do banco); aqui só o envio, que espera a IA e recarrega a página.
+ */
+export function PedidoDeAjuste({ jobId, desligado }: { jobId: number; desligado: string | null }) {
+  const [estado, acao] = useActionState<EstadoDoAjuste, FormData>(corrigirAcao, {});
+  return (
+    <form action={acao} className="ajuste-form" key={estado.enviado ?? 0}>
+      <input type="hidden" name="jobId" value={jobId} />
+      <label htmlFor="pedido" className="sr-only">
+        O que você quer ajustar
+      </label>
+      <textarea
+        id="pedido"
+        name="pedido"
+        rows={3}
+        maxLength={1000}
+        required
+        disabled={Boolean(desligado)}
+        defaultValue={estado.pedido ?? ''}
+        placeholder="Ex.: tire a experiência da padaria; o resumo ficou exagerado; minha pós é de 2022."
+        onKeyDown={(e) => {
+          // Enter envia, Shift+Enter quebra linha — o atalho que todo chat tem.
+          if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+            e.preventDefault();
+            e.currentTarget.form?.requestSubmit();
+          }
+        }}
+      />
+      {estado.erro ? <p className="erro">{estado.erro}</p> : null}
+      {desligado ? <p className="fraco">{desligado}</p> : null}
+      <Enviar pendente="A IA está ajustando… uns 15 segundos" desligado={Boolean(desligado)}>Pedir ajuste</Enviar>
     </form>
   );
 }
