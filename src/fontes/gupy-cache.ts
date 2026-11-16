@@ -24,7 +24,7 @@ import { SupabaseRest } from '../db/supabase.ts';
 import { canonicalizarUrl, hashUrl } from '../normalize/url.ts';
 import { normalizarCargo } from '../dedupe.ts';
 import { classesDeFamilia, senioridadeDoTitulo, tokensDeFamilia } from '../classificar/familia.ts';
-import { normalizarLocal, slugCidade } from '../normalize/local.ts';
+import { normalizarLocal, slugCidade, type LocalNormalizado } from '../normalize/local.ts';
 import { log } from '../logger.ts';
 import type { VagaDaGupy } from './gupy.ts';
 
@@ -36,8 +36,8 @@ export const CLASSIFICADOR = 'gupy-api/v1';
  * gravações divergentes produzem feed que filtra diferente por fonte.
  */
 export interface FonteDoCache {
-  fonte: 'ats_gupy' | 'portal_infojobs';
-  origemData: 'gupy_api' | 'metatag';
+  fonte: 'ats_gupy' | 'portal_infojobs' | 'ats_greenhouse';
+  origemData: 'gupy_api' | 'metatag' | 'greenhouse_api';
   classificador: string;
   /** Prefixo de `raw_results.combo_id`, para medir cada rota separada. */
   comboPrefixo: string;
@@ -60,6 +60,14 @@ export const INFOJOBS: FonteDoCache = {
   classificador: 'infojobs-jsonld/v1',
   comboPrefixo: 'infojobs',
   coleta: 'infojobs',
+};
+
+export const GREENHOUSE: FonteDoCache = {
+  fonte: 'ats_greenhouse',
+  origemData: 'greenhouse_api',
+  classificador: 'greenhouse-api/v1',
+  comboPrefixo: 'greenhouse',
+  coleta: 'greenhouse',
 };
 
 export interface ResultadoDaGravacao {
@@ -126,9 +134,28 @@ function linhaRaw(
   };
 }
 
-function linhaJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache): Record<string, unknown> {
+/**
+ * Uma linha de `jobs` por local. Gupy e InfoJobs têm um local só, e a linha sai
+ * como sempre saiu. O Greenhouse anuncia a mesma vaga em várias cidades
+ * ("BH; Curitiba; Recife; SP"), e cada cidade precisa da sua linha: o filtro de
+ * cidade do feed é igualdade em `cidade_slug`.
+ */
+function linhasJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache): Record<string, unknown>[] {
   const { vaga } = linha;
-  const local = normalizarLocal(vaga.localizacao);
+  if (!vaga.locais || vaga.locais.length === 0) return [linhaJob(linha, rawId, origem, normalizarLocal(vaga.localizacao), '')];
+  const varias = vaga.locais.length > 1;
+  return vaga.locais.map((l) => linhaJob(linha, rawId, origem, l, varias ? `@${l.cidadeSlug ?? ''}` : '', l.localizacao));
+}
+
+function linhaJob(
+  linha: LinhaPronta,
+  rawId: number | null,
+  origem: FonteDoCache,
+  local: LocalNormalizado,
+  sufixoDedup: string,
+  localizacao: string | null = linha.vaga.localizacao,
+): Record<string, unknown> {
+  const { vaga } = linha;
 
   return {
     raw_result_id: rawId,
@@ -137,7 +164,7 @@ function linhaJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache
     // "Vendedor(a) de Loja" em BH e em SP virava uma linha só, e quem buscava
     // em BH perdia a vaga. Vaga repetida ENTRE fontes é problema da exibição
     // (trava 5, `src/feed/colapsar.ts`), não da gravação.
-    dedup_key: `${origem.fonte}:${vaga.fonteId}`,
+    dedup_key: `${origem.fonte}:${vaga.fonteId}${sufixoDedup}`,
     dedup_por_empresa: false,
     empresa: vaga.empresa,
     cargo: vaga.cargo,
@@ -146,7 +173,7 @@ function linhaJob(linha: LinhaPronta, rawId: number | null, origem: FonteDoCache
     familia_classes: classesDeFamilia(vaga.cargo),
     senioridade: senioridadeDoTitulo(vaga.cargo),
     modelo: vaga.modelo,
-    localizacao: vaga.localizacao,
+    localizacao,
     cidade_slug: local.cidadeSlug,
     uf: local.uf,
     pais_br: local.paisBr,
@@ -213,7 +240,7 @@ export async function gravarDaGupy(
 
   const gravadasJobs = await db.insert<{ id: number }>(
     'jobs',
-    [...novas, ...orfas].map((n) => linhaJob(n, idPorHash.get(n.urlHash) ?? null, origem)),
+    [...novas, ...orfas].flatMap((n) => linhasJob(n, idPorHash.get(n.urlHash) ?? null, origem)),
     { ignorarDuplicados: true, conflito: 'dedup_key', retornar: true },
   );
 

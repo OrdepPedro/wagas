@@ -368,6 +368,7 @@ const NOME_DA_FONTE: Record<CartaoDaVitrine['fonte'], string> = {
   linkedin_post: 'post no LinkedIn',
   ats_gupy: 'Gupy',
   ats_inhire: 'InHire',
+  ats_greenhouse: 'Greenhouse',
   portal_infojobs: 'InfoJobs',
 };
 

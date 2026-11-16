@@ -41,7 +41,7 @@ export interface Vaga {
   uf: string | null;
   pais_br: boolean | null;
   url: string;
-  fonte: 'linkedin_job' | 'linkedin_post' | 'ats_gupy' | 'ats_inhire' | 'portal_infojobs';
+  fonte: 'linkedin_job' | 'linkedin_post' | 'ats_gupy' | 'ats_inhire' | 'ats_greenhouse' | 'portal_infojobs';
   descricao: string | null;
   data_publicacao: string | null;
   data_publicacao_origem: string;
