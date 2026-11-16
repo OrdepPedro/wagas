@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { CABECALHO_REVISAO, exigeConfirmacao } from '../../../../../../../src/curriculo/vaga-colada.ts';
 import { lerAdaptacaoColada, lerCurriculo } from '../../../../../../lib/adaptacao.ts';
 import { conferirOrigem, json, preflight, recusada } from '../../../../../../lib/extensao.ts';
 import { gerarPdf, nomeDoArquivo } from '../../../../../../lib/pdf-curriculo.ts';
@@ -18,6 +19,8 @@ export async function GET(requisicao: Request, contexto: { params: Promise<{ id:
   const curriculo = await lerCurriculo(usuario.id);
   const adaptacao = curriculo ? await lerAdaptacaoColada(usuario.id, curriculo, { id }) : null;
   if (!adaptacao) return json({ erro: 'Adaptação não encontrada para o currículo salvo.' }, h, 404);
+  // A 0.1.0 não manda o cabeçalho e não sabe confirmar: segue baixando como antes.
+  if (exigeConfirmacao(requisicao.headers.get(CABECALHO_REVISAO)) && !adaptacao.confirmada) return json({ erro: 'Confirme a versão revisada antes de baixar.' }, h, 409);
 
   const pdf = await gerarPdf(adaptacao.resultado);
   return new NextResponse(Buffer.from(pdf), {

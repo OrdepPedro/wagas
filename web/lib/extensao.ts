@@ -7,7 +7,8 @@
  * extensão (fixada por `EXTENSAO_ID` em produção) e o próprio site.
  */
 import { NextResponse } from 'next/server';
-import { CABECALHO_EXTENSAO, chamadaPermitida, origemPermitida } from '../../src/curriculo/vaga-colada.ts';
+import { correcoesHoje, LIMITE_CORRECOES, type Adaptacao } from './adaptacao.ts';
+import { CABECALHO_EXTENSAO, CABECALHO_REVISAO, chamadaPermitida, origemPermitida } from '../../src/curriculo/vaga-colada.ts';
 
 const SITE = (): string => process.env['NEXT_PUBLIC_SITE_URL'] ?? 'http://localhost:3000';
 const ID = (): string | undefined => process.env['EXTENSAO_ID']?.trim() || undefined;
@@ -19,7 +20,7 @@ function cabecalhos(origem: string | null): Record<string, string> {
           'access-control-allow-origin': origem,
           'access-control-allow-credentials': 'true',
           'access-control-allow-methods': 'GET, POST, OPTIONS',
-          'access-control-allow-headers': `content-type, ${CABECALHO_EXTENSAO}`,
+          'access-control-allow-headers': `content-type, ${CABECALHO_EXTENSAO}, ${CABECALHO_REVISAO}`,
         }
       : {}),
     vary: 'origin',
@@ -55,3 +56,23 @@ export function preflight(requisicao: Request): NextResponse {
 }
 
 export const URL_DO_SITE = SITE;
+
+/**
+ * O que a extensão recebe de uma adaptação: a versão atual, a conversa e se
+ * ela está confirmada — o painel monta a revisão com isto e só mostra o botão
+ * de baixar depois da confirmação.
+ */
+export async function corpoDaAdaptacao(userId: string, a: Adaptacao & { cargo: string }) {
+  return {
+    id: a.id,
+    cargo: a.cargo,
+    resultado: a.resultado,
+    alertas: a.alertas,
+    corrigidos: a.corrigidos,
+    conversa: a.conversa,
+    versao: a.versao,
+    confirmada: a.confirmada,
+    ajustesRestantes: Math.max(LIMITE_CORRECOES - (await correcoesHoje(userId)), 0),
+    limiteAjustes: LIMITE_CORRECOES,
+  };
+}

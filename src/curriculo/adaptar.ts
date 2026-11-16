@@ -177,7 +177,11 @@ export function interpretarResposta(bruto: string): CurriculoAdaptado {
   if (!dado || typeof dado !== 'object' || Array.isArray(dado)) {
     throw new RespostaInvalida('resposta não é um objeto');
   }
+  return interpretarObjeto(dado);
+}
 
+/** O mesmo que `interpretarResposta`, sobre o objeto já lido — a correção pelo chat devolve o CV dentro de outro JSON. */
+export function interpretarObjeto(dado: Record<string, unknown>): CurriculoAdaptado {
   const experiencias: Experiencia[] = objetos(dado['experiencias'])
     .map((e) => ({
       cargo: texto(e['cargo']),

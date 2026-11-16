@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { chamadaPermitida, lerVagaColada, origemPermitida } from '../src/curriculo/vaga-colada.ts';
+import { chamadaPermitida, exigeConfirmacao, lerVagaColada, origemPermitida } from '../src/curriculo/vaga-colada.ts';
 
 const DESCRICAO = 'Atividades: atendimento ao cliente, controle de estoque e emissão de notas. '.repeat(6);
 
@@ -86,5 +86,13 @@ describe('origemPermitida', () => {
     assert.equal(origemPermitida('https://malicioso.example', SITE), false);
     assert.equal(origemPermitida(null, SITE), false);
     assert.equal(origemPermitida('chrome-extension://nao-e-id', SITE), false);
+  });
+});
+
+describe('exigeConfirmacao', () => {
+  it('só o painel com revisão (que manda o cabeçalho) precisa confirmar; a 0.1.0 baixa como antes', () => {
+    assert.equal(exigeConfirmacao('1'), true);
+    assert.equal(exigeConfirmacao(null), false);
+    assert.equal(exigeConfirmacao(''), false);
   });
 });

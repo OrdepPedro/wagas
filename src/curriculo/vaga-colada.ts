@@ -66,6 +66,22 @@ export function lerVagaColada(entrada: unknown): VagaColada | { erro: string } {
 export const CABECALHO_EXTENSAO = 'x-wagas-extensao';
 
 /**
+ * Mandado pelo painel que tem a etapa de revisão (extensão 0.2.0+).
+ *
+ * A 0.1.0 publicada baixa o PDF logo depois de adaptar e não tem botão de
+ * confirmar. Se a rota de PDF exigisse confirmação de todo mundo, o download
+ * dela quebraria entre o deploy do site e a atualização pela loja — e o Chrome
+ * atualiza cada instalação num momento diferente. Então a confirmação só é
+ * exigida de quem manda este cabeçalho. Quando a 0.1.0 sumir, a exceção sai.
+ */
+export const CABECALHO_REVISAO = 'x-wagas-revisao';
+
+/** O PDF da extensão exige a versão confirmada? Só para o painel que sabe confirmar. */
+export function exigeConfirmacao(cabecalhoRevisao: string | null): boolean {
+  return cabecalhoRevisao !== null && cabecalhoRevisao.trim() !== '';
+}
+
+/**
  * Quem pode chamar a API da extensão com o cookie da pessoa.
  *
  * O cookie de sessão é `SameSite=Lax`, então site de terceiro já não o manda

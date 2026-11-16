@@ -1,86 +1,76 @@
 import { redirect } from 'next/navigation';
-import { vagaAdaptavel, type CurriculoAdaptado } from '../../../../src/curriculo/adaptar.ts';
+import { vagaAdaptavel } from '../../../../src/curriculo/adaptar.ts';
 import {
   adaptacaoDisponivel,
   adaptacoesHoje,
+  correcoesHoje,
   lerAdaptacao,
   lerCurriculo,
   LIMITE_ADAPTACOES,
+  LIMITE_CORRECOES,
   type Adaptacao,
+  type Mensagem,
 } from '../../../lib/adaptacao.ts';
 import { clienteDoServidor, usuarioAtual } from '../../../lib/supabase.ts';
 import { ExtensaoChrome } from '../../extensao-chrome.tsx';
 import { FormularioDeEntrada } from '../../formularios.tsx';
-import { BotaoDeAdaptar } from '../../curriculo/formularios.tsx';
+import { confirmarAcao } from '../../curriculo/actions.ts';
+import { BotaoDeAdaptar, PedidoDeAjuste } from '../../curriculo/formularios.tsx';
+import { ChatFlutuante, CurriculoEditavel } from './revisao.tsx';
 
 export const dynamic = 'force-dynamic';
 
-function Previa({ cv }: { cv: CurriculoAdaptado }) {
+function Conversa({ conversa }: { conversa: Mensagem[] }) {
+  if (conversa.length === 0) {
+    return (
+      <p className="fraco">
+        Diga o que mudar, um pedido de cada vez. O que você afirmar sobre você vale como fato; o que a IA não puder
+        confirmar, ela não escreve.
+      </p>
+    );
+  }
   return (
-    <article className="cv">
-      <h2>{cv.nome}</h2>
-      {cv.titulo ? <p className="cv-titulo">{cv.titulo}</p> : null}
-      {cv.contato.length > 0 ? <p className="fraco">{cv.contato.join(' · ')}</p> : null}
-      {cv.resumo ? (
-        <>
-          <h3>Resumo</h3>
-          <p>{cv.resumo}</p>
-        </>
-      ) : null}
-      {cv.experiencias.length > 0 ? <h3>Experiência</h3> : null}
-      {cv.experiencias.map((e, i) => (
-        <div key={i} className="cv-bloco">
-          <strong>{[e.cargo, e.empresa].filter(Boolean).join(' — ')}</strong>
-          {e.periodo ? <span className="fraco"> · {e.periodo}</span> : null}
-          <ul>
-            {e.itens.map((item, j) => (
-              <li key={j}>{item}</li>
-            ))}
-          </ul>
-        </div>
-      ))}
-      {cv.formacao.length > 0 ? <h3>Formação</h3> : null}
-      {cv.formacao.map((f, i) => (
-        <p key={i}>
-          <strong>{[f.curso, f.instituicao].filter(Boolean).join(' — ')}</strong>
-          {f.periodo ? <span className="fraco"> · {f.periodo}</span> : null}
-        </p>
-      ))}
-      {cv.habilidades.length > 0 ? (
-        <>
-          <h3>Habilidades</h3>
-          <p>{cv.habilidades.join(' · ')}</p>
-        </>
-      ) : null}
-      {cv.certificacoes.length > 0 ? (
-        <>
-          <h3>Certificações</h3>
-          <p>{cv.certificacoes.join(' · ')}</p>
-        </>
-      ) : null}
-      {cv.idiomas.length > 0 ? (
-        <>
-          <h3>Idiomas</h3>
-          <p>{cv.idiomas.join(' · ')}</p>
-        </>
-      ) : null}
-    </article>
+    <ol className="conversa">
+      {conversa.map((m, i) =>
+        m.manual ? (
+          <li key={i} className="conversa-nota">
+            Você editou o currículo à mão.
+          </li>
+        ) : (
+          <li key={i}>
+            <p className="conversa-pedido">{m.pedido}</p>
+            <p className="conversa-resposta">
+              {m.resposta}
+              {m.mudou ? null : <span className="fraco"> (o currículo não mudou)</span>}
+            </p>
+          </li>
+        ),
+      )}
+    </ol>
   );
 }
 
-function Resultado({ jobId, adaptacao }: { jobId: number; adaptacao: Adaptacao }) {
+function Resultado({
+  jobId,
+  adaptacao,
+  ajustesRestantes,
+}: {
+  jobId: number;
+  adaptacao: Adaptacao;
+  ajustesRestantes: number;
+}) {
   const { resultado: cv, alertas } = adaptacao;
+  const desligado = !adaptacaoDisponivel()
+    ? 'Os ajustes pela IA estão desligados neste ambiente.'
+    : ajustesRestantes === 0
+      ? `Você já fez ${LIMITE_CORRECOES} ajustes hoje. O contador zera à meia-noite.`
+      : null;
   return (
     <>
-      <div className="acoes-cv">
-        <a className="botao" href={`/adaptar/${jobId}/pdf`}>
-          Baixar PDF
-        </a>
-        {/* Pelo /ir para o clique contar: CV gerado → foi para a vaga é a métrica do diferencial. */}
-        <a className="link-feed" href={`/ir/${jobId}`} target="_blank" rel="noopener noreferrer">
-          Ver vaga e se candidatar
-        </a>
-      </div>
+      <p className="fraco">
+        Leia o currículo adaptado com calma. Se algo estiver errado, exagerado ou faltando, edite à mão ou peça o
+        ajuste à IA no chat do canto da tela. Quando estiver bom, confirme no fim da página para baixar o PDF.
+      </p>
 
       {adaptacao.corrigidos > 0 ? (
         <p className="fraco">
@@ -93,7 +83,7 @@ function Resultado({ jobId, adaptacao }: { jobId: number; adaptacao: Adaptacao }
         <div className="caixa aviso" style={{ marginBottom: 20 }}>
           <p>
             <strong>Confira antes de enviar.</strong> Estes trechos citam algo que não encontrei no seu
-            currículo original:
+            currículo original nem no que você disse no chat:
           </p>
           <ul>
             {alertas.map((a, i) => (
@@ -106,7 +96,7 @@ function Resultado({ jobId, adaptacao }: { jobId: number; adaptacao: Adaptacao }
             ))}
           </ul>
           <p className="fraco" style={{ margin: 0 }}>
-            Se não for verdade, não envie: corrija o currículo salvo e adapte de novo.
+            Se não for verdade, peça à IA para tirar, ou corrija o currículo salvo.
           </p>
         </div>
       ) : null}
@@ -126,8 +116,8 @@ function Resultado({ jobId, adaptacao }: { jobId: number; adaptacao: Adaptacao }
         <div className="caixa" style={{ marginBottom: 16 }}>
           <h3 style={{ marginTop: 0 }}>O que a vaga pede e o seu currículo não mostra</h3>
           <p className="fraco">
-            Ficou fora do currículo de propósito — não inventamos experiência. Se você tem, acrescente ao
-            currículo salvo; se não tem, vale preparar a resposta para a entrevista.
+            Ficou fora do currículo de propósito — não inventamos experiência. Se você tem, diga no chat
+            abaixo (ou acrescente ao currículo salvo); se não tem, vale preparar a resposta para a entrevista.
           </p>
           <ul>
             {cv.lacunas.map((l, i) => (
@@ -137,9 +127,50 @@ function Resultado({ jobId, adaptacao }: { jobId: number; adaptacao: Adaptacao }
         </div>
       ) : null}
 
-      <ExtensaoChrome />
+      <CurriculoEditavel jobId={jobId} cv={cv} />
 
-      <Previa cv={cv} />
+      <ChatFlutuante
+        mensagens={adaptacao.conversa.length}
+        conversa={<Conversa conversa={adaptacao.conversa} />}
+        rodape={
+          <>
+            <PedidoDeAjuste jobId={jobId} desligado={desligado} />
+            <p className="limite">
+              {ajustesRestantes} de {LIMITE_CORRECOES} ajustes restantes hoje.
+            </p>
+          </>
+        }
+      />
+
+      <section className={`caixa confirmacao${adaptacao.confirmada ? ' boa' : ''}`} id="baixar">
+        {adaptacao.confirmada ? (
+          <>
+            <p>
+              <strong>Versão confirmada.</strong> Se pedir outro ajuste, você confirma de novo antes de baixar.
+            </p>
+            <div className="acoes-cv" style={{ marginBottom: 0 }}>
+              <a className="botao" href={`/adaptar/${jobId}/pdf`}>
+                Baixar PDF
+              </a>
+              {/* Pelo /ir para o clique contar: CV gerado → foi para a vaga é a métrica do diferencial. */}
+              <a className="link-feed" href={`/ir/${jobId}`} target="_blank" rel="noopener noreferrer">
+                Ver vaga e se candidatar
+              </a>
+            </div>
+          </>
+        ) : (
+          <form action={confirmarAcao}>
+            <input type="hidden" name="jobId" value={jobId} />
+            <input type="hidden" name="versao" value={adaptacao.versao} />
+            <p>
+              <strong>Leu tudo e está de acordo?</strong> O PDF sai exatamente com o que está acima.
+            </p>
+            <button type="submit">Revisei — gerar o PDF</button>
+          </form>
+        )}
+      </section>
+
+      <ExtensaoChrome />
     </>
   );
 }
@@ -222,7 +253,11 @@ export default async function PaginaDaAdaptacao({ params }: { params: Promise<{ 
     return (
       <>
         {cabecalho}
-        <Resultado jobId={jobId} adaptacao={adaptacao} />
+        <Resultado
+          jobId={jobId}
+          adaptacao={adaptacao}
+          ajustesRestantes={Math.max(LIMITE_CORRECOES - (await correcoesHoje(usuario.id)), 0)}
+        />
       </>
     );
   }

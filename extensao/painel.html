@@ -69,15 +69,12 @@
 
   <template id="t-resultado">
     <section>
-      <div class="acoes">
-        <button class="botao" id="baixar">Baixar PDF</button>
-        <button class="link" id="outra">Adaptar outra vaga</button>
-      </div>
+      <p class="fraco">Leia o currículo adaptado com calma. Se algo estiver errado, edite à mão ou peça o ajuste à IA no chat de baixo. Quando estiver bom, confirme para baixar o PDF.</p>
       <p class="fraco" id="corrigidos" hidden></p>
       <div class="caixa aviso" id="alertas" hidden>
-        <p><strong>Confira antes de enviar.</strong> Estes trechos citam algo que não encontrei no seu currículo original:</p>
+        <p><strong>Confira antes de enviar.</strong> Estes trechos citam algo que não encontrei no seu currículo original nem no que você disse no chat:</p>
         <ul></ul>
-        <p class="fraco">Se não for verdade, não envie: corrija o currículo salvo e adapte de novo.</p>
+        <p class="fraco">Se não for verdade, peça à IA para tirar, ou corrija o currículo salvo.</p>
       </div>
       <div class="caixa" id="mudancas" hidden>
         <h3>O que mudou</h3>
@@ -85,14 +82,43 @@
       </div>
       <div class="caixa" id="lacunas" hidden>
         <h3>O que a vaga pede e o seu currículo não mostra</h3>
-        <p class="fraco">Ficou de fora de propósito. Se você tem, acrescente ao currículo salvo; se não tem, prepare a resposta para a entrevista.</p>
+        <p class="fraco">Ficou de fora de propósito. Se você tem, diga no chat abaixo; se não tem, prepare a resposta para a entrevista.</p>
         <ul></ul>
       </div>
-      <div class="caixa" id="previa">
-        <h3>Título e resumo</h3>
-        <p><strong id="titulo"></strong></p>
-        <p id="resumo"></p>
+      <div class="editar-topo"><button class="link" id="editar">Editar à mão</button></div>
+      <article class="caixa cv" id="cv"></article>
+      <form class="caixa editor" id="editor" hidden></form>
+      <div class="caixa" id="confirmacao">
+        <div id="nao-confirmada">
+          <p><strong>Leu tudo e está de acordo?</strong> O PDF sai exatamente com o que está acima.</p>
+          <button class="botao" id="confirmar">Revisei — gerar o PDF</button>
+        </div>
+        <div id="ja-confirmada" hidden>
+          <p><strong>Versão confirmada.</strong> Se pedir outro ajuste, você confirma de novo.</p>
+          <button class="botao" id="baixar">Baixar PDF</button>
+        </div>
       </div>
+      <div class="acoes">
+        <button class="link" id="outra">Adaptar outra vaga</button>
+      </div>
+      <!-- Fixo no pé do painel: dá para pedir ajuste lendo qualquer parte do currículo. -->
+      <aside class="chat-fixo" id="ajustes">
+        <button class="chat-fixo-topo" id="alternar-chat" aria-expanded="true">
+          <strong>Ajustar com a IA</strong><span id="seta-chat" aria-hidden="true">▾</span>
+        </button>
+        <div id="chat-corpo">
+          <div class="chat-rolagem" id="chat-rolagem">
+            <p class="fraco pequeno" id="chat-dica">Um pedido de cada vez. O que você afirmar sobre você vale como fato; o que a IA não puder confirmar, ela não escreve.</p>
+            <ol class="conversa" id="conversa" hidden></ol>
+          </div>
+          <form id="form-ajuste">
+            <textarea name="pedido" rows="2" maxlength="1000" required aria-label="O que você quer ajustar" placeholder="Ex.: tire a experiência da padaria."></textarea>
+            <p class="erro" id="erro-ajuste" hidden></p>
+            <button class="botao" type="submit" id="enviar-ajuste">Pedir ajuste</button>
+            <p class="limite fraco" id="ajustes-restantes"></p>
+          </form>
+        </div>
+      </aside>
     </section>
   </template>
 
