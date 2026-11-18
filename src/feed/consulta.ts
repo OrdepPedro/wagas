@@ -121,6 +121,15 @@ export function consultaDeFeed(pedido: PedidoDeFeed): ConsultaDeFeed {
   return { query: partes.join('&'), cidadeSlug, dominio, classes, desde };
 }
 
+/**
+ * Tudo que está no local e na janela, de QUALQUER cargo. Serve só para contar
+ * (Mapa: "N vagas de outra área"), por isso não traz coluna nem linha.
+ */
+export function consultaDoLocal(pedido: PedidoDeFeed): string {
+  const { partes, local } = base(pedido);
+  return ['select=id', ...partes.slice(1), `and=(${local})`, 'limit=1'].join('&');
+}
+
 /** Janela, vaga aberta e composição de local: o que toda consulta do feed tem. */
 function base(pedido: PedidoDeFeed) {
   const cidadeSlug = slugCidade(pedido.cidade);

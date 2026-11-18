@@ -70,6 +70,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                   Minhas vagas
                 </a>
               ) : null}
+              {/* Só conta com e-mail: visitante não guarda candidatura (0023). */}
+              {entrou ? (
+                <a href="/mapa" className="link-feed">
+                  Mapa
+                </a>
+              ) : null}
               {entrou ? null : <BotaoEntrar limite={LIMITE_GRATUITO} />}
               <AlternarTema inicial={tema} />
             </nav>

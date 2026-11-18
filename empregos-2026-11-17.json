@@ -1,0 +1,1106 @@
+[
+  {
+    "cargo": "auxiliar administrativo",
+    "cidade": "sao-paulo",
+    "uf": "sp",
+    "totalAnunciado": "62.450",
+    "paginasLidas": 15,
+    "falhas": 0,
+    "cartoes": 294,
+    "semTitulo": 0,
+    "semData": 14,
+    "naJanela": 69,
+    "naFamilia": 66,
+    "naJanelaPorPagina": "9,0,8,12,1,0,0,8,6,3,7,3,12,0,0",
+    "confidencial": 6,
+    "comSalario": 26,
+    "acervoNaFamilia": 172,
+    "acervoPorFonte": {
+      "ats_gupy": 54,
+      "portal_infojobs": 117,
+      "ats_greenhouse": 1
+    },
+    "mesmaEmpresa": 9,
+    "mesmaVaga": 8,
+    "exemplosMesmaVaga": [
+      "Auxiliar Administrativo - Frete/fiscal — Pacaembu autopeças",
+      "Auxiliar Administrativo (faturamento) — HTB",
+      "Auxiliar Administrativo (central de Operações Administrativas) — HTB"
+    ],
+    "cortadosPelaFamilia": [
+      "Auxiliar de Escritório",
+      "Auxiliar de Escritório",
+      "Auxiliar de Escritório"
+    ],
+    "vagas": [
+      {
+        "id": "8814433",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Confidencial",
+        "dias": 5,
+        "salario": "R$151,91",
+        "pagina": 1
+      },
+      {
+        "id": "12020347",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Tekno Engenharia",
+        "dias": 5,
+        "salario": "R$ 2.302,00",
+        "pagina": 1
+      },
+      {
+        "id": "12019580",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "London valet park",
+        "dias": 5,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "12019908",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Confidencial",
+        "dias": 5,
+        "salario": "R$ 3.100,00",
+        "pagina": 1
+      },
+      {
+        "id": "12019423",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Ello Seleção de Pessoal Ltda",
+        "dias": 5,
+        "salario": "R$ 1.800,00",
+        "pagina": 1
+      },
+      {
+        "id": "12019326",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "SMA MOT",
+        "dias": 6,
+        "salario": "R$ 2.200,00",
+        "pagina": 1
+      },
+      {
+        "id": "12016286",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Conceito prime rh",
+        "dias": 6,
+        "salario": "R$2.083,33",
+        "pagina": 1
+      },
+      {
+        "id": "12014794",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Confidencial",
+        "dias": 7,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "12012173",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "SMA MOT",
+        "dias": 7,
+        "salario": "R$ 250,00",
+        "pagina": 1
+      },
+      {
+        "id": "12034284",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Rhf talentos",
+        "dias": 2,
+        "salario": "R$ 2.300,00",
+        "pagina": 3
+      },
+      {
+        "id": "12032638",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Grupo zelo",
+        "dias": 4,
+        "salario": "R$ 1.500,00",
+        "pagina": 3
+      },
+      {
+        "id": "12028879",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Confidencial",
+        "dias": 4,
+        "salario": null,
+        "pagina": 3
+      },
+      {
+        "id": "12026334",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "SMA MOT",
+        "dias": 6,
+        "salario": "R$ 2.200,00",
+        "pagina": 3
+      },
+      {
+        "id": "12020136",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Conceito prime rh",
+        "dias": 6,
+        "salario": null,
+        "pagina": 3
+      },
+      {
+        "id": "12019304",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Wasek Cast Comercio e Industria",
+        "dias": 6,
+        "salario": null,
+        "pagina": 3
+      },
+      {
+        "id": "12018300",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "Rhf talentos",
+        "dias": 6,
+        "salario": null,
+        "pagina": 3
+      },
+      {
+        "id": "12017747",
+        "titulo": "Auxiliar Administrativo",
+        "empresa": "SMA MOT",
+        "dias": 7,
+        "salario": "R$ 2.200,00",
+        "pagina": 3
+      },
+      {
+        "id": "11843993",
+        "titulo": "Auxiliar Administrativo(a). - 120903",
+        "empresa": "Manpower",
+        "dias": 1,
+        "salario": "R$ 1.853,00",
+        "pagina": 4
+      },
+      {
+        "id": "12033830",
+        "titulo": "Auxiliar Administrativo Obras - Zona Sul/sp",
+        "empresa": "Rhf talentos",
+        "dias": 2,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12032644",
+        "titulo": "Pessoa Auxiliar Administrativa Exclusiva Para Pessoas com Deficiência (pcd) - Sp - Sp",
+        "empresa": "Cury Construtora",
+        "dias": 3,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12030293",
+        "titulo": "Auxiliar Administrativo Junior",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12029163",
+        "titulo": "Auxiliar Administrativo de Obras",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12026564",
+        "titulo": "Auxiliar Administrativo - Frete/fiscal",
+        "empresa": "Pacaembu autopeças",
+        "dias": 4,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12025806",
+        "titulo": "Auxiliar Administrativo - Faciliteis Hospitalar",
+        "empresa": "Confidencial",
+        "dias": 4,
+        "salario": "R$151,91",
+        "pagina": 4
+      },
+      {
+        "id": "12025286",
+        "titulo": "Auxiliar Administrativo Finaceiro",
+        "empresa": "RM Saúde Domiciliar",
+        "dias": 5,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12024421",
+        "titulo": "Auxiliar Administrativo - Externo - Hospital Geral de Guaianases (santa Marcelina Saúde)",
+        "empresa": "Confidencial",
+        "dias": 5,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12021511",
+        "titulo": "Auxiliar Administrativo - Importação e Exportação",
+        "empresa": "Heach RH",
+        "dias": 6,
+        "salario": "R$ 2.600,00",
+        "pagina": 4
+      },
+      {
+        "id": "12019395",
+        "titulo": "Auxiliar Administrativo (faturamento)",
+        "empresa": "HTB",
+        "dias": 7,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12016254",
+        "titulo": "Auxiliar Administrativo (central de Operações Administrativas)",
+        "empresa": "HTB",
+        "dias": 7,
+        "salario": null,
+        "pagina": 4
+      },
+      {
+        "id": "12015775",
+        "titulo": "Auxiliar Administrativo (cobrança)",
+        "empresa": "Pacaembu autopeças",
+        "dias": 7,
+        "salario": "R$2.252,00",
+        "pagina": 5
+      },
+      {
+        "id": "11954251",
+        "titulo": "Auxiliar Administrativo Comercial",
+        "empresa": "Tga empregos",
+        "dias": 4,
+        "salario": null,
+        "pagina": 8
+      },
+      {
+        "id": "12029875",
+        "titulo": "Auxiliar Administrativo #1454",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": "R$ 1.700,00",
+        "pagina": 8
+      },
+      {
+        "id": "12029161",
+        "titulo": "Auxiliar Administrativo Operacional",
+        "empresa": "Tga empregos",
+        "dias": 4,
+        "salario": "R$ 2.159,29",
+        "pagina": 8
+      },
+      {
+        "id": "12027759",
+        "titulo": "Auxiliar Administrativo de Logística",
+        "empresa": "Sn labbore de agência de rh",
+        "dias": 4,
+        "salario": "R$2.300,00",
+        "pagina": 8
+      },
+      {
+        "id": "12025634",
+        "titulo": "Auxiliar Administrativo Logistica",
+        "empresa": "Sn labbore de agência de rh",
+        "dias": 6,
+        "salario": "R$2.300,00",
+        "pagina": 8
+      },
+      {
+        "id": "12020778",
+        "titulo": "Auxiliar Administrativo - Guarulhos",
+        "empresa": "Dl green segurança e vigilância",
+        "dias": 6,
+        "salario": null,
+        "pagina": 8
+      },
+      {
+        "id": "12020399",
+        "titulo": "Auxiliar Administrativo 12x36 - Taboão da Serra",
+        "empresa": "Pro security- santo andrè (sp)",
+        "dias": 7,
+        "salario": null,
+        "pagina": 8
+      },
+      {
+        "id": "12017033",
+        "titulo": "Auxiliar Administrativo 12x36 Taboão da Serra",
+        "empresa": "Pro security",
+        "dias": 7,
+        "salario": null,
+        "pagina": 8
+      },
+      {
+        "id": "11868900",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Fibra RH",
+        "dias": 5,
+        "salario": "R$ 2.080,00",
+        "pagina": 9
+      },
+      {
+        "id": "12023030",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Ast consultoria",
+        "dias": 6,
+        "salario": null,
+        "pagina": 9
+      },
+      {
+        "id": "12020511",
+        "titulo": "Assistente Administrativo",
+        "empresa": "BM VAGAS",
+        "dias": 1,
+        "salario": "R$ 2.500,00",
+        "pagina": 9
+      },
+      {
+        "id": "12033815",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Gd9 Assessoria em Recursos Humanos ...",
+        "dias": 2,
+        "salario": null,
+        "pagina": 9
+      },
+      {
+        "id": "12033266",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": "R$ 2.400,00",
+        "pagina": 9
+      },
+      {
+        "id": "12029091",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Alamo Engenharia",
+        "dias": 4,
+        "salario": null,
+        "pagina": 9
+      },
+      {
+        "id": "12024495",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Tecnoset It Solution",
+        "dias": 5,
+        "salario": null,
+        "pagina": 10
+      },
+      {
+        "id": "12024082",
+        "titulo": "Assistente Administrativo",
+        "empresa": "New Partner",
+        "dias": 6,
+        "salario": "R$ 2.316,46",
+        "pagina": 10
+      },
+      {
+        "id": "12018602",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Grupo Viamar Consórcio",
+        "dias": 7,
+        "salario": null,
+        "pagina": 10
+      },
+      {
+        "id": "11980690",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Conceito prime rh",
+        "dias": 1,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "12034352",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Conceito prime rh",
+        "dias": 4,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "12029760",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Fibra rh soluções empresariais",
+        "dias": 5,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "12024501",
+        "titulo": "Assistente Administrativo",
+        "empresa": "GRUPO ATTIVITA",
+        "dias": 6,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "12020533",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Consigaz",
+        "dias": 6,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "12019742",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Rede Talent Solutions Ltda",
+        "dias": 6,
+        "salario": "R$ 2.400,00",
+        "pagina": 11
+      },
+      {
+        "id": "12019642",
+        "titulo": "Assistente Administrativo",
+        "empresa": "Maxi Service",
+        "dias": 6,
+        "salario": "R$ 3.000,00",
+        "pagina": 11
+      },
+      {
+        "id": "11870782",
+        "titulo": "Auxiliar / Assistente Administrativo (documentação Acessória)",
+        "empresa": "HTB",
+        "dias": 4,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "11999266",
+        "titulo": "Assistente Administrativo (emissão de Crachás)",
+        "empresa": "JumperFour Tecnologia",
+        "dias": 1,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12034189",
+        "titulo": "Pessoa Assistente Administrativo - Assistência Técnica",
+        "empresa": "Cury Construtora",
+        "dias": 2,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12033028",
+        "titulo": "Assistente Administrativo de Vendas",
+        "empresa": "P&v consultoria rh",
+        "dias": 4,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12028268",
+        "titulo": "Assistente Administrativo de Vendas",
+        "empresa": "P&v consultoria rh",
+        "dias": 4,
+        "salario": "R$ 35,00",
+        "pagina": 13
+      },
+      {
+        "id": "12028269",
+        "titulo": "Assistente Administrativo/comercial / Sp- 1009",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12029100",
+        "titulo": "Assistente Administrativo (documentação Legal)",
+        "empresa": "Mooca, Sp",
+        "dias": 4,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12027610",
+        "titulo": "Assistente Administrativo - Shopping Lar Center",
+        "empresa": "On the job rh consultoria de re",
+        "dias": 4,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12025448",
+        "titulo": "Pessoa Assistente Administrativo (exclusiva Para Pessoas com Deficiência)",
+        "empresa": "Cury Construtora",
+        "dias": 5,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12024485",
+        "titulo": "Assistente Administrativo Pcd",
+        "empresa": "3AM IT Services",
+        "dias": 5,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12023736",
+        "titulo": "Assistente Administrativo - Almoxarifado 12x36 Pcd",
+        "empresa": "Cushman & Wakefield",
+        "dias": 6,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "12020448",
+        "titulo": "Assistente Administrativo(a). - 120720",
+        "empresa": "Manpower",
+        "dias": 6,
+        "salario": null,
+        "pagina": 13
+      }
+    ]
+  },
+  {
+    "cargo": "analista de dados",
+    "cidade": "sao-paulo",
+    "uf": "sp",
+    "totalAnunciado": "9.663",
+    "paginasLidas": 15,
+    "falhas": 0,
+    "cartoes": 299,
+    "semTitulo": 0,
+    "semData": 15,
+    "naJanela": 75,
+    "naFamilia": 6,
+    "naJanelaPorPagina": "2,3,4,0,3,18,5,0,0,0,0,11,0,10,19",
+    "confidencial": 1,
+    "comSalario": 1,
+    "acervoNaFamilia": 11,
+    "acervoPorFonte": {
+      "ats_gupy": 7,
+      "portal_infojobs": 1,
+      "ats_greenhouse": 3
+    },
+    "mesmaEmpresa": 0,
+    "mesmaVaga": 0,
+    "exemplosMesmaVaga": [],
+    "cortadosPelaFamilia": [
+      "Analista de Business Intelligence (bi) – Pleno",
+      "Analista de Bi Pleno Sp",
+      "Analista Bi Sr/especialista",
+      "Engenheiro de Dados Pleno",
+      "Arquiteto de Dados Pleno Salesforce",
+      "Assistente Logístico Qualidade Controle de Dados",
+      "Analista de Desenvolvimento Pleno - Ti",
+      "Analista de Operações Comerciais"
+    ],
+    "vagas": [
+      {
+        "id": "12001503",
+        "titulo": "Analista de Dados Júnior",
+        "empresa": "Carpe diem consultoria",
+        "dias": 3,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "11984497",
+        "titulo": "Cientista de Dados",
+        "empresa": "Blend It Consultoria",
+        "dias": 4,
+        "salario": null,
+        "pagina": 2
+      },
+      {
+        "id": "12023988",
+        "titulo": "Jovem Aprendiz Ti - Automação, Ia & Dados Financeiros",
+        "empresa": "Pharmaesthetics do Brasil",
+        "dias": 5,
+        "salario": "R$ 1.400,00",
+        "pagina": 3
+      },
+      {
+        "id": "12023930",
+        "titulo": "Estagiário (a) em Ciência de Dados, Engenharia de Dados e Cyber Security",
+        "empresa": "Confidencial",
+        "dias": 5,
+        "salario": null,
+        "pagina": 3
+      },
+      {
+        "id": "11907325",
+        "titulo": "Especialista em Governança de Dados",
+        "empresa": "Gft Brasil",
+        "dias": 5,
+        "salario": null,
+        "pagina": 5
+      },
+      {
+        "id": "12021532",
+        "titulo": "Engenharia de Dados Sênior",
+        "empresa": "Gft Brasil",
+        "dias": 5,
+        "salario": null,
+        "pagina": 5
+      }
+    ]
+  },
+  {
+    "cargo": "enfermeiro",
+    "cidade": "sao-paulo",
+    "uf": "sp",
+    "totalAnunciado": "169",
+    "paginasLidas": 4,
+    "falhas": 0,
+    "cartoes": 72,
+    "semTitulo": 0,
+    "semData": 4,
+    "naJanela": 13,
+    "naFamilia": 5,
+    "naJanelaPorPagina": "3,9,1,0",
+    "confidencial": 1,
+    "comSalario": 2,
+    "acervoNaFamilia": 30,
+    "acervoPorFonte": {
+      "ats_gupy": 22,
+      "portal_infojobs": 8
+    },
+    "mesmaEmpresa": 0,
+    "mesmaVaga": 0,
+    "exemplosMesmaVaga": [],
+    "cortadosPelaFamilia": [
+      "Técnico de Enfermagem - Itaquaquecetuba",
+      "Técnico de Enfermagem Para Upa e Pa Externo – Aps Santa Marcelina - Edital 315/2026",
+      "Técnico de Enfermagem do Trabalho",
+      "Edital 313/2026 - Fonoaudiólogo Para o Hospital Cidade Tiradentes - Externo",
+      "Médico da Família - São Paulo/sp Bairro: Vila Leopoldina",
+      "Auxiliar de Enfermagem Externo - Aps Santa Marcelina - Edital 305/2026 - Vagas Temporárias",
+      "Instrutor de Motorista P/ Transportadora - São Paulo/sp",
+      "Técnico de Enfermagem"
+    ],
+    "vagas": [
+      {
+        "id": "12007525",
+        "titulo": "Enfermeiro do Trabalho",
+        "empresa": "Talentos consultoria",
+        "dias": 2,
+        "salario": "R$ 4.000,00",
+        "pagina": 1
+      },
+      {
+        "id": "11946316",
+        "titulo": "Enfermeiro(a) Cme",
+        "empresa": "Life Empresarial Saúde",
+        "dias": 2,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "12031284",
+        "titulo": "Enfermeiro Junior (vaga Afirmativa Para Pessoas com Deficiência)",
+        "empresa": "Confidencial",
+        "dias": 5,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "11981807",
+        "titulo": "Enfermeiro de Educação Continuada",
+        "empresa": "Casa de David",
+        "dias": 1,
+        "salario": null,
+        "pagina": 2
+      },
+      {
+        "id": "12033353",
+        "titulo": "Enfermeiro Auditor Jr",
+        "empresa": "BENNER SISTEMAS S/A",
+        "dias": 4,
+        "salario": "R$ 4.750,00",
+        "pagina": 2
+      }
+    ]
+  },
+  {
+    "cargo": "vendedor",
+    "cidade": "belo-horizonte",
+    "uf": "mg",
+    "totalAnunciado": "1.053",
+    "paginasLidas": 15,
+    "falhas": 0,
+    "cartoes": 282,
+    "semTitulo": 0,
+    "semData": 15,
+    "naJanela": 55,
+    "naFamilia": 34,
+    "naJanelaPorPagina": "2,3,3,5,2,5,13,0,0,3,8,7,1,3,0",
+    "confidencial": 0,
+    "comSalario": 16,
+    "acervoNaFamilia": 59,
+    "acervoPorFonte": {
+      "ats_gupy": 22,
+      "portal_infojobs": 37
+    },
+    "mesmaEmpresa": 2,
+    "mesmaVaga": 2,
+    "exemplosMesmaVaga": [
+      "Vendedor - Filial Contagem — Loja eletrica",
+      "Vendedor - Filial Contagem — Loja elétrica"
+    ],
+    "cortadosPelaFamilia": [
+      "Consultor de Vendas Produtos Financeiro",
+      "Consultor de Vendas - Porta de Loja",
+      "[banco de Talentos] Consultor(a) de Vendas",
+      "Consultor de Vendas Externas",
+      "Consultor Comercial Senior",
+      "Consultor (a) Comercial - Consórcios e Financiamentos",
+      "Consultor Comercial Junior",
+      "Consultor Comercial - Pleno"
+    ],
+    "vagas": [
+      {
+        "id": "12022328",
+        "titulo": "Vendedor",
+        "empresa": "Cervejaria Petrópolis",
+        "dias": 5,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "12020889",
+        "titulo": "Vendedor",
+        "empresa": "Rhf talentos",
+        "dias": 5,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "11975286",
+        "titulo": "Representante Comercial",
+        "empresa": "cachaçaria catcha fire brasil",
+        "dias": 3,
+        "salario": null,
+        "pagina": 3
+      },
+      {
+        "id": "12006200",
+        "titulo": "Representante Comercial",
+        "empresa": "Imediatta trabalho temporário",
+        "dias": 4,
+        "salario": "R$ 1,00",
+        "pagina": 3
+      },
+      {
+        "id": "11942512",
+        "titulo": "Vendedor Externo",
+        "empresa": "Rhf talentos",
+        "dias": 5,
+        "salario": "R$ 1.500,00",
+        "pagina": 5
+      },
+      {
+        "id": "12003430",
+        "titulo": "Vendedor Externo de Serviços",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": "R$ 1.780,61",
+        "pagina": 6
+      },
+      {
+        "id": "12029599",
+        "titulo": "Vendedor Externo - Materiais Construção Civil",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": null,
+        "pagina": 6
+      },
+      {
+        "id": "11949564",
+        "titulo": "Vendedor Interno",
+        "empresa": "Danfab",
+        "dias": 7,
+        "salario": null,
+        "pagina": 6
+      },
+      {
+        "id": "11948219",
+        "titulo": "Vendedor Interno",
+        "empresa": "Cocari",
+        "dias": 4,
+        "salario": null,
+        "pagina": 6
+      },
+      {
+        "id": "12025275",
+        "titulo": "Vendedor Interno",
+        "empresa": "Conecta Recursos Humanos ltda",
+        "dias": 6,
+        "salario": "R$ 2.000,00",
+        "pagina": 6
+      },
+      {
+        "id": "11907284",
+        "titulo": "Vendedor(a) Interno - Móveis de Lazer e Fitness - Belo Horizonte #1264",
+        "empresa": "Rhf talentos",
+        "dias": 1,
+        "salario": null,
+        "pagina": 7
+      },
+      {
+        "id": "11951394",
+        "titulo": "1138 - Vendedor Técnico na Área Agrária - Irrigação",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": null,
+        "pagina": 7
+      },
+      {
+        "id": "12029007",
+        "titulo": "Vendedora de Loja",
+        "empresa": "Consultoria Christiane Aguilar",
+        "dias": 1,
+        "salario": "R$ 2.500,00 a R$ 3.200,00",
+        "pagina": 7
+      },
+      {
+        "id": "12014495",
+        "titulo": "Vendedor Balconista – Comércio de Materiais Elétricos, Hidráulicos e Ferragens",
+        "empresa": "CEDRUS CONSULTORIA EMPRESARIAL LTDA",
+        "dias": 4,
+        "salario": "R$ 1.961,00",
+        "pagina": 7
+      },
+      {
+        "id": "12026146",
+        "titulo": "Vendedor Balconista – Comércio de Materiais Elétricos, Hidráulicos e Ferragens",
+        "empresa": "CEDRUS CONSULTORIA EMPRESARIAL LTDA",
+        "dias": 4,
+        "salario": "R$ 1.500,00",
+        "pagina": 7
+      },
+      {
+        "id": "12026135",
+        "titulo": "Vendedor Balconista",
+        "empresa": "Cedrus Consultoria Empresarial",
+        "dias": 4,
+        "salario": "R$ 1.961,00",
+        "pagina": 7
+      },
+      {
+        "id": "12025870",
+        "titulo": "Vendedor Balconista – Comércio de Materiais Elétricos, Hidráulicos e Ferragens",
+        "empresa": "Raiza",
+        "dias": 5,
+        "salario": "R$ 1.961,00",
+        "pagina": 7
+      },
+      {
+        "id": "12024295",
+        "titulo": "Vendedor de Comércio Varejista",
+        "empresa": "Raiza",
+        "dias": 5,
+        "salario": "R$ 1.900,00",
+        "pagina": 7
+      },
+      {
+        "id": "12023720",
+        "titulo": "Vendedor de Imóveis",
+        "empresa": "Libia pessoas e projetos",
+        "dias": 5,
+        "salario": null,
+        "pagina": 7
+      },
+      {
+        "id": "12021551",
+        "titulo": "Vendedora Comercio",
+        "empresa": "Libia pessoas e projetos",
+        "dias": 5,
+        "salario": null,
+        "pagina": 7
+      },
+      {
+        "id": "12021552",
+        "titulo": "Vendedor Pap",
+        "empresa": "Nonna rh",
+        "dias": 6,
+        "salario": null,
+        "pagina": 7
+      },
+      {
+        "id": "12020894",
+        "titulo": "Vendedor(a) Reserva Diamond Mall (belo Horizonte- Mg)",
+        "empresa": "Reserva",
+        "dias": 7,
+        "salario": null,
+        "pagina": 7
+      },
+      {
+        "id": "11889870",
+        "titulo": "Vendedor Técnico",
+        "empresa": "Paulo Kennedy de Oliveira",
+        "dias": 1,
+        "salario": "R$ 6.000,00",
+        "pagina": 10
+      },
+      {
+        "id": "12034032",
+        "titulo": "Vendedor Técnico",
+        "empresa": "Paulo Kennedy de Oliveira",
+        "dias": 4,
+        "salario": "R$ 2.500,00",
+        "pagina": 10
+      },
+      {
+        "id": "11664574",
+        "titulo": "Vendedor Técnico Externo Contagem Mg",
+        "empresa": "Acelera RH",
+        "dias": 6,
+        "salario": null,
+        "pagina": 10
+      },
+      {
+        "id": "12011942",
+        "titulo": "Pré Vendedor",
+        "empresa": "Paulo Kennedy de Oliveira",
+        "dias": 4,
+        "salario": "R$ 2.000,00",
+        "pagina": 11
+      },
+      {
+        "id": "11855565",
+        "titulo": "Vendedor Trainee",
+        "empresa": "Somar recursos humanos e consultori...",
+        "dias": 5,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "12024441",
+        "titulo": "Vendedora",
+        "empresa": "BM VAGAS",
+        "dias": 6,
+        "salario": "R$ 1.904,00",
+        "pagina": 11
+      },
+      {
+        "id": "12019508",
+        "titulo": "Vendedor B2b",
+        "empresa": "Rhf talentos",
+        "dias": 6,
+        "salario": "R$ 1.800,00",
+        "pagina": 11
+      },
+      {
+        "id": "12017882",
+        "titulo": "Vendedor - Filial Contagem",
+        "empresa": "Loja eletrica",
+        "dias": 7,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "12017330",
+        "titulo": "Vendedor - Filial Contagem",
+        "empresa": "Loja elétrica",
+        "dias": 7,
+        "salario": null,
+        "pagina": 11
+      },
+      {
+        "id": "11993101",
+        "titulo": "Vendedor (a)",
+        "empresa": "Rise Talent Solutions",
+        "dias": 4,
+        "salario": null,
+        "pagina": 13
+      },
+      {
+        "id": "11939846",
+        "titulo": "Vendedor de Livraria",
+        "empresa": "FOCO RECURSOS HUMANOS LTDA.",
+        "dias": 3,
+        "salario": null,
+        "pagina": 14
+      },
+      {
+        "id": "12030451",
+        "titulo": "Vendedor - Proteção Veicular",
+        "empresa": "L&M MULTISOLUCOES",
+        "dias": 7,
+        "salario": "R$1.739,21",
+        "pagina": 14
+      }
+    ]
+  },
+  {
+    "cargo": "product manager",
+    "cidade": "sao-paulo",
+    "uf": "sp",
+    "totalAnunciado": "176",
+    "paginasLidas": 9,
+    "falhas": 0,
+    "cartoes": 172,
+    "semTitulo": 0,
+    "semData": 9,
+    "naJanela": 27,
+    "naFamilia": 4,
+    "naJanelaPorPagina": "3,5,0,4,4,0,4,4,3",
+    "confidencial": 0,
+    "comSalario": 0,
+    "acervoNaFamilia": 6,
+    "acervoPorFonte": {
+      "ats_gupy": 3,
+      "ats_greenhouse": 3
+    },
+    "mesmaEmpresa": 0,
+    "mesmaVaga": 0,
+    "exemplosMesmaVaga": [],
+    "cortadosPelaFamilia": [
+      "Analista de Produtos Pleno",
+      "Dream Builder – Especialista em Produto",
+      "Especialista de Produtos (foco Marketing)",
+      "Desenvolvimento Full Stack Sênior (java/react)",
+      "Oportunidade",
+      "Desenvolvedor em Quadient Inspire",
+      "Desenvolvedor Python Sr",
+      "Change Management Consultant"
+    ],
+    "vagas": [
+      {
+        "id": "11866095",
+        "titulo": "Gerente de Produto Júnior",
+        "empresa": "Carpe diem consultoria",
+        "dias": 7,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "12014075",
+        "titulo": "Coordenador(a) de Produtos",
+        "empresa": "Recovery",
+        "dias": 0,
+        "salario": null,
+        "pagina": 1
+      },
+      {
+        "id": "11961472",
+        "titulo": "Chief Product Officer (cpo) #1067",
+        "empresa": "Rhf talentos",
+        "dias": 4,
+        "salario": null,
+        "pagina": 2
+      },
+      {
+        "id": "11943287",
+        "titulo": "Gerente de Produtos",
+        "empresa": "Grupo Rojemac",
+        "dias": 4,
+        "salario": null,
+        "pagina": 8
+      }
+    ]
+  }
+]
