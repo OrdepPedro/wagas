@@ -4,9 +4,15 @@ import type { Route } from 'next';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { ehAba, ehStatus, perfilDoFormulario, validarManual } from '../../../src/mapa/regras.ts';
+import { lerCurriculo } from '../../lib/adaptacao.ts';
 import {
   apagarCandidatura,
+  comparacoesHoje,
+  comparar,
   iniciarTeste,
+  lerComparacao,
+  limiteDeComparacoes,
+  vagaParaComparar,
   inserirManual,
   lerAcesso,
   mudarStatus,
@@ -110,4 +116,37 @@ export async function inserirManualAcao(form: FormData): Promise<void> {
   });
   if ('erro' in linha) voltar(form, 'manual_invalida');
   voltar(form, (await inserirManual(userId, linha)) ? 'candidatura' : 'falha');
+}
+
+/** Códigos de aviso da página de comparação (`/mapa/comparar/[id]?aviso=`). */
+export type AvisoDaComparacao = 'limite' | 'cota' | 'falha' | 'indisponivel' | 'sem_descricao';
+
+/**
+ * "Comparar com meu currículo". Usa o CV salvo em /curriculo; sem ele, manda
+ * para lá e volta para cá depois de salvar. Comparação já feita com este CV
+ * não é refeita nem conta no teto.
+ */
+export async function compararAcao(form: FormData): Promise<void> {
+  const userId = await usuarioComAcesso(form);
+  const jobId = idDoFormulario(form, 'job_id');
+  if (!jobId) voltar(form, 'falha');
+  const pagina = `/mapa/comparar/${jobId}`;
+  const ir = (aviso?: AvisoDaComparacao): never =>
+    redirect((aviso ? `${pagina}?aviso=${aviso}` : pagina) as Route);
+
+  const curriculo = await lerCurriculo(userId);
+  if (!curriculo) redirect(`/curriculo?comparar=${jobId}` as Route);
+
+  const alvo = await vagaParaComparar(jobId);
+  if (!alvo) voltar(form, 'falha');
+  if (!alvo.comparavel) ir('sem_descricao');
+  if (await lerComparacao(userId, jobId, curriculo.hash)) ir();
+
+  const acesso = await lerAcesso(userId);
+  if (acesso.estado !== 'teste' && acesso.estado !== 'pago') voltar(form, 'travado');
+  if ((await comparacoesHoje(userId)) >= limiteDeComparacoes(acesso)) ir('limite');
+
+  const resultado = await comparar(userId, curriculo, alvo.vaga);
+  revalidatePath('/mapa');
+  ir(resultado.ok ? undefined : resultado.falha === 'resposta' ? 'falha' : resultado.falha);
 }

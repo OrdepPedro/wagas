@@ -80,9 +80,9 @@ export function FormularioDeCurriculo({ texto, voltar }: { texto: string; voltar
       <label className="opcao">
         <input type="checkbox" name="consentimento" required />
         <span>
-          Concordo que o wagas guarde o texto do meu currículo para adaptá-lo às vagas que eu escolher.
+          Concordo que o wagas guarde o texto do meu currículo para adaptá-lo e compará-lo às vagas que eu escolher.
           <small>
-            Ele só sai daqui no momento de uma adaptação, para o Groq (o serviço de IA), que por padrão não
+            Ele só sai daqui no momento de uma adaptação ou comparação, para o Groq (o serviço de IA), que por padrão não
             guarda o conteúdo. Você pode apagar o currículo e as adaptações a qualquer momento nesta página.
           </small>
         </span>

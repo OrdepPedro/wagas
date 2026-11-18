@@ -1,6 +1,14 @@
 import type { Metadata } from 'next';
 import { TRIAL_DIAS, ehAba, type Aba } from '../../../src/mapa/regras.ts';
-import { lerAcesso, lerCandidaturas, lerPerfilDoMapa, perguntasPendentes, vagasDoMapa } from '../../lib/mapa.ts';
+import { lerCurriculo } from '../../lib/adaptacao.ts';
+import {
+  lerAcesso,
+  lerCandidaturas,
+  lerPerfilDoMapa,
+  perguntasPendentes,
+  placaresDoCurriculo,
+  vagasDoMapa,
+} from '../../lib/mapa.ts';
 import { lerPerfil } from '../../lib/perfil.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
 import { comecarTeste, type Aviso } from './actions.ts';
@@ -112,11 +120,14 @@ export default async function PaginaDoMapa({
   const codigo = params.aviso as Aviso | undefined;
   const aviso = codigo && Object.hasOwn(TEXTO_DO_AVISO, codigo) ? TEXTO_DO_AVISO[codigo] : null;
 
-  const [perfil, filtros, candidaturas] = await Promise.all([
+  const [perfil, filtros, candidaturas, curriculo] = await Promise.all([
     lerPerfil(usuario.id),
     lerPerfilDoMapa(usuario.id),
     lerCandidaturas(usuario.id),
+    lerCurriculo(usuario.id),
   ]);
+  // Sem a 0024 aplicada a consulta falha e volta vazia: as vagas aparecem sem placar.
+  const placares = curriculo ? await placaresDoCurriculo(usuario.id, curriculo.hash) : new Map();
   const [dados, perguntas] = await Promise.all([
     perfil ? vagasDoMapa(perfil, filtros, candidaturas) : Promise.resolve(null),
     aba === 'geral'
@@ -138,9 +149,9 @@ export default async function PaginaDoMapa({
         ) : null}
 
         {aba === 'geral' ? (
-          <VisaoGeral perfil={perfil} dados={dados} candidaturas={candidaturas} perguntas={perguntas} agora={agora} />
+          <VisaoGeral perfil={perfil} dados={dados} candidaturas={candidaturas} perguntas={perguntas} agora={agora} placares={placares} />
         ) : aba === 'vagas' ? (
-          <Vagas perfil={perfil} dados={dados} />
+          <Vagas perfil={perfil} dados={dados} placares={placares} />
         ) : aba === 'candidaturas' ? (
           <Candidaturas candidaturas={candidaturas} />
         ) : (

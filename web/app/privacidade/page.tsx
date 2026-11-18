@@ -51,6 +51,11 @@ export default function Privacidade() {
           pedidos de ajuste que você escreveu à IA na revisão, com as respostas dela.
         </li>
         <li>
+          <strong>Mapa.</strong> Se você usar o Mapa: quando começou o teste, seus filtros (nível, modelos,
+          contrato e pretensão salarial), as candidaturas que você registrou com o status de cada uma e as
+          comparações do seu currículo com vagas, com o trecho do currículo que prova cada requisito.
+        </li>
+        <li>
           <strong>Medidor e reescrita para LinkedIn e Gupy.</strong> O currículo enviado a essas ferramentas é
           processado e descartado. Guardamos só a nota, contagens e um código não reversível do texto, para
           aplicar o limite diário.
@@ -90,7 +95,7 @@ export default function Privacidade() {
         </li>
         <li>
           <strong>Groq</strong> (IA, Estados Unidos): recebe o seu currículo salvo e a descrição da vaga para
-          gerar a versão adaptada. O currículo salvo vai só para ele.
+          gerar a versão adaptada e, no Mapa, a comparação de requisitos. O currículo salvo vai só para ele.
         </li>
         <li>
           <strong>Google Gemini</strong> (IA, Estados Unidos): recebe o currículo enviado ao medidor e à
@@ -105,7 +110,8 @@ export default function Privacidade() {
 
       <h2>Por quanto tempo</h2>
       <ul>
-        <li>Currículo salvo e adaptações: até você apagar.</li>
+        <li>Currículo salvo, adaptações e comparações: até você apagar. Apagar o currículo apaga também o conteúdo das adaptações e das comparações.</li>
+        <li>Candidaturas e filtros do Mapa: até você apagar cada candidatura ou pedir a exclusão da conta.</li>
         <li>
           Sessão anônima: apagada depois de 30 dias sem uso. As buscas e cliques dela ficam, sem ligação com
           ninguém.
