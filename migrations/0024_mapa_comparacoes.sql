@@ -73,10 +73,14 @@ create table if not exists public.vaga_requisitos (
 
 alter table public.vaga_requisitos enable row level security;
 
+-- Leitura só para conta com e-mail. Sessão anônima também é `authenticated`, e
+-- qualquer um obtém uma com a chave pública: `using (true)` entregaria a tabela
+-- a quem nunca deu e-mail, ao contrário do resto do Mapa.
 drop policy if exists vaga_requisitos_leitura on public.vaga_requisitos;
 create policy vaga_requisitos_leitura
   on public.vaga_requisitos for select
   to authenticated
-  using (true);
+  using (not coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false));
 
-revoke insert, update, delete, truncate on public.vaga_requisitos from anon, authenticated;
+revoke all on public.vaga_requisitos from anon;
+revoke insert, update, delete, truncate on public.vaga_requisitos from authenticated;
