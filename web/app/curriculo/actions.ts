@@ -31,7 +31,7 @@ export interface EstadoDoCurriculo {
 /** Para onde voltar depois de salvar. Só caminho interno conhecido — nunca redirecionador aberto. */
 function destinoSeguro(bruto: FormDataEntryValue | null): Route {
   const s = String(bruto ?? '');
-  return (/^\/adaptar\/\d+$/.test(s) ? s : '/curriculo') as Route;
+  return (/^\/(adaptar|mapa\/comparar)\/\d+$/.test(s) ? s : '/curriculo') as Route;
 }
 
 export async function salvarCurriculoAcao(

@@ -3541,3 +3541,72 @@ a.painel-lista-titulo:hover {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---------------------------------------------------------------------------
+ * Comparação do currículo com a vaga (/mapa/comparar/[id]).
+ * ------------------------------------------------------------------------- */
+.etiqueta.comparada {
+  background: var(--acento-fraco);
+  color: var(--acento);
+  font-weight: 600;
+}
+
+.painel-lista .etiqueta.comparada {
+  flex: none;
+  font-size: 0.75rem;
+}
+
+.comparacao-placar {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  background: var(--acento-fraco);
+  border-radius: var(--raio);
+  padding: 18px 20px;
+}
+
+.comparacao-placar strong {
+  font-size: 2rem;
+  line-height: 1.1;
+  color: var(--acento);
+}
+
+.comparacao-grupo h2 {
+  margin-bottom: 8px;
+}
+
+.comparacao-grupo > .fraco {
+  margin: -4px 0 10px;
+  font-size: 0.875rem;
+}
+
+.comparacao-grupo ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.comparacao-grupo li {
+  background: var(--superficie);
+  border: 1px solid var(--borda);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.comparacao-trecho {
+  flex-basis: 100%;
+  font-size: 0.875rem;
+  color: var(--texto-fraco);
+  font-style: italic;
+}
+
+.comparacao-nota {
+  font-size: 0.8125rem;
+}

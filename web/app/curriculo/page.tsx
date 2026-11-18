@@ -10,11 +10,17 @@ export const dynamic = 'force-dynamic';
 export default async function PaginaDoCurriculo({
   searchParams,
 }: {
-  searchParams: Promise<{ vaga?: string; lido?: string; apagado?: string }>;
+  searchParams: Promise<{ vaga?: string; comparar?: string; lido?: string; apagado?: string }>;
 }) {
   const usuario = await usuarioAtual();
-  const { vaga, lido, apagado } = await searchParams;
-  const voltar = vaga && /^\d+$/.test(vaga) ? `/adaptar/${vaga}` : null;
+  const { vaga, comparar, lido, apagado } = await searchParams;
+  // Volta para onde a pessoa estava: a adaptação (`?vaga=`) ou a comparação do Mapa (`?comparar=`).
+  const voltar =
+    vaga && /^\d+$/.test(vaga)
+      ? `/adaptar/${vaga}`
+      : comparar && /^\d+$/.test(comparar)
+        ? `/mapa/comparar/${comparar}`
+        : null;
 
   // Sem sessão nenhuma é o mesmo caso do visitante: a página é porta de
   // entrada pelo menu Funcionalidades, e mandar para `/` perderia o destino.

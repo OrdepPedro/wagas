@@ -9,8 +9,23 @@
  * dela. O início do teste é a exceção de desenho, e mora na policy de insert
  * de `mapa_acessos` (uma vez, com a hora de agora, sem update).
  */
+import { LlmIndisponivel, type Provedor } from '../../src/classificar/llm.ts';
+import { vagaAdaptavel } from '../../src/curriculo/adaptar.ts';
 import { consultaDeFeed, consultaDoLocal } from '../../src/feed/consulta.ts';
 import {
+  SCHEMA_EXTRACAO,
+  interpretarComparacao,
+  interpretarExtracao,
+  montarPromptDeClassificacao,
+  montarPromptDeExtracao,
+  placar,
+  type Placar,
+  type RequisitoComparado,
+  type RequisitoDaVaga,
+  type VagaParaComparar,
+} from '../../src/mapa/comparar.ts';
+import {
+  COMPARACOES_POR_DIA_NO_TESTE,
   PERFIL_VAZIO,
   estadoDoAcesso,
   separar,
@@ -20,7 +35,11 @@ import {
   type Separacao,
   type Status,
 } from '../../src/mapa/regras.ts';
+import { provedorDoCurriculo, type Curriculo } from './adaptacao.ts';
+import { clienteAdministrativo } from './admin.ts';
+import { provedorDeCurriculo } from './gemini-curriculo.ts';
 import { carregarFeed, type Vaga } from './feed.ts';
+import { inicioDoDiaBrasilia } from './limites.ts';
 import type { Perfil } from './perfil.ts';
 import { clienteDoServidor, SUPABASE_ANON, SUPABASE_URL } from './supabase.ts';
 
@@ -257,5 +276,181 @@ async function contarOutraArea(pedido: { cargo: string; cidade: string; soRemoto
     return Math.max(0, noLocal - doCargo);
   } catch {
     return null;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Comparação do currículo com a vaga (migration 0024).
+ *
+ * Reaproveita o CV salvo em /curriculo e o mesmo provedor da adaptação: o
+ * consentimento de lá diz que o CV salvo vai só para o Groq, então a
+ * comparação não pode mandá-lo ao Gemini gratuito, cujos termos permitem uso
+ * do conteúdo.
+ * ------------------------------------------------------------------------- */
+
+/** Pago: ainda não decidido pelo Pedro. Configurável até ser. */
+export const LIMITE_COMPARACOES_PAGO = (() => {
+  const n = Number(process.env['LIMITE_COMPARACOES_PAGO']?.trim());
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 10;
+})();
+
+export function limiteDeComparacoes(acesso: Acesso): number {
+  return acesso.estado === 'pago' ? LIMITE_COMPARACOES_PAGO : COMPARACOES_POR_DIA_NO_TESTE;
+}
+
+export interface ComparacaoSalva {
+  id: number;
+  requisitos: RequisitoComparado[];
+  criadoEm: string;
+}
+
+/** A comparação mais recente desta vaga com ESTE currículo. Trocou o CV, não vale. */
+export async function lerComparacao(userId: string, jobId: number, curriculoHash: string): Promise<ComparacaoSalva | null> {
+  const supabase = await clienteDoServidor();
+  const { data } = await supabase
+    .from('mapa_comparacoes')
+    .select('id,resultado,criado_em')
+    .eq('user_id', userId)
+    .eq('job_id', jobId)
+    .eq('curriculo_hash', curriculoHash)
+    .eq('ok', true)
+    .not('resultado', 'is', null)
+    .order('criado_em', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (!data) return null;
+  return { id: data.id, requisitos: (data.resultado as { requisitos: RequisitoComparado[] }).requisitos, criadoEm: data.criado_em };
+}
+
+/** Placar de cada vaga já comparada com este CV, para a etiqueta na lista. */
+export async function placaresDoCurriculo(userId: string, curriculoHash: string): Promise<Map<number, Placar>> {
+  const supabase = await clienteDoServidor();
+  const { data } = await supabase
+    .from('mapa_comparacoes')
+    .select('job_id,resultado')
+    .eq('user_id', userId)
+    .eq('curriculo_hash', curriculoHash)
+    .eq('ok', true)
+    .not('job_id', 'is', null)
+    .not('resultado', 'is', null)
+    .order('criado_em', { ascending: true })
+    .limit(500);
+  const mapa = new Map<number, Placar>();
+  for (const linha of data ?? []) {
+    const requisitos = (linha.resultado as { requisitos?: RequisitoComparado[] } | null)?.requisitos;
+    if (requisitos) mapa.set(linha.job_id as number, placar(requisitos));
+  }
+  return mapa;
+}
+
+/** Comparações bem-sucedidas hoje (Brasília). Erro de leitura não bloqueia ninguém. */
+export async function comparacoesHoje(userId: string): Promise<number> {
+  try {
+    const supabase = await clienteDoServidor();
+    const { count, error } = await supabase
+      .from('mapa_comparacoes')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('ok', true)
+      .gte('criado_em', inicioDoDiaBrasilia());
+    if (error) throw error;
+    return count ?? 0;
+  } catch {
+    return 0;
+  }
+}
+
+export interface VagaComparavel extends VagaParaComparar {
+  id: number;
+  url: string;
+}
+
+/** A vaga pelo id, pela RLS (só `ativo = true`). Null se não existe ou não tem descrição que dê para comparar. */
+export async function vagaParaComparar(jobId: number): Promise<{ vaga: VagaComparavel; comparavel: boolean } | null> {
+  const supabase = await clienteDoServidor();
+  const { data } = await supabase.from('jobs').select('id,cargo,empresa,descricao,url').eq('id', jobId).maybeSingle();
+  if (!data) return null;
+  return {
+    vaga: { id: data.id, cargo: data.cargo, empresa: data.empresa, descricao: data.descricao ?? '', url: data.url },
+    comparavel: vagaAdaptavel(data),
+  };
+}
+
+export type FalhaDaComparacao = 'indisponivel' | 'cota' | 'resposta';
+
+/**
+ * A lista de requisitos da vaga: a guardada, ou extraída agora e guardada.
+ *
+ * A extração vai ao Gemini, e o Groq só fica de reserva: a vaga é texto
+ * público, sem dado pessoal, e cada chamada poupada no Groq é cota que sobra
+ * para a classificação e a adaptação, que levam o CV e só podem ir a ele.
+ * Grava pela chave de servidor (a tabela é compartilhada; ver 0024). Duas
+ * pessoas comparando a mesma vaga ao mesmo tempo: fica a primeira lista.
+ */
+async function requisitosDaVaga(vaga: VagaComparavel, groq: Provedor): Promise<RequisitoDaVaga[]> {
+  const supabase = await clienteDoServidor();
+  const { data } = await supabase.from('vaga_requisitos').select('requisitos').eq('job_id', vaga.id).maybeSingle();
+  if (data) return data.requisitos as RequisitoDaVaga[];
+
+  const prompt = montarPromptDeExtracao(vaga);
+  const gemini = process.env['GEMINI_KEY']?.trim();
+  let provedor: Provedor = groq;
+  let requisitos: RequisitoDaVaga[];
+  try {
+    if (!gemini) throw new Error('sem GEMINI_KEY');
+    provedor = provedorDeCurriculo(gemini);
+    requisitos = interpretarExtracao(await provedor.julgar(prompt, SCHEMA_EXTRACAO));
+  } catch {
+    provedor = groq;
+    requisitos = interpretarExtracao(await groq.julgar(prompt, null));
+  }
+
+  await clienteAdministrativo()
+    .insert('vaga_requisitos', [{ job_id: vaga.id, requisitos, provedor: provedor.nome }], { ignorarDuplicados: true })
+    .catch(() => undefined);
+  // Se outra pessoa gravou antes, vale a lista dela: o placar é o mesmo para todos.
+  const { data: gravada } = await supabase.from('vaga_requisitos').select('requisitos').eq('job_id', vaga.id).maybeSingle();
+  return (gravada?.requisitos as RequisitoDaVaga[] | undefined) ?? requisitos;
+}
+
+/**
+ * Extrai (se preciso) os requisitos da vaga, classifica o CV contra eles e
+ * grava a tentativa, com sucesso ou não. Só em Server Action: grava e gasta
+ * cota, e render repete.
+ */
+export async function comparar(
+  userId: string,
+  curriculo: Curriculo,
+  vaga: VagaComparavel,
+): Promise<{ ok: true } | { ok: false; falha: FalhaDaComparacao }> {
+  const chave = process.env['GROQ_KEY']?.trim();
+  if (!chave) return { ok: false, falha: 'indisponivel' };
+
+  const groq = provedorDoCurriculo(chave);
+  const supabase = await clienteDoServidor();
+  const inicio = Date.now();
+  const base = { user_id: userId, job_id: vaga.id, curriculo_hash: curriculo.hash, provedor: groq.nome };
+
+  try {
+    const daVaga = await requisitosDaVaga(vaga, groq);
+    const bruto = await groq.julgar(montarPromptDeClassificacao(curriculo.texto, daVaga), null);
+    const { requisitos, rebaixados } = interpretarComparacao(bruto, curriculo.texto, daVaga);
+    const { error } = await supabase.from('mapa_comparacoes').insert({
+      ...base,
+      ok: true,
+      resultado: { requisitos },
+      rebaixados,
+      duracao_ms: Date.now() - inicio,
+    });
+    return error ? { ok: false, falha: 'resposta' } : { ok: true };
+  } catch (erro) {
+    await supabase.from('mapa_comparacoes').insert({
+      ...base,
+      ok: false,
+      duracao_ms: Date.now() - inicio,
+      // A mensagem do provedor, nunca o CV.
+      erro: String(erro instanceof Error ? erro.message : erro).slice(0, 300),
+    });
+    return { ok: false, falha: erro instanceof LlmIndisponivel ? 'cota' : 'resposta' };
   }
 }

@@ -11,6 +11,8 @@ import {
   type MotivoDoCorte,
   type PerfilDoMapa,
 } from '../../../src/mapa/regras.ts';
+import { vagaAdaptavel } from '../../../src/curriculo/adaptar.ts';
+import type { Placar } from '../../../src/mapa/comparar.ts';
 import { JANELA_DIAS, type Vaga } from '../../lib/feed.ts';
 import type { Candidatura, Pergunta, VagasDoMapa } from '../../lib/mapa.ts';
 import type { Perfil } from '../../lib/perfil.ts';
@@ -170,7 +172,8 @@ export function Resumo({ perfil, dados, candidaturas }: { perfil: Perfil | null;
       <section className="painel-cartao">
         <h2>Seu currículo</h2>
         <p className="fraco">
-          Em breve o Mapa compara cada vaga com o seu currículo: quantos requisitos você tem e o que falta.
+          O Mapa compara cada vaga com o seu currículo salvo: quantos requisitos você tem e o que falta. Use
+          “Comparar com meu currículo” na vaga.
         </p>
         <a className="painel-link" href="/curriculo">
           Revisar currículo
@@ -239,7 +242,7 @@ function Numeros({ dados, candidaturas }: { dados: VagasDoMapa | null; candidatu
   );
 }
 
-function LinhaDeVaga({ vaga }: { vaga: Vaga }) {
+function LinhaDeVaga({ vaga, placar }: { vaga: Vaga; placar?: Placar }) {
   const empresa = vaga.empresa === 'não identificada' ? 'Empresa não identificada' : vaga.empresa;
   return (
     <li>
@@ -254,6 +257,7 @@ function LinhaDeVaga({ vaga }: { vaga: Vaga }) {
           {vaga.modelo ? ` · ${NOME_DO_MODELO[vaga.modelo]}` : ''}
         </p>
       </div>
+      {placar ? <EtiquetaDoPlacar placar={placar} /> : null}
       <span className="painel-data">
         {vaga.data_publicacao ? dia(vaga.data_publicacao) : `vista ${dia(vaga.data_referencia)}`}
       </span>
@@ -290,12 +294,14 @@ export function VisaoGeral({
   candidaturas,
   perguntas,
   agora,
+  placares,
 }: {
   perfil: Perfil | null;
   dados: VagasDoMapa | null;
   candidaturas: Candidatura[];
   perguntas: Pergunta[];
   agora: Date;
+  placares: Map<number, Placar>;
 }) {
   const recomendadas = dados?.visiveis.slice(0, 5) ?? [];
   const recentes = candidaturas.filter((c) => c.status !== 'nao_enviada').slice(0, 3);
@@ -314,7 +320,7 @@ export function VisaoGeral({
         {recomendadas.length > 0 ? (
           <ul className="painel-lista">
             {recomendadas.map((v) => (
-              <LinhaDeVaga key={v.id} vaga={v} />
+              <LinhaDeVaga key={v.id} vaga={v} placar={placares.get(v.id)} />
             ))}
           </ul>
         ) : (
@@ -401,7 +407,7 @@ function Perguntas({ perguntas }: { perguntas: Pergunta[] }) {
  * Vagas
  * ------------------------------------------------------------------------- */
 
-function CartaoDoMapa({ vaga, motivo }: { vaga: Vaga; motivo?: MotivoDoCorte }) {
+function CartaoDoMapa({ vaga, motivo, placar }: { vaga: Vaga; motivo?: MotivoDoCorte; placar?: Placar }) {
   return (
     <li className="vaga">
       <p className="empresa">{vaga.empresa === 'não identificada' ? <em>empresa não identificada</em> : vaga.empresa}</p>
@@ -410,6 +416,7 @@ function CartaoDoMapa({ vaga, motivo }: { vaga: Vaga; motivo?: MotivoDoCorte }) 
       </a>
       {vaga.localizacao ? <p className="local">{vaga.localizacao}</p> : null}
       <div className="etiquetas">
+        {placar ? <EtiquetaDoPlacar placar={placar} /> : null}
         {motivo ? <span className="etiqueta incerta">{NOME_DO_MOTIVO[motivo]}</span> : null}
         {vaga.modelo ? <span className="etiqueta">{NOME_DO_MODELO[vaga.modelo]}</span> : null}
         {vaga.senioridade ? <span className="etiqueta">{vaga.senioridade}</span> : null}
@@ -423,6 +430,9 @@ function CartaoDoMapa({ vaga, motivo }: { vaga: Vaga; motivo?: MotivoDoCorte }) 
           Ver vaga <span aria-hidden="true">↗</span>
           <span className="sr-only"> (abre em nova aba)</span>
         </a>
+        {vagaAdaptavel(vaga) ? (
+          <a href={`/mapa/comparar/${vaga.id}`}>{placar ? 'Ver comparação' : 'Comparar com meu currículo'}</a>
+        ) : null}
         <form action={marcarCandidatura}>
           <input type="hidden" name="aba" value="vagas" />
           <input type="hidden" name="job_id" value={vaga.id} />
@@ -435,7 +445,24 @@ function CartaoDoMapa({ vaga, motivo }: { vaga: Vaga; motivo?: MotivoDoCorte }) 
   );
 }
 
-export function Vagas({ perfil, dados }: { perfil: Perfil | null; dados: VagasDoMapa | null }) {
+/** "4 de 6 requisitos": o placar da comparação, onde a vaga aparece. */
+function EtiquetaDoPlacar({ placar }: { placar: Placar }) {
+  return (
+    <span className="etiqueta comparada" title="Requisitos com prova no seu currículo">
+      {placar.demonstrados} de {placar.total} {placar.essenciais ? 'obrigatórios' : 'requisitos'}
+    </span>
+  );
+}
+
+export function Vagas({
+  perfil,
+  dados,
+  placares,
+}: {
+  perfil: Perfil | null;
+  dados: VagasDoMapa | null;
+  placares: Map<number, Placar>;
+}) {
   if (!perfil || !dados) {
     return (
       <Vazio
@@ -494,7 +521,7 @@ export function Vagas({ perfil, dados }: { perfil: Perfil | null; dados: VagasDo
       ) : (
         <ul className="vagas">
           {visiveis.slice(0, 30).map((v) => (
-            <CartaoDoMapa key={v.id} vaga={v} />
+            <CartaoDoMapa key={v.id} vaga={v} placar={placares.get(v.id)} />
           ))}
         </ul>
       )}
@@ -511,7 +538,7 @@ export function Vagas({ perfil, dados }: { perfil: Perfil | null; dados: VagasDo
           </summary>
           <ul className="vagas">
             {recolhidas.slice(0, 50).map(({ vaga, motivo }) => (
-              <CartaoDoMapa key={vaga.id} vaga={vaga} motivo={motivo} />
+              <CartaoDoMapa key={vaga.id} vaga={vaga} motivo={motivo} placar={placares.get(vaga.id)} />
             ))}
           </ul>
         </details>

@@ -53,7 +53,8 @@ export const LIMITE_CORRECOES = (() => {
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 15;
 })();
 
-function provedorDoCurriculo(chave: string): ProvedorGroq {
+/** Também usado pela comparação do Mapa: o CV salvo vai só para o Groq (consentimento de /curriculo). */
+export function provedorDoCurriculo(chave: string): ProvedorGroq {
   return new ProvedorGroq({
     chave,
     modelo: process.env['GROQ_MODELO_CURRICULO']?.trim() || MODELO_PADRAO,
@@ -134,6 +135,20 @@ export async function apagarCurriculo(userId: string): Promise<boolean> {
     );
   } catch {
     return false;
+  }
+  // A comparação do Mapa guarda o trecho do CV que prova cada requisito (0024).
+  // Sem a 0024 aplicada a tabela não existe e não há o que apagar: esse erro
+  // não pode impedir a pessoa de apagar o currículo.
+  try {
+    await clienteAdministrativo().update(
+      'mapa_comparacoes',
+      `user_id=eq.${encodeURIComponent(userId)}&resultado=not.is.null`,
+      { resultado: null },
+    );
+  } catch (erro) {
+    // Só "tabela não existe" (PGRST205 / 42P01) passa; a mensagem traz o
+    // caminho com o nome da tabela, então casar o nome aceitaria qualquer erro.
+    if (!/PGRST205|42P01/.test(String(erro))) return false;
   }
   return !e1;
 }
