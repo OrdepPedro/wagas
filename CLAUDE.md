@@ -735,6 +735,26 @@ Pôr stacks na pré-carga foi medido e descartado: 22 stacks na Gupy somaram 53 
 - **Família de cargo perde título em inglês: 12 de 78 sem classe** ("Account Executive", "Sales Executive", "Executivo(a) de Contas", "Intern", "Estagiário"). Essas vagas não aparecem em busca nenhuma. É recall do `familia.ts`, que nesta fonte pesa mais, e não foi mexido.
 - **Não medido:** sobreposição com `jobs` depois da primeira gravação (trava 10), e se o volume de ~80/semana justifica a fonte. 13 empresas, quase todas fintech de SP.
 
+**45. O InfoJobs abria a página de toda vaga listada; o cartão da listagem já dizia quase tudo (18/11).** A coleta diária de 17/11 levou 216 min no InfoJobs, contra 6 da Gupy e 7 do Greenhouse: ~12,5 mil requisições a 1 req/s para gravar 658 vagas. O coletor abria a página de cada vaga e só depois descobria que ela era de outra família ou que já estava no banco desde a véspera.
+
+Cada cartão da listagem traz id, título e data com hora. Agora (`cartoesDaListagem` em `src/fontes/infojobs.ts`) a página só é aberta quando o título do cartão é da família, a data está na janela e o id não está em `jobs` (`idsConhecidosDoInfojobs`). A página continua decidindo tudo o mais. `scripts/sondar-cartao-infojobs.ts` abriu as 240 páginas de 6 pares (12 listagens) e comparou cartão com página. Bruto em `infojobs-cartao-2026-11-18.json`.
+
+| | cartões |
+|---|---|
+| comparados com a página | 233 (7 páginas ilegíveis) |
+| família igual no cartão e na página | 231 |
+| **cartão cortaria vaga que a página aceita, por família** | **1** ("Enfermeira Do Trabalho" × "Enfermeiro do Trabalho") |
+| cartão corta por família | 142 (61%) |
+| cartão corta por data (com a folga abaixo) | 19 |
+| passam pelo cartão e já estão em `jobs` | 19 de 72 |
+| páginas que seriam abertas | **53 de 240 (22%)** |
+
+- **A hora do cartão é de relógio de 12h sem AM/PM.** 74 cartões dizem 05:42 onde a página diz 17:42. Sem folga, 4 vagas na janela seriam cortadas. O corte dá ao cartão a hora mais tarde possível (+12h): 0 cortes errados.
+- **O cartão mostra a data de renovação, a página a de publicação.** 49 cartões são mais novos que a página, até 2 meses. Não muda o filtro, porque a página continua decidindo a janela.
+- **O erro de família não é do cartão, é do `familia.ts`:** `cargoBateNoTitulo('Enfermeiro', 'Enfermeira')` é `false`, e isso vale para toda fonte, não só aqui. A `demanda_descoberta` já trata gênero por sufixo (achado 26); a regra de família não.
+- **Estimativa, não medida em produção:** de 252 para ~65 requisições por 6 pares, cerca de 75% a menos, ou seja, os 216 min devem cair para algo perto de 1h. A conta de "já conhecidas" foi feita no meio do dia, com a coleta da véspera; numa coleta às 04h a fração deve ser maior. O resumo da coleta diária passou a imprimir requisições, páginas abertas, cortes pelo cartão e conhecidas.
+- **Se o layout do cartão mudar,** `cartoesDaListagem` cai para os links soltos, sem título nem data, e a coleta volta a abrir tudo: mais lenta e correta.
+
 ---
 
 ## As dez travas — decididas em 28/08/2026

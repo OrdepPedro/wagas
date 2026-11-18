@@ -15,7 +15,7 @@ import { ufMaisFrequente } from '../src/coleta/pares.ts';
 import type { Pedido } from '../src/coleta/outra-fonte.ts';
 import { carregarConfigClassificador } from '../src/config/env.ts';
 import { SupabaseRest } from '../src/db/supabase.ts';
-import { INFOJOBS, gravarNoCache, registrarColeta } from '../src/fontes/gupy-cache.ts';
+import { INFOJOBS, gravarNoCache, idsConhecidosDoInfojobs, registrarColeta } from '../src/fontes/gupy-cache.ts';
 import { buscarNoInfojobs } from '../src/fontes/infojobs.ts';
 
 const config = carregarConfigClassificador({ precisaDb: true });
@@ -41,6 +41,8 @@ async function coletaDiariaRodando(): Promise<boolean> {
 }
 
 const placar = { pronto: 0, falhou: 0, adiado: 0, sem_uf: 0 };
+// Quem pediu está olhando "Consultando outra fonte…": não reabrir vaga já gravada.
+const conhecidos = await idsConhecidosDoInfojobs(db);
 
 while (true) {
   const [pedido] = await db.select<Pedido>(
@@ -75,7 +77,7 @@ while (true) {
       continue;
     }
 
-    const r = await buscarNoInfojobs({ cargo: pedido.cargo, cidade: pedido.cidade, uf });
+    const r = await buscarNoInfojobs({ cargo: pedido.cargo, cidade: pedido.cidade, uf, conhecidos });
     if (r.falhou) {
       // Fonte caída não é fonte vazia: não carimba `coletas_sob_demanda`.
       await marcar(pedido, { status: 'falhou', motivo: 'listagem não respondeu', concluido_em: agoraIso() });

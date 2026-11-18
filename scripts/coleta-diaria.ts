@@ -26,7 +26,7 @@ import { CARGOS_PRE_CARGA, CIDADES_PRE_CARGA } from '../src/config/pre-carga.ts'
 import { montarPares, ufMaisFrequente, type BuscaRegistrada } from '../src/coleta/pares.ts';
 import { buscarNaGupy, vagaFechadaNaGupy } from '../src/fontes/gupy.ts';
 import { buscarNoInfojobs } from '../src/fontes/infojobs.ts';
-import { GUPY, INFOJOBS, gravarNoCache, registrarColeta, ultimaColeta } from '../src/fontes/gupy-cache.ts';
+import { GUPY, INFOJOBS, gravarNoCache, idsConhecidosDoInfojobs, registrarColeta, ultimaColeta } from '../src/fontes/gupy-cache.ts';
 import { coletarGreenhouse, type PlacarGreenhouse } from '../src/coleta/greenhouse.ts';
 import { MAX_SUGERIDOS_NA_COLETA, cargosDaColeta } from '../src/cargos/abrangidos.ts';
 import { decidirEncerramentos, type ConsultaDoDia, type VagaVerificavel } from '../src/coleta/encerramento.ts';
@@ -192,6 +192,10 @@ try {
 
 // --- InfoJobs: por par, dentro do orçamento de tempo -------------------------
 if (!soGupy) {
+  // Vaga já em `jobs` não tem a página aberta de novo, e o que esta execução lê
+  // entra no conjunto: o mesmo anúncio aparece em vários pares do mesmo dia.
+  const conhecidos = await idsConhecidosDoInfojobs(db, agora);
+  const ij = { requisicoes: 0, jaConhecidas: 0, cortadasNaListagem: 0, paginasAbertas: 0 };
   for (const p of pares) {
     if (minutos() >= orcamentoMin) {
       console.log(`Orçamento de ${orcamentoMin} min esgotado; ${pares.length - placar.infojobs.ok - placar.infojobs.falhou - placar.infojobs.pulados} pares ficam para amanhã`);
@@ -203,15 +207,21 @@ if (!soGupy) {
       const anterior = await ultimaColeta(db, p.cargo, p.cidade, false, INFOJOBS);
       if (anterior && Date.now() - anterior.getTime() < 20 * 3600 * 1000) { placar.infojobs.pulados++; continue; }
     }
-    const r = await buscarNoInfojobs({ cargo: p.cargo, cidade: p.cidade, uf: p.uf });
+    const r = await buscarNoInfojobs({ cargo: p.cargo, cidade: p.cidade, uf: p.uf, conhecidos });
+    ij.requisicoes += r.requisicoes;
+    ij.jaConhecidas += r.jaConhecidas;
+    ij.cortadasNaListagem += r.cortadasNaListagem;
+    ij.paginasAbertas += r.vistos;
     if (r.falhou) { placar.infojobs.falhou++; continue; }
     placar.infojobs.ok++;
+    for (const v of r.vagas) conhecidos.add(v.fonteId);
     if (seco) continue;
     const g = await gravarNoCache(db, r.vagas, { cargoBusca: p.cargo, cidadeBusca: p.cidade, soRemoto: false }, INFOJOBS);
     await registrarColeta(db, p.cargo, p.cidade, false, r.vistos, g.vagasGravadas, INFOJOBS);
     placar.infojobs.gravadas += g.vagasGravadas;
   }
   console.log(`InfoJobs: ${placar.infojobs.ok} ok, ${placar.infojobs.falhou} falharam, ${placar.infojobs.pulados} pulados, ${placar.infojobs.gravadas} vagas novas — ${minutos()} min`);
+  console.log(`  ${ij.requisicoes} requisições: ${ij.paginasAbertas} páginas de vaga abertas, ${ij.cortadasNaListagem} cortadas pelo cartão, ${ij.jaConhecidas} já conhecidas`);
 }
 
 // --- Saúde: falha alta faz o job falhar, e o Actions manda e-mail ------------
