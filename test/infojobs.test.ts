@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {
   blocoDaVaga,
   buscarNoInfojobs,
+  cartoesDaListagem,
+  dataDoCartao,
   dataRelativa,
   modeloDoBloco,
   vagaRemotaDoBloco,
@@ -243,4 +245,89 @@ test('fonte caída não é fonte vazia', async () => {
   });
   assert.equal(vazia.falhou, false);
   assert.equal(vazia.vagas.length, 0);
+});
+
+// --- Cartões da listagem (18/11) ------------------------------------------------
+
+/** Cartão no formato real da listagem (18/11/2026), encurtado. */
+function cartao(id: number, titulo: string, data: string | null): string {
+  const d = data === null ? '' : `<div hidden class="js_date" data-value="${data}"><span> NOVA </span></div>`;
+  return `<div class="card js_rowCard">
+    <div id="vacancy${id}" data-id="${id}" class="pt-24 px-24 cursor-pointer js_vacancyLoad js_cardLink" data-href="/vaga-de-algo-em-sao-paulo__${id}.aspx">
+      <div class="d-flex">${d}</div>
+      <a class="text-decoration-none" href="/vaga-de-algo-em-sao-paulo__${id}.aspx">
+        <h2 class="h3 font-weight-bold text-body mb-2 js_vacancyTitle"> ${titulo} </h2></a>
+      <div class="text-medium small text-nowrap"> Hoje </div>
+    </div></div>`;
+}
+
+test('o cartão traz id, título decodificado e data de Brasília em UTC, sem vazar para o vizinho', () => {
+  const html = cartao(1, 'Auxiliar Administrativo - Cachoeir&#xE3;o', '2026/10/19 08:58:00') + cartao(2, 'Recepcionista', null);
+  assert.deepEqual(cartoesDaListagem(html), [
+    { url: 'https://www.infojobs.com.br/vaga-de-algo-em-sao-paulo__1.aspx', id: '1', titulo: 'Auxiliar Administrativo - Cachoeirão', data: '2026-10-19T11:58:00.000Z' },
+    // Sem data no cartão: null, não a data do cartão anterior.
+    { url: 'https://www.infojobs.com.br/vaga-de-algo-em-sao-paulo__2.aspx', id: '2', titulo: 'Recepcionista', data: null },
+  ]);
+  assert.equal(dataDoCartao('2026/11/18 08:58'), '2026-11-18T11:58:00.000Z');
+  assert.equal(dataDoCartao('18 nov'), null);
+});
+
+test('layout sem cartão reconhecível cai para os links soltos, sem título nem data', () => {
+  assert.deepEqual(cartoesDaListagem(listagem([7])), [
+    { url: 'https://www.infojobs.com.br/vaga-de-algo-em-sao-paulo__7.aspx', id: '7', titulo: null, data: null },
+  ]);
+});
+
+test('o cartão corta outra família, vaga velha e id conhecido sem abrir a página', async () => {
+  const abertas: string[] = [];
+  const base = fetchFalso(
+    { 1: [cartao(1, 'Analista de Dados', '2026/10/19 10:00:00'), cartao(2, 'Analista Fiscal', '2026/10/19 10:00:00'), cartao(3, 'Analista de Dados Pleno', '2026/10/19 09:00:00'), cartao(4, 'Analista de Dados', '2026/09/01 10:00:00')].join('') },
+    { '1': paginaDeVaga(jobPosting()), '2': paginaDeVaga(jobPosting({ title: 'Analista Fiscal' })), '3': paginaDeVaga(jobPosting()), '4': paginaDeVaga(jobPosting()) },
+  );
+  const buscar = (async (url: string) => {
+    const id = /__(\d+)\.aspx/.exec(url)?.[1];
+    if (id) abertas.push(id);
+    return base(url);
+  }) as unknown as typeof fetch;
+
+  const r = await buscarNoInfojobs({
+    cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0,
+    conhecidos: new Set(['3']), buscar,
+  });
+  assert.deepEqual(abertas, ['1']);
+  assert.deepEqual(r.vagas.map((v) => v.fonteId), ['1']);
+  assert.equal(r.outraFamilia, 1);
+  assert.equal(r.foraDaJanela, 1);
+  assert.equal(r.jaConhecidas, 1);
+  assert.equal(r.cortadasNaListagem, 2);
+  assert.equal(r.requisicoes, 3); // listagem 1, vaga 1, listagem 2 (vazia)
+});
+
+test('o cartão para a paginação depois de 5 velhos seguidos, sem abrir nenhuma vaga', async () => {
+  const velhos = [1, 2, 3, 4, 5, 6].map((i) => cartao(i, 'Analista de Dados', '2026/09/01 10:00:00')).join('');
+  const r = await buscarNoInfojobs({
+    cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0,
+    buscar: fetchFalso({ 1: velhos, 2: cartao(7, 'Analista de Dados', '2026/10/19 10:00:00') }, {}),
+  });
+  assert.equal(r.foraDaJanela, 5);
+  assert.equal(r.requisicoes, 1);
+});
+
+test('a página ainda decide: título do cartão na família e JobPosting de outra família não passa', async () => {
+  const r = await buscarNoInfojobs({
+    cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0,
+    buscar: fetchFalso({ 1: cartao(1, 'Analista de Dados', '2026/10/19 10:00:00') }, { '1': paginaDeVaga(jobPosting({ title: 'Analista Fiscal' })) }),
+  });
+  assert.equal(r.vagas.length, 0);
+  assert.equal(r.outraFamilia, 1);
+});
+
+test('hora do cartão em relógio de 12h: perto do corte, o cartão não corta, a página decide', async () => {
+  // Corte em 13/10 12h UTC. O cartão diz 02:00 (05:00 UTC), mas pode ser 14:00 (17:00 UTC).
+  const r = await buscarNoInfojobs({
+    cargo: 'Analista de Dados', cidade: 'São Paulo', uf: 'SP', agora: AGORA, intervaloMs: 0,
+    buscar: fetchFalso({ 1: cartao(1, 'Analista de Dados', '2026/10/13 02:00:00') }, { '1': paginaDeVaga(jobPosting({ datePosted: '2026-10-13T14:00:00.0000000' })) }),
+  });
+  assert.deepEqual(r.vagas.map((v) => v.fonteId), ['1']);
+  assert.equal(r.cortadasNaListagem, 0);
 });

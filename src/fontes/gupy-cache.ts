@@ -351,3 +351,20 @@ export async function registrarColeta(
     { mesclarDuplicados: true, conflito: 'cargo_chave,cidade_slug,so_remoto,fonte' },
   );
 }
+
+/**
+ * Ids do InfoJobs já em `jobs` e ainda na janela (com um dia de folga). A coleta
+ * não abre de novo a página dessas vagas: com coleta diária, quase tudo o que a
+ * listagem mostra foi lido na véspera. Só `jobs`, não `raw_results`: vaga que
+ * ficou em `raw_results` sem linha em `jobs` precisa ser relida para a
+ * autocura da gravação (achado 40) ter o que gravar.
+ */
+export async function idsConhecidosDoInfojobs(db: SupabaseRest, agora = new Date()): Promise<Set<string>> {
+  const desde = new Date(agora.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString();
+  const prefixo = `${INFOJOBS.fonte}:`;
+  const linhas = await db.selectTodos<{ dedup_key: string }>(
+    'jobs',
+    `select=dedup_key&dedup_key=like.${encodeURIComponent(prefixo)}*&data_referencia=gte.${desde}&order=id`,
+  );
+  return new Set(linhas.map((l) => l.dedup_key.slice(prefixo.length)));
+}
