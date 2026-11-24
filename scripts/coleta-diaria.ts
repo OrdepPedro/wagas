@@ -83,6 +83,29 @@ const consultasGupy = [
   ...[...new Map(pares.map((p) => [p.cargo.toLowerCase(), p.cargo])).values()].map((cargo) => ({ cargo, cidade: null, soRemoto: true })),
 ];
 
+// Gravação que falha mesmo depois das retentativas do cliente (SupabaseRest
+// repete 5xx por ~50 s) vira falha daquele par, não do processo. Antes, um 522
+// numa gravação do InfoJobs matava a coleta inteira e os pares seguintes não
+// rodavam (21/11 e 24/11). Três falhas seguidas é o banco fora do ar: para de
+// tentar, porque cada par queimaria mais 50 s em espera.
+let falhasDeGravacao = 0;
+let falhasSeguidas = 0;
+let ultimoErroDeGravacao = '';
+async function gravarPar(rotulo: string, gravar: () => Promise<number>): Promise<number | null> {
+  try {
+    const n = await gravar();
+    falhasSeguidas = 0;
+    return n;
+  } catch (erro) {
+    falhasDeGravacao++;
+    falhasSeguidas++;
+    ultimoErroDeGravacao = String(erro).slice(0, 300);
+    console.error(`Gravação falhou em ${rotulo}: ${ultimoErroDeGravacao}`);
+    return null;
+  }
+}
+const bancoFora = () => falhasSeguidas >= 3;
+
 const consultasDoDia: ConsultaDoDia[] = [];
 const achadasPorConsulta: Array<{ cargo: string; vagas: number }> = [];
 
@@ -94,10 +117,13 @@ for (const c of consultasGupy) {
   consultasDoDia.push({ cargo: c.cargo, cidade: c.cidade, soRemoto: c.soRemoto, completa: r.completa, idsVistos: r.idsVistos });
   if (r.falhou && r.vagas.length === 0) { placar.gupy.falhou++; continue; }
   placar.gupy.ok++;
-  if (seco) continue;
-  const g = await gravarNoCache(db, r.vagas, { cargoBusca: c.cargo, cidadeBusca: c.cidade, soRemoto: c.soRemoto }, GUPY);
-  await registrarColeta(db, c.cargo, c.cidade, c.soRemoto, r.vistos, g.vagasGravadas, GUPY);
-  placar.gupy.gravadas += g.vagasGravadas;
+  if (seco || bancoFora()) continue;
+  const gravadas = await gravarPar(`Gupy ${c.cargo} / ${c.cidade ?? 'remoto'}`, async () => {
+    const g = await gravarNoCache(db, r.vagas, { cargoBusca: c.cargo, cidadeBusca: c.cidade, soRemoto: c.soRemoto }, GUPY);
+    await registrarColeta(db, c.cargo, c.cidade, c.soRemoto, r.vistos, g.vagasGravadas, GUPY);
+    return g.vagasGravadas;
+  });
+  placar.gupy.gravadas += gravadas ?? 0;
 }
 // Quantas vagas cada sugerido achou: é o que decide se ele aparece na landing.
 // Conta vagas encontradas (não só as novas): cargo de verdade que já estava no
@@ -187,7 +213,7 @@ try {
   console.log(`Greenhouse: ${greenhouse.ok} quadros ok, ${greenhouse.falhou} falharam, ${greenhouse.naJanela} vagas na janela, ${greenhouse.gravadas} linhas novas, ${greenhouse.encerradas} encerradas — ${minutos()} min`);
 } catch (erro) {
   erroGreenhouse = String(erro).slice(0, 300);
-  console.error(`Greenhouse falhou (a migration 0022 foi aplicada?): ${erroGreenhouse}`);
+  console.error(`Greenhouse falhou: ${erroGreenhouse}`);
 }
 
 // --- InfoJobs: por par, dentro do orçamento de tempo -------------------------
@@ -197,6 +223,10 @@ if (!soGupy) {
   const conhecidos = await idsConhecidosDoInfojobs(db, agora);
   const ij = { requisicoes: 0, jaConhecidas: 0, cortadasNaListagem: 0, paginasAbertas: 0 };
   for (const p of pares) {
+    if (bancoFora()) {
+      console.error('Três gravações seguidas falharam; o InfoJobs para aqui');
+      break;
+    }
     if (minutos() >= orcamentoMin) {
       console.log(`Orçamento de ${orcamentoMin} min esgotado; ${pares.length - placar.infojobs.ok - placar.infojobs.falhou - placar.infojobs.pulados} pares ficam para amanhã`);
       break;
@@ -216,9 +246,12 @@ if (!soGupy) {
     placar.infojobs.ok++;
     for (const v of r.vagas) conhecidos.add(v.fonteId);
     if (seco) continue;
-    const g = await gravarNoCache(db, r.vagas, { cargoBusca: p.cargo, cidadeBusca: p.cidade, soRemoto: false }, INFOJOBS);
-    await registrarColeta(db, p.cargo, p.cidade, false, r.vistos, g.vagasGravadas, INFOJOBS);
-    placar.infojobs.gravadas += g.vagasGravadas;
+    const gravadas = await gravarPar(`InfoJobs ${p.cargo} / ${p.cidade}`, async () => {
+      const g = await gravarNoCache(db, r.vagas, { cargoBusca: p.cargo, cidadeBusca: p.cidade, soRemoto: false }, INFOJOBS);
+      await registrarColeta(db, p.cargo, p.cidade, false, r.vistos, g.vagasGravadas, INFOJOBS);
+      return g.vagasGravadas;
+    });
+    placar.infojobs.gravadas += gravadas ?? 0;
   }
   console.log(`InfoJobs: ${placar.infojobs.ok} ok, ${placar.infojobs.falhou} falharam, ${placar.infojobs.pulados} pulados, ${placar.infojobs.gravadas} vagas novas — ${minutos()} min`);
   console.log(`  ${ij.requisicoes} requisições: ${ij.paginasAbertas} páginas de vaga abertas, ${ij.cortadasNaListagem} cortadas pelo cartão, ${ij.jaConhecidas} já conhecidas`);
@@ -231,9 +264,10 @@ const problemas = [
   erroGreenhouse && `Greenhouse: ${erroGreenhouse}`,
   greenhouse && doente(greenhouse.ok, greenhouse.falhou) && `Greenhouse falhou em ${greenhouse.falhou} de ${greenhouse.ok + greenhouse.falhou} quadros`,
   !soGupy && doente(placar.infojobs.ok, placar.infojobs.falhou) && `InfoJobs falhou em ${placar.infojobs.falhou} de ${placar.infojobs.ok + placar.infojobs.falhou} pares`,
+  falhasDeGravacao > 0 && `Banco: ${falhasDeGravacao} gravações falharam mesmo repetindo${bancoFora() ? ' (parou por três seguidas)' : ''}. Última: ${ultimoErroDeGravacao}`,
 ].filter(Boolean);
 
 if (problemas.length) {
-  console.error(`FONTE COM PROBLEMA — o endereço ou o layout pode ter mudado:\n  ${problemas.join('\n  ')}`);
+  console.error(`COLETA COM PROBLEMA — fonte (endereço ou layout pode ter mudado) ou banco:\n  ${problemas.join('\n  ')}`);
   process.exit(1);
 }
