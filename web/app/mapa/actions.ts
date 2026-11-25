@@ -3,7 +3,7 @@
 import type { Route } from 'next';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { ehAba, ehStatus, perfilDoFormulario, validarManual } from '../../../src/mapa/regras.ts';
+import { acessoAtivo, ehAba, ehStatus, perfilDoFormulario, validarManual } from '../../../src/mapa/regras.ts';
 import { lerCurriculo } from '../../lib/adaptacao.ts';
 import { adicionarBusca, desligarAlertas, ligarAlertas, removerBusca } from '../../lib/alertas.ts';
 import {
@@ -55,7 +55,7 @@ async function usuarioComAcesso(form: FormData): Promise<string> {
   const usuario = await usuarioAtual();
   if (!usuario || usuario.visitante) redirect('/entrar' as Route);
   const acesso = await lerAcesso(usuario.id);
-  if (acesso.estado !== 'teste' && acesso.estado !== 'pago') voltar(form, 'travado');
+  if (!acessoAtivo(acesso)) voltar(form, 'travado');
   return usuario.id;
 }
 
@@ -191,7 +191,7 @@ export async function compararAcao(form: FormData): Promise<void> {
   if (await lerComparacao(userId, jobId, curriculo.hash)) ir();
 
   const acesso = await lerAcesso(userId);
-  if (acesso.estado !== 'teste' && acesso.estado !== 'pago') voltar(form, 'travado');
+  if (!acessoAtivo(acesso)) voltar(form, 'travado');
   if ((await comparacoesHoje(userId)) >= limiteDeComparacoes(acesso)) ir('limite');
 
   const resultado = await comparar(userId, curriculo, alvo.vaga);

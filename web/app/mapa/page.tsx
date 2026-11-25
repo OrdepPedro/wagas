@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { TRIAL_DIAS, ehAba, type Aba } from '../../../src/mapa/regras.ts';
+import { MAPA_GRATUITO, TRIAL_DIAS, ehAba, type Aba } from '../../../src/mapa/regras.ts';
 import { lerCurriculo } from '../../lib/adaptacao.ts';
 import {
   lerAcesso,
@@ -76,7 +76,8 @@ export default async function PaginaDoMapa({
       <Porta titulo="Entre com seu e-mail para usar o Mapa">
         <OQueE />
         <p>
-          São {TRIAL_DIAS} dias de teste, sem cartão. <a href="/entrar">Entrar</a>
+          {MAPA_GRATUITO ? 'Gratuito por enquanto.' : `São ${TRIAL_DIAS} dias de teste, sem cartão.`}{' '}
+          <a href="/entrar">Entrar</a>
         </p>
       </Porta>
     );

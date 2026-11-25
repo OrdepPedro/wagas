@@ -16,7 +16,7 @@ import { SupabaseRest } from '../src/db/supabase.ts';
 import { consultaDeFeed } from '../src/feed/consulta.ts';
 import { colapsarRepetidas, type VagaColapsavel } from '../src/feed/colapsar.ts';
 import { distribuir, inicioDaSemana, montarEmail, vagasNovas, type BlocoDoEmail, type VagaDoEmail } from '../src/email/semanal.ts';
-import { estadoDoAcesso } from '../src/mapa/regras.ts';
+import { acessoAtivo, estadoDoAcesso, MAPA_GRATUITO } from '../src/mapa/regras.ts';
 
 const args = process.argv.slice(2);
 const SECO = args.includes('--seco');
@@ -95,8 +95,9 @@ if (ids.length) {
       db.select<BuscaExtra>('alertas_email_buscas', `select=user_id,cargo,cidade,so_remoto&user_id=in.(${ids.join(',')})&order=id`),
       db.select<AcessoDoMapa>('mapa_acessos', `select=user_id,trial_inicio,pago_ate&user_id=in.(${ids.join(',')})`),
     ]);
+    // Com o Mapa gratuito vale para todos, inclusive quem nunca abriu o Mapa.
     const comMapa = new Set(
-      acessos.filter((a) => ['teste', 'pago'].includes(estadoDoAcesso(a, agora).estado)).map((a) => a.user_id),
+      MAPA_GRATUITO ? ids : acessos.filter((a) => acessoAtivo(estadoDoAcesso(a, agora))).map((a) => a.user_id),
     );
     for (const x of extras) {
       if (!comMapa.has(x.user_id)) continue;

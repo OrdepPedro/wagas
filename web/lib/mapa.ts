@@ -294,6 +294,7 @@ export const LIMITE_COMPARACOES_PAGO = (() => {
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : 10;
 })();
 
+/** Com o Mapa gratuito vale o teto do teste: cada comparação é uma chamada ao modelo. */
 export function limiteDeComparacoes(acesso: Acesso): number {
   return acesso.estado === 'pago' ? LIMITE_COMPARACOES_PAGO : COMPARACOES_POR_DIA_NO_TESTE;
 }

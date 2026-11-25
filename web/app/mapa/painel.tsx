@@ -121,6 +121,15 @@ function Assinatura({ acesso }: { acesso: Acesso }) {
       </div>
     );
   }
+  if (acesso.estado === 'gratuito') {
+    return (
+      <div className="painel-teste">
+        <strong>
+          <span className="painel-ponto ok" aria-hidden="true" /> Gratuito por enquanto
+        </strong>
+      </div>
+    );
+  }
   if (acesso.estado !== 'teste') return null;
   const { horasRestantes } = acesso;
   const resta = horasRestantes > 24 ? plural(Math.ceil(horasRestantes / 24), 'dia', 'dias') : `${horasRestantes} h`;
