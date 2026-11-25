@@ -4,7 +4,7 @@ import { URL_DO_SITE } from '../lib/site.ts';
 import { usuarioAtual } from '../lib/supabase.ts';
 import { carregarVitrine } from '../lib/vitrine.ts';
 import { carregarCargosAbrangidos } from '../lib/cargos.ts';
-import { FormularioDeBusca, FormularioDeEntrada } from './formularios.tsx';
+import { FormularioDeBusca } from './formularios.tsx';
 import { Landing } from './landing.tsx';
 
 export const dynamic = 'force-dynamic';
@@ -55,27 +55,12 @@ function JsonLd() {
 export default async function Pagina() {
   const usuario = await usuarioAtual();
 
-  // Sem sessão só acontece se os logins anônimos estiverem desligados no
-  // Supabase: aí a landing pede e-mail no lugar da busca.
-  //
-  // É também o caminho do robô de busca, que nunca ganha sessão (`proxy.ts`).
-  // Por isso a vitrine carrega aqui também: sem ela o Google indexava uma
-  // landing sem nenhuma vaga. A leitura sem sessão passa pela policy
-  // `jobs_leitura_publica` (0021); sem a migration, volta vazia e a landing
-  // segue como era.
-  if (!usuario) {
-    const [vitrine, cargos] = await Promise.all([carregarVitrine(), carregarCargosAbrangidos()]);
-    return (
-      <>
-        <JsonLd />
-        <Landing formulario={<FormularioDeEntrada />} vitrine={vitrine} cargos={cargos} />
-      </>
-    );
-  }
-
-  // Quem já buscou chega com o formulário preenchido com a última busca.
+  // Sem sessão é o caso de todo visitante novo, e também o do robô de busca: a
+  // sessão anônima só nasce quando a pessoa busca (`usuarioOuVisitante`). A
+  // landing é a mesma; quem já buscou chega com o formulário preenchido. A
+  // leitura da vitrine sem sessão passa pela policy `jobs_leitura_publica` (0021).
   const [perfil, vitrine, cargos] = await Promise.all([
-    lerPerfil(usuario.id),
+    usuario ? lerPerfil(usuario.id) : Promise.resolve(null),
     carregarVitrine(),
     carregarCargosAbrangidos(),
   ]);

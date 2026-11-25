@@ -37,40 +37,13 @@ export default async function proxy(requisicao: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getUser();
-
-  // Visitante sem sessão ganha uma sessão anônima, invisível (trava 7). É ela
-  // que dá ao teto diário um `user_id` para contar. Aqui e não na página porque
-  // Server Component não grava cookie (achado 31).
-  //
-  // Só em navegação de documento para `/`: prefetch, `/ir/...` e o callback do
-  // link mágico não podem criar usuário — cada um viraria uma conta anônima a
-  // mais por visita, e o callback trocaria a sessão que está chegando.
-  if (!data.user && deveCriarVisitante(requisicao)) {
-    await supabase.auth.signInAnonymously();
-  }
+  // Só renova a sessão que já existe. A sessão de visitante nasce na Server
+  // Action, quando a pessoa age (`usuarioOuVisitante` em `lib/supabase.ts`).
+  // Criá-la aqui, a cada GET, fazia de cada robô sem cookie uma conta nova:
+  // 939 contas anônimas para ~120 visitantes até 25/11.
+  await supabase.auth.getUser();
 
   return resposta;
-}
-
-const PAGINAS_QUE_CRIAM_VISITANTE = new Set(['/', '/funcionalidades/ats']);
-
-function deveCriarVisitante(requisicao: NextRequest): boolean {
-  if (requisicao.method !== 'GET') return false;
-  // O medidor de currículo também precisa de `user_id`: é ele que conta o teto
-  // diário de chamadas ao Gemini.
-  // `/vagas-de/...` é porta de entrada pelo Google: quem chega ali e clica em
-  // "Ver o feed completo" precisa de sessão para a busca valer.
-  const caminho = requisicao.nextUrl.pathname;
-  if (!PAGINAS_QUE_CRIAM_VISITANTE.has(caminho) && !caminho.startsWith('/vagas-de/')) return false;
-  const h = requisicao.headers;
-  if (h.get('next-router-prefetch') || h.get('purpose') === 'prefetch') return false;
-  if (h.get('sec-purpose')?.includes('prefetch')) return false;
-  // Robô de busca e pré-visualização de link não são visitantes.
-  if (/bot|crawl|spider|preview|facebookexternalhit|whatsapp/i.test(h.get('user-agent') ?? '')) {
-    return false;
-  }
-  return true;
 }
 
 export const config = {

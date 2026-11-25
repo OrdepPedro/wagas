@@ -57,6 +57,28 @@ export interface Usuario {
   visitante: boolean;
 }
 
+/**
+ * Quem está logado; sem sessão, cria a sessão anônima de visitante (trava 7).
+ *
+ * SÓ em Server Action: é o único lugar, junto com Route Handler, onde o Next
+ * deixa gravar o cookie da sessão nova.
+ *
+ * A sessão nasce aqui, no momento em que a pessoa AGE (busca, sugere cargo,
+ * mede currículo), e não no carregamento da página. Até 25/11 o `proxy.ts`
+ * criava a sessão a cada GET em `/`: eram 939 contas anônimas para ~120
+ * visitantes do Analytics, com rajadas de 124 contas em 10 minutos e 2
+ * visitantes no dia — robô sem cookie com user-agent de navegador, que filtro
+ * de user-agent não pega. Robô carrega página; não submete formulário.
+ */
+export async function usuarioOuVisitante(): Promise<Usuario | null> {
+  const atual = await usuarioAtual();
+  if (atual) return atual;
+  const supabase = await clienteDoServidor();
+  const { data, error } = await supabase.auth.signInAnonymously();
+  if (error || !data.user) return null;
+  return { id: data.user.id, email: null, visitante: true };
+}
+
 /** Quem está logado, ou null. Usa `getUser`, que valida o token no servidor. */
 export async function usuarioAtual(): Promise<Usuario | null> {
   const supabase = await clienteDoServidor();

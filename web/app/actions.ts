@@ -3,7 +3,7 @@
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
-import { clienteDoServidor, usuarioAtual } from '../lib/supabase.ts';
+import { clienteDoServidor, usuarioOuVisitante } from '../lib/supabase.ts';
 import { salvarPerfil } from '../lib/perfil.ts';
 import { chaveDaBusca, gravarBuscaDaSessao } from '../lib/sessao.ts';
 import { CARGOS_PRE_CARGA } from '../../src/config/pre-carga.ts';
@@ -65,8 +65,8 @@ export async function definirBusca(
   _anterior: EstadoDoFormulario,
   form: FormData,
 ): Promise<EstadoDoFormulario> {
-  const usuario = await usuarioAtual();
-  if (!usuario) return { erro: 'Sua sessão expirou. Entre de novo.' };
+  const usuario = await usuarioOuVisitante();
+  if (!usuario) return { erro: 'Não consegui abrir sua sessão. Tente de novo em instantes.' };
 
   const cargo = String(form.get('cargo') ?? '');
   const cidade = String(form.get('cidade') ?? '');
@@ -108,8 +108,8 @@ export async function sugerirCargo(
   _anterior: EstadoDaSugestao,
   form: FormData,
 ): Promise<EstadoDaSugestao> {
-  const usuario = await usuarioAtual();
-  if (!usuario) return { erro: 'Sua sessão não foi encontrada. Recarregue a página e tente de novo.' };
+  const usuario = await usuarioOuVisitante();
+  if (!usuario) return { erro: 'Não consegui abrir sua sessão. Tente de novo em instantes.' };
 
   const validado = validarCargo(String(form.get('cargo') ?? ''));
   if ('erro' in validado) return { erro: validado.erro };
