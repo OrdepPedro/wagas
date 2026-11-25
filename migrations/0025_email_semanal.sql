@@ -28,16 +28,19 @@ alter table public.alertas_email enable row level security;
 
 -- A pessoa lê, liga e desliga o próprio alerta. Sessão anônima fica de fora
 -- pelo mesmo critério do Mapa (0024).
+drop policy if exists alertas_email_le on public.alertas_email;
 create policy alertas_email_le
   on public.alertas_email for select
   to authenticated
   using (user_id = auth.uid());
 
+drop policy if exists alertas_email_cria on public.alertas_email;
 create policy alertas_email_cria
   on public.alertas_email for insert
   to authenticated
   with check (user_id = auth.uid() and not coalesce((auth.jwt() ->> 'is_anonymous')::boolean, false));
 
+drop policy if exists alertas_email_altera on public.alertas_email;
 create policy alertas_email_altera
   on public.alertas_email for update
   to authenticated
@@ -76,17 +79,22 @@ create index if not exists cliques_email_por_envio_idx on public.cliques_email (
 -- envio existe e que a vaga estava nele.
 alter table public.cliques_email enable row level security;
 
+-- Cliques contados POR ENVIO primeiro, e só depois agrupados por semana: somar
+-- direto no agrupamento por semana exigiria subconsulta correlacionada com a
+-- coluna agrupada, que o Postgres recusa (42803).
 create or replace view public.email_conversao
 with (security_invoker = true) as
+with por_envio as (
+  select
+    date_trunc('week', e.enviado_em) as semana,
+    (select count(*) from public.cliques_email c where c.envio_id = e.id) as cliques
+  from public.envios_email e
+)
 select
-  date_trunc('week', e.enviado_em) as semana,
-  count(*)                                           as envios,
-  count(*) filter (where exists (
-    select 1 from public.cliques_email c where c.envio_id = e.id
-  ))                                                 as envios_com_clique,
-  (select count(*) from public.cliques_email c
-     join public.envios_email e2 on e2.id = c.envio_id
-    where date_trunc('week', e2.enviado_em) = date_trunc('week', e.enviado_em)) as cliques
-from public.envios_email e
-group by 1
-order by 1 desc;
+  semana,
+  count(*)                              as envios,
+  count(*) filter (where cliques > 0)   as envios_com_clique,
+  coalesce(sum(cliques), 0)::bigint     as cliques
+from por_envio
+group by semana
+order by semana desc;
