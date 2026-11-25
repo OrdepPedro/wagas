@@ -11,6 +11,7 @@ import { redirect } from 'next/navigation';
 import { FormularioDeBusca } from '../formularios.tsx';
 import { AvisoDeTeto } from '../teto-modal.tsx';
 import { FaixaDaOutraFonte } from '../outra-fonte.tsx';
+import { AlertaPorEmail } from '../email/alerta.tsx';
 
 export const dynamic = 'force-dynamic';
 
@@ -370,8 +371,8 @@ export default async function PaginaDoFeed({
             últimos {JANELA_DIAS} dias
           </p>
         </div>
-        {/* Visitante não tem "Sair": sair apagaria a sessão anônima, o proxy
-            criaria outra no próximo acesso, e o teto zeraria com um clique. */}
+        {/* Visitante não tem "Sair": sair apagaria a sessão anônima, a próxima
+            busca criaria outra, e o teto zeraria com um clique. */}
         {/* "Meu currículo" fica aqui e não no topo: no celular o topo já não
             cabe em 375 px, e o link a mais o deixava 59 px mais largo. */}
         {usuario.visitante ? null : (
@@ -398,6 +399,8 @@ export default async function PaginaDoFeed({
           rotulo="Buscar"
         />
       </section>
+
+      <AlertaPorEmail usuario={usuario} cargo={perfil.cargo} />
 
       <Feed
         cargo={perfil.cargo}

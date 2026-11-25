@@ -16,3 +16,6 @@ backup-jobs-*.json
 
 # Zip da extensão gerado por `npm run extensao`.
 dist/
+
+# Prévias do e-mail semanal (`npm run email-semanal -- --seco`): têm o cargo e a cidade de usuários reais.
+email-previas/

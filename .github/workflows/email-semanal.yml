@@ -1,0 +1,51 @@
+name: email-semanal
+
+# Vagas novas da semana para quem pediu (Passo 5, gatilho de retorno).
+# Lê só o cache que a coleta diária popula; não chama fonte externa.
+#
+# Segunda de manhã, depois da coleta da madrugada. O GitHub atrasa o agendamento
+# em horas (medido de 10 a 24/11 na coleta diária), então o horário nominal é
+# 06h de Brasília para o e-mail sair, na pior das hipóteses, na segunda à tarde.
+# Re-run na mesma semana não duplica: o script pula quem recebeu há menos de 6 dias.
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      seco:
+        description: 'Monta os e-mails sem enviar'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: email-semanal
+  cancel-in-progress: false
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+
+      - name: Enviar
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          RESEND_KEY: ${{ secrets.RESEND_KEY }}
+          # Entrada do disparo manual por env, nunca interpolada no `run`.
+          SECO: ${{ inputs.seco }}
+        run: |
+          set -euo pipefail
+          if [ "${SECO:-false}" = "true" ]; then
+            node scripts/email-semanal.ts --seco
+          else
+            node scripts/email-semanal.ts
+          fi
