@@ -16,6 +16,10 @@ on:
         description: 'Monta os e-mails sem enviar'
         type: boolean
         default: true
+      para:
+        description: 'Teste: manda só para este e-mail, sem registrar o envio (desligue o seco)'
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -42,10 +46,10 @@ jobs:
           RESEND_KEY: ${{ secrets.RESEND_KEY }}
           # Entrada do disparo manual por env, nunca interpolada no `run`.
           SECO: ${{ inputs.seco }}
+          PARA: ${{ inputs.para }}
         run: |
           set -euo pipefail
-          if [ "${SECO:-false}" = "true" ]; then
-            node scripts/email-semanal.ts --seco
-          else
-            node scripts/email-semanal.ts
-          fi
+          args=()
+          if [ "${SECO:-false}" = "true" ]; then args+=(--seco); fi
+          if [ -n "${PARA:-}" ]; then args+=("--para=${PARA}"); fi
+          node scripts/email-semanal.ts ${args[@]+"${args[@]}"}
