@@ -10,7 +10,7 @@ import { clienteAdministrativo } from '../../../lib/admin.ts';
 import { provedorDeCurriculo } from '../../../lib/gemini-curriculo.ts';
 import { ArquivoIlegivel, extrairArquivo } from '../../../lib/curriculo.ts';
 import { inicioDoDiaBrasilia } from '../../../lib/limites.ts';
-import { usuarioAtual } from '../../../lib/supabase.ts';
+import { usuarioAtual, usuarioOuVisitante } from '../../../lib/supabase.ts';
 
 export interface EstadoDaMedicao {
   erro?: string;
@@ -74,8 +74,8 @@ async function registrar(linha: Record<string, unknown>): Promise<string | undef
 }
 
 export async function medir(_anterior: EstadoDaMedicao, form: FormData): Promise<EstadoDaMedicao> {
-  const usuario = await usuarioAtual();
-  if (!usuario) return { erro: 'Não encontramos sua sessão. Recarregue a página e tente de novo.' };
+  const usuario = await usuarioOuVisitante();
+  if (!usuario) return { erro: 'Não consegui abrir sua sessão. Tente de novo em instantes.' };
 
   const cargo = String(form.get('cargo') ?? '').trim().slice(0, 120);
   const vaga = String(form.get('vaga') ?? '').trim().slice(0, 20_000) || null;

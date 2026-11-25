@@ -755,6 +755,23 @@ Cada cartão da listagem traz id, título e data com hora. Agora (`cartoesDaList
 - **Estimativa, não medida em produção:** de 252 para ~65 requisições por 6 pares, cerca de 75% a menos, ou seja, os 216 min devem cair para algo perto de 1h. A conta de "já conhecidas" foi feita no meio do dia, com a coleta da véspera; numa coleta às 04h a fração deve ser maior. O resumo da coleta diária passou a imprimir requisições, páginas abertas, cortes pelo cartão e conhecidas.
 - **Se o layout do cartão mudar,** `cartoesDaListagem` cai para os links soltos, sem título nem data, e a coleta volta a abrir tudo: mais lenta e correta.
 
+**46. Primeiras duas semanas de uso, e as contas anônimas eram 8 por visitante (25/11).** De 10 a 25/11: **119 visitantes e 235 pageviews** no Vercel Analytics, quase tudo em 10 e 11/11 (20 e 33 por dia); de 19/11 em diante, 2 a 5 por dia. 103 dos 119 sem referrer (link direto ou app de mensagem), LinkedIn 9, Facebook 5, Google e Bing 3 cada — ninguém chega por busca.
+
+| | linhas | pessoas |
+|---|---|---|
+| buscas | 74 | 29 (9 vazias; a última em 21/11) |
+| cliques em "ver vaga" | 61 | 17 (24 de um usuário só em 15/11, provavelmente teste) |
+| CVs adaptados | 10 | 3 |
+| **voltaram 7+ dias depois** | — | **0** |
+
+5 de 30 voltaram em outro dia, todos dentro da primeira semana. Público quase todo tech ("engenheiro de dados", "PM", "desenvolvedor", "TI", node, react, python), que é onde o acervo é mais fraco.
+
+**A contagem de usuário estava inflada 8×.** `auth.users` tinha 939 contas anônimas (642 desde 10/11) contra ~120 visitantes. Em 22/11, 177 contas e 2 visitantes, em duas rajadas: 124 contas em 10 minutos e 48 em outros 10. O `proxy.ts` criava a sessão anônima a cada GET em `/` sem cookie, e robô sem cookie com user-agent de navegador passava pelo filtro. Os logs do plano Hobby da Vercel guardam 1 hora, então o user-agent não foi identificado. **Correção estrutural, não mais um filtro:** a sessão nasce em `usuarioOuVisitante`, dentro da Server Action de buscar, sugerir cargo e medir currículo. Robô carrega página; não submete formulário. Verificado no servidor local: 3 GETs sem cookie criaram 0 contas; uma busca criou 1 e gravou perfil e busca pela RLS no mesmo request. Buscas e cliques não foram afetados pela inflação (exigem ação); qualquer número por "usuário" tirado de `auth.users` antes de 25/11 está errado.
+
+**E-mail semanal construído (25/11), não ligado.** `src/email/semanal.ts`, `scripts/email-semanal.ts` (`npm run email-semanal -- --seco`), `email-semanal.yml` (segunda, 06h de Brasília), migration `0025_email_semanal.sql` (**aplicada pelo Pedro em 25/11**), convite em `/vagas`, `/email/descadastrar`, e `/ir/<id>?envio=` contando em `cliques_email`. Só conta com e-mail recebe: visitante anônimo é levado a entrar. Não manda e-mail vazio nem dois na mesma semana; teto de 80 por execução, porque o Resend gratuito dá 100/dia e o link mágico sai da mesma conta. **Para ligar:** criar uma API key no Resend (só envio, domínio `wagas.com.br`) e pôr como secret `RESEND_KEY` no repositório, rodar o workflow à mão com `seco` e depois um envio de teste com `--para=`.
+
+**Atrito não resolvido:** quem entra com e-mail vindo de sessão anônima ganha outro usuário, e o perfil (cargo + cidade) fica no anônimo. A pessoa cai na landing e busca de novo. Para dez pessoas recrutadas à mão é tolerável; para conversão orgânica, não.
+
 ---
 
 ## As dez travas — decididas em 28/08/2026
@@ -859,7 +876,7 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
   - **Duas regras de privacidade para o mesmo dado.** O medidor e o estruturador mandam o currículo ao **Gemini gratuito** (efêmero, nada gravado); a adaptação manda só ao Groq, porque os termos do tier gratuito do Gemini permitem uso do conteúdo. Não decidido qual vale para o produto.
 - **[fecha o Passo 4] Uma requisição por item na coleta** (trava 4). Fecha `data_publicacao`, empresa, modelo e corpo do post de uma vez. Só no Actions, nunca no request do usuário, e com falha de rede distinguível de campo ausente.
 - ~~**[fecha o Passo 4] Garantir zero duplicata na exibição do feed** (trava 5)~~ — **feito em 23/10, achado 40.** Colapso na exibição em duas regras, dedup de gravação por id da fonte, autocura das vagas descartadas. A regra entre fontes não disparou em produção ainda.
-- **Ligar Anonymous Sign-ins no Supabase** (trava 7). O caminho já está pronto no código — `is_anonymous` lido, teto aplicado. Falta o botão no dashboard.
+- ~~**Ligar Anonymous Sign-ins no Supabase** (trava 7)~~ — **ligado** (conferido em 25/11, `anonymous_users: true`). Desde 25/11 a sessão nasce na Server Action, não no proxy (achado 46).
 - **Região metropolitana determinística** (trava 6, achado 22). `cidade_slug` + tabela de municípios por RM.
 - **Segunda fonte gratuita brasileira** (trava 10). A Gupy sustenta o caso de cargo novo sozinha, o que é risco de fonte única. Nenhum candidato foi verificado; a sonda mede **sobreposição com o acervo atual**, não volume.
 - **Medir se post converte — mas só no Passo 5.** Posts são 19 de 248 itens (7,7%) com a MAIOR taxa de aprovação de todas as fontes (95%): quando aparece, é vaga boa. Cliques por usuário por semana não existem porque ainda não há usuário (o deploy existe desde 06/11). Com o post rebaixado (trava 1), essa medição deixou de ser urgente: ela decide se vale reinvestir na fonte, não se o produto entrega feed. `/ir/[id]` já grava o clique.
@@ -894,13 +911,19 @@ As travas de decisão saíram desta lista em 28/08 e viraram a seção "As dez t
 | 2 — Coletor | ✅ **pronto, rodando sob demanda.** Repo em github.com/OrdepPedro/wagas (privado). Sem cron: o saldo da Serper não renova e não há front-end lendo o banco ainda |
 | 3 — Classificador com harness de avaliação | ✅ **pronto e medido.** Pipeline completo com precisão 100% e recall 95% sobre 120 casos rotulados. Roda sob demanda pelo Actions |
 | 4 — Feed mínimo (Next.js + Supabase Auth) | 🔨 **no ar em www.wagas.com.br desde 06/11.** Migrations 0004–0007, `web/` com Auth por link mágico, busca de qualquer cargo pela API pública da Gupy, toggle Só Remoto, teto diário, clique em `/ir/[id]` e fila de coleta paga |
-| 5 — Ingestão por e-mail e teste com 10 usuários reais | pendente. Vercel e SMTP próprio feitos em 06/11; falta Anonymous Sign-ins |
+| 5 — Teste com 10 usuários reais, com e-mail semanal como gatilho de retorno | 🔨 **redefinido em 25/11** (achado 46). Ingestão por e-mail saiu. E-mail semanal construído e `0025` aplicada; falta criar o secret `RESEND_KEY` e recrutar |
 
 **O Passo 4 fecha com três condições, e só com elas** (trava 3, 28/08): `data_publicacao` real na maioria das linhas, zero duplicata no feed, Telegram medido. Melhoria fora dessas três é o Passo 4 não terminando nunca — o resto vai para o Passo 5.
 
 **Telegram medido em 29/08** (achado 35) — a terceira condição está cumprida. Faltam as duas de dado.
 
 **As três cumpridas em 23/10:** data real em 100% das vagas da janela (938 de 938 em 22/10, pela coleta diária de Gupy + InfoJobs); zero duplicata no feed (achado 40); Telegram medido. **O Passo 4 fecha quando este trabalho chegar ao `main`.**
+
+**Passo 5 redefinido em 25/11.** A definição antiga ("ingestão por e-mail e teste com 10 usuários") era de antes da virada de 19/10: ingestão por e-mail servia a alerta de vaga e post de recrutador, que saíram do diferencial. Saiu. O Passo 5 agora é:
+
+1. **Dez pessoas recrutadas fora da bolha tech**, de segmentos variados. O acervo é forte em não-tech (Gupy + InfoJobs) e o público de 10/11 foi quase todo dev remoto, que mede o ponto fraco.
+2. **Com o e-mail semanal ligado.** Sem gatilho de retorno, retenção no dia 7 mede se a pessoa lembrou que o site existe.
+3. **Critério declarado antes de começar:** das dez, quantas clicam em vaga na SEGUNDA semana (`cliques` + `cliques_email`), e quantas adaptam CV e clicam na mesma vaga (`adaptacoes_conversao`). Envio com clique sobre envio sai de `email_conversao`. Se der zero de novo, a hipótese do encaixe perde força — e isso é resultado, não falha do teste.
 
 **Não ajude o Pedro a pular etapas.**
 
