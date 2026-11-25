@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { TRIAL_DIAS, ehAba, type Aba } from '../../../src/mapa/regras.ts';
+import { MAPA_GRATUITO, TRIAL_DIAS, ehAba, type Aba } from '../../../src/mapa/regras.ts';
 import { lerCurriculo } from '../../lib/adaptacao.ts';
 import {
   lerAcesso,
@@ -11,8 +11,9 @@ import {
 } from '../../lib/mapa.ts';
 import { lerPerfil } from '../../lib/perfil.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
+import { lerAlertas } from '../../lib/alertas.ts';
 import { comecarTeste, type Aviso } from './actions.ts';
-import { Candidaturas, Filtros, Lateral, Resumo, Vagas, VisaoGeral } from './painel.tsx';
+import { Alertas, Candidaturas, Filtros, Lateral, Resumo, Vagas, VisaoGeral } from './painel.tsx';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,6 +29,9 @@ const TEXTO_DO_AVISO: Record<Aviso, { texto: string; ruim?: boolean }> = {
   falha: { texto: 'Não consegui salvar. Tente de novo.', ruim: true },
   manual_invalida: { texto: 'Confira cargo, empresa, link e data da candidatura.', ruim: true },
   travado: { texto: 'Seu teste do Mapa terminou.', ruim: true },
+  alerta_invalido: { texto: 'Confira o cargo e a cidade, ou marque "Só vagas remotas".', ruim: true },
+  alerta_repetido: { texto: 'Essa busca já está nos seus alertas.', ruim: true },
+  alerta_limite: { texto: 'São até 5 buscas extras. Tire uma para pôr outra.', ruim: true },
 };
 
 /* ---------------------------------------------------------------------------
@@ -63,7 +67,7 @@ function OQueE() {
 export default async function PaginaDoMapa({
   searchParams,
 }: {
-  searchParams: Promise<{ aviso?: string; aba?: string }>;
+  searchParams: Promise<{ aviso?: string; aba?: string; status?: string }>;
 }) {
   const usuario = await usuarioAtual();
 
@@ -72,7 +76,8 @@ export default async function PaginaDoMapa({
       <Porta titulo="Entre com seu e-mail para usar o Mapa">
         <OQueE />
         <p>
-          São {TRIAL_DIAS} dias de teste, sem cartão. <a href="/entrar">Entrar</a>
+          {MAPA_GRATUITO ? 'Gratuito por enquanto.' : `São ${TRIAL_DIAS} dias de teste, sem cartão.`}{' '}
+          <a href="/entrar">Entrar</a>
         </p>
       </Porta>
     );
@@ -128,11 +133,12 @@ export default async function PaginaDoMapa({
   ]);
   // Sem a 0024 aplicada a consulta falha e volta vazia: as vagas aparecem sem placar.
   const placares = curriculo ? await placaresDoCurriculo(usuario.id, curriculo.hash) : new Map();
-  const [dados, perguntas] = await Promise.all([
+  const [dados, perguntas, alertas] = await Promise.all([
     perfil ? vagasDoMapa(perfil, filtros, candidaturas) : Promise.resolve(null),
     aba === 'geral'
       ? perguntasPendentes(usuario.id, new Set(candidaturas.flatMap((c) => (c.job_id ? [c.job_id] : []))))
       : Promise.resolve([]),
+    aba === 'alertas' ? lerAlertas(usuario.id) : Promise.resolve(null),
   ]);
   const agora = new Date();
   const feitas = candidaturas.filter((c) => c.status !== 'nao_enviada').length;
@@ -153,7 +159,9 @@ export default async function PaginaDoMapa({
         ) : aba === 'vagas' ? (
           <Vagas perfil={perfil} dados={dados} placares={placares} />
         ) : aba === 'candidaturas' ? (
-          <Candidaturas candidaturas={candidaturas} />
+          <Candidaturas candidaturas={candidaturas} status={params.status} />
+        ) : aba === 'alertas' && alertas ? (
+          <Alertas perfil={perfil} alertas={alertas} email={usuario.email} />
         ) : (
           <Filtros filtros={filtros} />
         )}

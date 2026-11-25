@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound, redirect } from 'next/navigation';
+import { acessoAtivo } from '../../../../../src/mapa/regras.ts';
 import { adaptacaoDisponivel, lerCurriculo } from '../../../../lib/adaptacao.ts';
 import {
   comparacoesHoje,
@@ -44,7 +45,7 @@ export default async function PaginaDaComparacao({
   const usuario = await usuarioAtual();
   if (!usuario || usuario.visitante) redirect('/mapa');
   const acesso = await lerAcesso(usuario.id);
-  if (acesso.estado !== 'teste' && acesso.estado !== 'pago') redirect('/mapa');
+  if (!acessoAtivo(acesso)) redirect('/mapa');
 
   const alvo = await vagaParaComparar(jobId);
   if (!alvo) notFound();

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   PERFIL_VAZIO,
+  acessoAtivo,
   estadoDoAcesso,
   motivoDoCorte,
   perfilDoFormulario,
@@ -81,16 +82,25 @@ test('formulário com valor desconhecido vira "não filtra"', () => {
 
 test('acesso: sem linha, em teste, expirado e pago', () => {
   const agora = new Date('2026-11-17T12:00:00Z');
-  assert.equal(estadoDoAcesso(null, agora).estado, 'sem_teste');
+  assert.equal(estadoDoAcesso(null, agora, false).estado, 'sem_teste');
 
-  const emTeste = estadoDoAcesso({ trial_inicio: '2026-11-16T12:00:00Z', pago_ate: null }, agora);
+  const emTeste = estadoDoAcesso({ trial_inicio: '2026-11-16T12:00:00Z', pago_ate: null }, agora, false);
   assert.equal(emTeste.estado, 'teste');
   assert.equal(emTeste.estado === 'teste' && emTeste.horasRestantes, 48);
 
-  assert.equal(estadoDoAcesso({ trial_inicio: '2026-11-14T11:59:00Z', pago_ate: null }, agora).estado, 'expirado');
-  assert.equal(estadoDoAcesso({ trial_inicio: '2026-10-01T00:00:00Z', pago_ate: '2026-12-01T00:00:00Z' }, agora).estado, 'pago');
+  assert.equal(estadoDoAcesso({ trial_inicio: '2026-11-14T11:59:00Z', pago_ate: null }, agora, false).estado, 'expirado');
+  assert.equal(estadoDoAcesso({ trial_inicio: '2026-10-01T00:00:00Z', pago_ate: '2026-12-01T00:00:00Z' }, agora, false).estado, 'pago');
   // Assinatura vencida trava de novo: o teste não recomeça.
-  assert.equal(estadoDoAcesso({ trial_inicio: '2026-10-01T00:00:00Z', pago_ate: '2026-11-01T00:00:00Z' }, agora).estado, 'expirado');
+  assert.equal(estadoDoAcesso({ trial_inicio: '2026-10-01T00:00:00Z', pago_ate: '2026-11-01T00:00:00Z' }, agora, false).estado, 'expirado');
+});
+
+test('acesso: com o Mapa gratuito, ninguém trava, nem sem teste nem com teste vencido', () => {
+  const agora = new Date('2026-11-17T12:00:00Z');
+  assert.equal(estadoDoAcesso(null, agora, true).estado, 'gratuito');
+  const vencido = estadoDoAcesso({ trial_inicio: '2026-10-01T00:00:00Z', pago_ate: null }, agora, true);
+  assert.equal(vencido.estado, 'gratuito');
+  assert.ok(acessoAtivo(vencido));
+  assert.ok(!acessoAtivo(estadoDoAcesso(null, agora, false)));
 });
 
 test('candidatura manual: valida e normaliza', () => {

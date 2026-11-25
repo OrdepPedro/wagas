@@ -124,6 +124,13 @@ export function perfilDoFormulario(campos: {
 // Acesso: teste de 3 dias, depois trava.
 // ---------------------------------------------------------------------------
 
+/**
+ * O Mapa está aberto a toda conta com e-mail, sem teste nem assinatura.
+ * Decidido pelo Pedro em 25/11/2026, "até segunda ordem". Para voltar ao
+ * teste de 3 dias, basta pôr `false`: a regra do teste continua abaixo.
+ */
+export const MAPA_GRATUITO = true;
+
 export const TRIAL_DIAS = 3;
 /** Comparações com o currículo por dia durante o teste. */
 export const COMPARACOES_POR_DIA_NO_TESTE = 2;
@@ -132,12 +139,21 @@ export type Acesso =
   | { estado: 'sem_teste' }
   | { estado: 'teste'; ate: Date; horasRestantes: number }
   | { estado: 'pago'; ate: Date }
-  | { estado: 'expirado'; em: Date };
+  | { estado: 'expirado'; em: Date }
+  | { estado: 'gratuito' };
+
+/** Pode usar o Mapa agora: em teste, pago ou com o Mapa aberto a todos. */
+export const acessoAtivo = (
+  acesso: Acesso | { estado: 'indisponivel' },
+): acesso is Extract<Acesso, { estado: 'teste' | 'pago' | 'gratuito' }> =>
+  acesso.estado === 'teste' || acesso.estado === 'pago' || acesso.estado === 'gratuito';
 
 export function estadoDoAcesso(
   linha: { trial_inicio: string; pago_ate: string | null } | null,
   agora: Date = new Date(),
+  gratuito: boolean = MAPA_GRATUITO,
 ): Acesso {
+  if (gratuito) return { estado: 'gratuito' };
   if (!linha) return { estado: 'sem_teste' };
 
   if (linha.pago_ate) {
@@ -176,7 +192,7 @@ export const NOME_DO_STATUS: Record<Exclude<Status, 'nao_enviada'>, string> = {
 export const ehStatus = (s: string): s is Status => (STATUS as readonly string[]).includes(s);
 
 /** Seções do painel do Mapa, em `/mapa?aba=`. */
-export const ABAS = ['geral', 'vagas', 'candidaturas', 'filtros'] as const;
+export const ABAS = ['geral', 'vagas', 'candidaturas', 'alertas', 'filtros'] as const;
 export type Aba = (typeof ABAS)[number];
 export const ehAba = (valor: unknown): valor is Aba =>
   typeof valor === 'string' && (ABAS as readonly string[]).includes(valor);

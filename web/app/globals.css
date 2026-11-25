@@ -3610,3 +3610,85 @@ a.painel-lista-titulo:hover {
 .comparacao-nota {
   font-size: 0.8125rem;
 }
+
+/* ---------------------------------------------------------------------------
+ * Convite do e-mail semanal (/vagas e /mapa): uma linha, botão com cara de link.
+ * ------------------------------------------------------------------------- */
+
+.alerta-email {
+  margin: 8px 0 16px;
+}
+
+button.como-link,
+button.como-link:hover:not(:disabled) {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--acento);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.painel-cartao .alerta-email {
+  margin: 12px 0 0;
+}
+
+/* Mapa: alertas por e-mail e funil de candidaturas. */
+.mapa-alerta-chave {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.mapa-subtitulo {
+  font-size: 1rem;
+  margin: 24px 0 8px;
+}
+
+.mapa-alertas {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+}
+
+.mapa-alertas li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--borda);
+}
+
+.mapa-funil {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 16px;
+}
+
+.mapa-funil a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid var(--borda);
+  border-radius: var(--raio);
+  font-size: 0.875rem;
+  color: var(--texto-fraco);
+  text-decoration: none;
+}
+
+.mapa-funil a[aria-current='page'] {
+  border-color: var(--acento);
+  color: var(--acento);
+}
+
+.mapa-funil strong {
+  color: var(--texto);
+}

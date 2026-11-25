@@ -59,12 +59,43 @@ export function vagasNovas<T extends VagaDoEmail>(
   return { mostrar: novas.slice(0, VAGAS_NO_EMAIL), total: novas.length };
 }
 
-export interface PedidoDoEmail {
+/** Uma busca dentro do e-mail: cargo, onde, e as vagas novas dela. */
+export interface BlocoDoEmail {
   cargo: string;
   cidade: string;
   soRemoto: boolean;
   vagas: VagaDoEmail[];
+  /** Quantas novas a busca tem, inclusive as que não couberam no corpo. */
   total: number;
+}
+
+/** Com várias buscas, cada uma mostra menos cartões: o e-mail não vira lista telefônica. */
+export const VAGAS_POR_BLOCO = 5;
+
+/**
+ * Prepara as buscas para o e-mail: tira a vaga que já apareceu numa busca
+ * anterior (trava 5, agora entre buscas: "Analista de Dados" e "Cientista de
+ * Dados" casam a mesma vaga), descarta busca sem nada novo e corta cada uma no
+ * teto. A primeira busca é a principal e tem prioridade sobre as repetidas.
+ */
+export function distribuir(blocos: BlocoDoEmail[]): BlocoDoEmail[] {
+  const vistas = new Set<number>();
+  const teto = blocos.length > 1 ? VAGAS_POR_BLOCO : VAGAS_NO_EMAIL;
+  const saida: BlocoDoEmail[] = [];
+  for (const b of blocos) {
+    const proprias = b.vagas.filter((v) => !vistas.has(v.id));
+    const repetidas = b.vagas.length - proprias.length;
+    const total = b.total - repetidas;
+    if (total <= 0 || proprias.length === 0) continue;
+    for (const v of proprias) vistas.add(v.id);
+    saida.push({ ...b, vagas: proprias.slice(0, teto), total });
+  }
+  return saida;
+}
+
+export interface PedidoDoEmail {
+  /** Já passadas por `distribuir`; a primeira é a busca principal. */
+  blocos: BlocoDoEmail[];
   site: string;
   /** Id do envio: vai em cada link, para o clique vir do e-mail ser contado. */
   envioId: string;
@@ -106,51 +137,67 @@ function linhaDeDetalhe(v: VagaDoEmail): string {
     .join(' · ');
 }
 
+const ondeDe = (b: BlocoDoEmail) => (b.soRemoto ? 'remoto em todo o Brasil' : `${b.cidade} e remoto no Brasil`);
+const vagasNovasDe = (n: number) => (n === 1 ? '1 vaga nova' : `${n} vagas novas`);
+
 export function montarEmail(p: PedidoDoEmail): EmailMontado {
+  if (p.blocos.length === 0) throw new Error('e-mail sem busca');
   const site = p.site.replace(/\/+$/, '');
-  const onde = p.soRemoto ? 'remoto em todo o Brasil' : `${p.cidade} e remoto no Brasil`;
   const linkDescadastro = `${site}/email/descadastrar?t=${encodeURIComponent(p.descadastro)}`;
   const link = (id: number) => `${site}/ir/${id}?envio=${encodeURIComponent(p.envioId)}`;
-  const mais = p.total - p.vagas.length;
+  const varias = p.blocos.length > 1;
+  const principal = p.blocos[0]!;
+  const totalGeral = p.blocos.reduce((s, b) => s + b.total, 0);
 
-  const assunto =
-    p.total === 1
-      ? `1 vaga nova de ${p.cargo} esta semana`
-      : `${p.total} vagas novas de ${p.cargo} esta semana`;
+  const assunto = varias
+    ? `${vagasNovasDe(totalGeral)} nas suas ${p.blocos.length} buscas esta semana`
+    : `${vagasNovasDe(principal.total)} de ${principal.cargo} esta semana`;
 
-  const itensHtml = p.vagas
-    .map(
-      (v) => `<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb">
+  const blocoHtml = (b: BlocoDoEmail) => {
+    const mais = b.total - b.vagas.length;
+    const itens = b.vagas
+      .map(
+        (v) => `<tr><td style="padding:12px 0;border-bottom:1px solid #e5e7eb">
 <a href="${escapar(link(v.id))}" style="font-size:16px;font-weight:600;color:#1d4ed8;text-decoration:none">${escapar(v.cargo)}</a>
 <div style="font-size:14px;color:#4b5563;margin-top:4px">${escapar(linhaDeDetalhe(v))}</div>
 </td></tr>`,
-    )
-    .join('\n');
+      )
+      .join('\n');
+    const titulo = varias
+      ? `<tr><td style="padding-top:24px"><h2 style="font-size:17px;margin:0">${escapar(b.cargo)} <span style="font-weight:normal;color:#6b7280">· ${escapar(ondeDe(b))} · ${vagasNovasDe(b.total)}</span></h2></td></tr>`
+      : '';
+    const rodape = mais > 0 ? `<tr><td style="padding-top:8px;font-size:14px;color:#4b5563">E mais ${mais} no wagas.</td></tr>` : '';
+    return `${titulo}<tr><td><table role="presentation" width="100%">${itens}</table></td></tr>${rodape}`;
+  };
 
+  const cargos = p.blocos.map((b) => b.cargo).join(', ');
   const html = `<!doctype html>
 <html lang="pt-BR"><body style="margin:0;padding:24px;background:#ffffff;font-family:Arial,Helvetica,sans-serif;color:#111827">
 <table role="presentation" width="100%" style="max-width:560px;margin:0 auto">
 <tr><td>
-<p style="font-size:14px;color:#6b7280;margin:0 0 4px">wagas · ${escapar(onde)}</p>
-<h1 style="font-size:20px;margin:0 0 16px">${escapar(assunto)}</h1>
+<p style="font-size:14px;color:#6b7280;margin:0 0 4px">wagas · ${escapar(varias ? 'suas buscas' : ondeDe(principal))}</p>
+<h1 style="font-size:20px;margin:0 0 8px">${escapar(assunto)}</h1>
 </td></tr>
-<tr><td><table role="presentation" width="100%">${itensHtml}</table></td></tr>
-<tr><td style="padding-top:16px;font-size:14px">
-${mais > 0 ? `<p style="margin:0 0 12px">E mais ${mais} no seu feed.</p>` : ''}
+${p.blocos.map(blocoHtml).join('\n')}
+<tr><td style="padding-top:20px;font-size:14px">
 <a href="${escapar(site)}/vagas" style="display:inline-block;background:#1d4ed8;color:#ffffff;padding:10px 16px;border-radius:6px;text-decoration:none">Ver todas no wagas</a>
 </td></tr>
 <tr><td style="padding-top:32px;font-size:12px;color:#6b7280">
-Você recebe este e-mail porque pediu, no wagas, as vagas novas de ${escapar(p.cargo)} toda semana.
+Você recebe este e-mail porque pediu, no wagas, as vagas novas de ${escapar(cargos)} toda semana.
 <a href="${escapar(linkDescadastro)}" style="color:#6b7280">Parar de receber</a>.
 </td></tr>
 </table>
 </body></html>`;
 
   const texto = [
-    `${assunto} — ${onde}`,
+    varias ? assunto : `${assunto} — ${ondeDe(principal)}`,
     '',
-    ...p.vagas.flatMap((v) => [v.cargo, linhaDeDetalhe(v), link(v.id), '']),
-    mais > 0 ? `E mais ${mais} no seu feed: ${site}/vagas` : `Seu feed: ${site}/vagas`,
+    ...p.blocos.flatMap((b) => [
+      ...(varias ? [`== ${b.cargo} · ${ondeDe(b)} · ${vagasNovasDe(b.total)} ==`, ''] : []),
+      ...b.vagas.flatMap((v) => [v.cargo, linhaDeDetalhe(v), link(v.id), '']),
+      ...(b.total > b.vagas.length ? [`E mais ${b.total - b.vagas.length} no wagas.`, ''] : []),
+    ]),
+    `Seu feed: ${site}/vagas`,
     '',
     `Parar de receber: ${linkDescadastro}`,
   ].join('\n');

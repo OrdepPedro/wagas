@@ -3,8 +3,9 @@
 import type { Route } from 'next';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
-import { ehAba, ehStatus, perfilDoFormulario, validarManual } from '../../../src/mapa/regras.ts';
+import { acessoAtivo, ehAba, ehStatus, perfilDoFormulario, validarManual } from '../../../src/mapa/regras.ts';
 import { lerCurriculo } from '../../lib/adaptacao.ts';
+import { adicionarBusca, desligarAlertas, ligarAlertas, removerBusca } from '../../lib/alertas.ts';
 import {
   apagarCandidatura,
   comparacoesHoje,
@@ -25,7 +26,15 @@ import { usuarioAtual } from '../../lib/supabase.ts';
  * Os avisos viajam como CÓDIGO na URL (`/mapa?aviso=...`) e a página traduz.
  * Texto livre na query string viraria mensagem falsa com o domínio do wagas.
  */
-export type Aviso = 'salvo' | 'candidatura' | 'falha' | 'manual_invalida' | 'travado';
+export type Aviso =
+  | 'salvo'
+  | 'candidatura'
+  | 'falha'
+  | 'manual_invalida'
+  | 'travado'
+  | 'alerta_invalido'
+  | 'alerta_repetido'
+  | 'alerta_limite';
 
 /**
  * Volta para a seção do painel de onde o formulário saiu (campo oculto `aba`),
@@ -46,7 +55,7 @@ async function usuarioComAcesso(form: FormData): Promise<string> {
   const usuario = await usuarioAtual();
   if (!usuario || usuario.visitante) redirect('/entrar' as Route);
   const acesso = await lerAcesso(usuario.id);
-  if (acesso.estado !== 'teste' && acesso.estado !== 'pago') voltar(form, 'travado');
+  if (!acessoAtivo(acesso)) voltar(form, 'travado');
   return usuario.id;
 }
 
@@ -118,6 +127,45 @@ export async function inserirManualAcao(form: FormData): Promise<void> {
   voltar(form, (await inserirManual(userId, linha)) ? 'candidatura' : 'falha');
 }
 
+// ---------------------------------------------------------------------------
+// Alertas por e-mail (aba "Alertas", migrations 0025 e 0026).
+// ---------------------------------------------------------------------------
+
+export async function ligarAlertasAcao(form: FormData): Promise<void> {
+  const userId = await usuarioComAcesso(form);
+  voltar(form, (await ligarAlertas(userId)) ? 'salvo' : 'falha');
+}
+
+export async function desligarAlertasAcao(form: FormData): Promise<void> {
+  const userId = await usuarioComAcesso(form);
+  voltar(form, (await desligarAlertas(userId)) ? 'salvo' : 'falha');
+}
+
+export async function adicionarBuscaAcao(form: FormData): Promise<void> {
+  const userId = await usuarioComAcesso(form);
+  const r = await adicionarBusca(
+    userId,
+    String(form.get('cargo') ?? ''),
+    String(form.get('cidade') ?? ''),
+    form.get('so_remoto') === 'on',
+  );
+  const aviso: Record<typeof r, Aviso> = {
+    ok: 'salvo',
+    invalida: 'alerta_invalido',
+    repetida: 'alerta_repetido',
+    limite: 'alerta_limite',
+    falha: 'falha',
+  };
+  voltar(form, aviso[r]);
+}
+
+export async function removerBuscaAcao(form: FormData): Promise<void> {
+  const userId = await usuarioComAcesso(form);
+  const id = idDoFormulario(form, 'id');
+  if (!id) voltar(form, 'falha');
+  voltar(form, (await removerBusca(userId, id)) ? undefined : 'falha');
+}
+
 /** Códigos de aviso da página de comparação (`/mapa/comparar/[id]?aviso=`). */
 export type AvisoDaComparacao = 'limite' | 'cota' | 'falha' | 'indisponivel' | 'sem_descricao';
 
@@ -143,7 +191,7 @@ export async function compararAcao(form: FormData): Promise<void> {
   if (await lerComparacao(userId, jobId, curriculo.hash)) ir();
 
   const acesso = await lerAcesso(userId);
-  if (acesso.estado !== 'teste' && acesso.estado !== 'pago') voltar(form, 'travado');
+  if (!acessoAtivo(acesso)) voltar(form, 'travado');
   if ((await comparacoesHoje(userId)) >= limiteDeComparacoes(acesso)) ir('limite');
 
   const resultado = await comparar(userId, curriculo, alvo.vaga);
