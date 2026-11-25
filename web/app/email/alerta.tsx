@@ -2,8 +2,8 @@ import { clienteDoServidor, type Usuario } from '../../lib/supabase.ts';
 import { desligarEmailSemanal, ligarEmailSemanal } from './actions.ts';
 
 /**
- * O convite do e-mail semanal: uma linha de texto com um link, no feed
- * (/vagas, abaixo da busca) e no Mapa (cartão "Busca diária").
+ * O convite do e-mail semanal em Minhas vagas: uma linha de texto que liga ou
+ * desliga o envio. As buscas extras se configuram no Mapa (aba Alertas).
  *
  * Discreto de propósito: é um recurso a mais, não o caminho principal da tela.
  * Mesmo numa linha, o texto diz o que chega, para qual e-mail e com que
@@ -36,6 +36,8 @@ export async function AlertaPorEmail({ usuario, cargo }: { usuario: Usuario; car
         <button type="submit" className="como-link">
           Parar
         </button>
+        {' · '}
+        <a href="/mapa?aba=alertas">mais buscas no e-mail</a>
       </form>
     );
   }

@@ -176,7 +176,7 @@ export const NOME_DO_STATUS: Record<Exclude<Status, 'nao_enviada'>, string> = {
 export const ehStatus = (s: string): s is Status => (STATUS as readonly string[]).includes(s);
 
 /** Seções do painel do Mapa, em `/mapa?aba=`. */
-export const ABAS = ['geral', 'vagas', 'candidaturas', 'filtros'] as const;
+export const ABAS = ['geral', 'vagas', 'candidaturas', 'alertas', 'filtros'] as const;
 export type Aba = (typeof ABAS)[number];
 export const ehAba = (valor: unknown): valor is Aba =>
   typeof valor === 'string' && (ABAS as readonly string[]).includes(valor);

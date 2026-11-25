@@ -50,6 +50,28 @@ const [buscas, ufs] = await Promise.all([
   db.selectTodos<{ cidade_slug: string | null; uf: string | null }>('jobs', 'select=cidade_slug,uf&uf=not.is.null&order=id'),
 ]);
 
+// Pares de quem pediu o e-mail semanal (0025) e das buscas extras do Mapa
+// (0026) entram como demanda de hoje. Sem isso, um alerta de quem não volta ao
+// site sai da janela de 30 dias de `buscas` e o e-mail fica vazio para sempre.
+try {
+  const ativos = await db.selectTodos<{ user_id: string }>('alertas_email', 'select=user_id&ativo=is.true&order=user_id');
+  const ids = ativos.map((a) => a.user_id);
+  if (ids.length) {
+    const hoje = agora.toISOString();
+    const lista = `in.(${ids.join(',')})`;
+    const [perfisComAlerta, extras] = await Promise.all([
+      db.select<Omit<BuscaRegistrada, 'criado_em'>>('perfis', `select=user_id,cargo,cidade,cidade_slug&user_id=${lista}`),
+      db
+        .select<Omit<BuscaRegistrada, 'criado_em'>>('alertas_email_buscas', `select=user_id,cargo,cidade,cidade_slug&user_id=${lista}`)
+        .catch(() => []),
+    ]);
+    for (const b of [...perfisComAlerta, ...extras]) buscas.push({ ...b, criado_em: hoje });
+    console.log(`alertas por e-mail: ${perfisComAlerta.length + extras.length} buscas de ${ids.length} pessoas`);
+  }
+} catch (erro) {
+  console.error(`alertas por e-mail ilegíveis (a migration 0025 foi aplicada?): ${String(erro).slice(0, 200)}`);
+}
+
 // Cargos sugeridos na landing (migration 0014): entram como pré-carga, DEPOIS
 // da fixa — se a madrugada não der conta do InfoJobs, quem cai são eles. Sem a
 // migration, a coleta segue só com a pré-carga.

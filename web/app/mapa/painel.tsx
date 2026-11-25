@@ -6,6 +6,7 @@ import {
   NOME_DO_NIVEL,
   NOME_DO_STATUS,
   STATUS_VISIVEIS,
+  ehStatus,
   type Aba,
   type Acesso,
   type MotivoDoCorte,
@@ -15,9 +16,14 @@ import { vagaAdaptavel } from '../../../src/curriculo/adaptar.ts';
 import type { Placar } from '../../../src/mapa/comparar.ts';
 import { JANELA_DIAS, type Vaga } from '../../lib/feed.ts';
 import type { Candidatura, Pergunta, VagasDoMapa } from '../../lib/mapa.ts';
-import type { Perfil } from '../../lib/perfil.ts';
+import { MAX_BUSCAS_EXTRAS, type Alertas as EstadoDosAlertas } from '../../lib/alertas.ts';
+import { CIDADE_SO_REMOTO, type Perfil } from '../../lib/perfil.ts';
 import {
+  adicionarBuscaAcao,
   apagarCandidaturaAcao,
+  desligarAlertasAcao,
+  ligarAlertasAcao,
+  removerBuscaAcao,
   inserirManualAcao,
   marcarCandidatura,
   mudarStatusAcao,
@@ -68,6 +74,7 @@ export function Lateral({
     { aba: 'geral', nome: 'Visão geral', icone: '▦' },
     { aba: 'vagas', nome: 'Vagas', icone: '◎', conta: vagas },
     { aba: 'candidaturas', nome: 'Candidaturas', icone: '✓', conta: candidaturas },
+    { aba: 'alertas', nome: 'Alertas por e-mail', icone: '✉' },
     { aba: 'filtros', nome: 'Filtros', icone: '≡' },
   ];
   return (
@@ -129,18 +136,7 @@ function Assinatura({ acesso }: { acesso: Acesso }) {
   );
 }
 
-export function Resumo({
-  perfil,
-  dados,
-  candidaturas,
-  alerta,
-}: {
-  perfil: Perfil | null;
-  dados: VagasDoMapa | null;
-  candidaturas: Candidatura[];
-  /** Convite do e-mail semanal; vem pronto da página, que tem o usuário. */
-  alerta?: React.ReactNode;
-}) {
+export function Resumo({ perfil, dados, candidaturas }: { perfil: Perfil | null; dados: VagasDoMapa | null; candidaturas: Candidatura[] }) {
   const feitas = candidaturas.filter((c) => c.status !== 'nao_enviada').length;
   const linhas: [string, number | null][] = dados
     ? [
@@ -178,7 +174,6 @@ export function Resumo({
             Trocar cargo ou cidade
           </a>
         ) : null}
-        {alerta}
       </section>
 
       <section className="painel-cartao">
@@ -563,21 +558,39 @@ export function Vagas({
  * Candidaturas
  * ------------------------------------------------------------------------- */
 
-export function Candidaturas({ candidaturas }: { candidaturas: Candidatura[] }) {
-  const lista = candidaturas.filter((c) => c.status !== 'nao_enviada');
+export function Candidaturas({ candidaturas, status }: { candidaturas: Candidatura[]; status?: string }) {
+  const todas = candidaturas.filter((c) => c.status !== 'nao_enviada');
+  const filtro = status && ehStatus(status) && status !== 'nao_enviada' ? status : null;
+  const lista = filtro ? todas.filter((c) => c.status === filtro) : todas;
   const hoje = new Date().toLocaleDateString('sv-SE', { timeZone: FUSO });
 
   return (
     <section>
       <div className="painel-cabecalho">
         <h1>
-          Suas candidaturas <span className="fraco">({lista.length})</span>
+          Suas candidaturas <span className="fraco">({todas.length})</span>
         </h1>
       </div>
+      {todas.length > 0 ? (
+        <nav className="mapa-funil" aria-label="Candidaturas por fase">
+          <a href="/mapa?aba=candidaturas" aria-current={filtro ? undefined : 'page'}>
+            <strong>{todas.length}</strong> Todas
+          </a>
+          {STATUS_VISIVEIS.map((s) => (
+            <a key={s} href={`/mapa?aba=candidaturas&status=${s}`} aria-current={filtro === s ? 'page' : undefined}>
+              <strong>{todas.filter((c) => c.status === s).length}</strong> {NOME_DO_STATUS[s]}
+            </a>
+          ))}
+        </nav>
+      ) : null}
       {lista.length === 0 ? (
         <Vazio
-          titulo="Nada registrado ainda"
-          texto="Marque “Já me candidatei” numa vaga ou adicione abaixo uma candidatura feita fora do wagas."
+          titulo={filtro ? `Nenhuma em “${NOME_DO_STATUS[filtro]}”` : 'Nada registrado ainda'}
+          texto={
+            filtro
+              ? 'Mude a fase de uma candidatura na lista de todas.'
+              : 'Marque “Já me candidatei” numa vaga ou adicione abaixo uma candidatura feita fora do wagas.'
+          }
         />
       ) : (
         <ul className="mapa-candidaturas">
@@ -673,6 +686,123 @@ export function Candidaturas({ candidaturas }: { candidaturas: Candidatura[] }) 
 /* ---------------------------------------------------------------------------
  * Filtros
  * ------------------------------------------------------------------------- */
+
+/* ---------------------------------------------------------------------------
+ * Alertas por e-mail
+ * ------------------------------------------------------------------------- */
+
+const ondeDaBusca = (b: { cidade: string; so_remoto: boolean }) =>
+  b.so_remoto || b.cidade === CIDADE_SO_REMOTO ? 'remoto, todo o Brasil' : `${b.cidade} e remoto`;
+
+export function Alertas({
+  perfil,
+  alertas,
+  email,
+}: {
+  perfil: Perfil | null;
+  alertas: EstadoDosAlertas;
+  email: string | null;
+}) {
+  if (alertas.ativo === null) {
+    return (
+      <section>
+        <div className="painel-cabecalho">
+          <h1>Alertas por e-mail</h1>
+        </div>
+        <Vazio titulo="Indisponível agora" texto="Não consegui ler seus alertas. Tente de novo em instantes." />
+      </section>
+    );
+  }
+  const extras = alertas.extras ?? [];
+  const cabe = alertas.extras !== null && extras.length < MAX_BUSCAS_EXTRAS;
+
+  return (
+    <section>
+      <div className="painel-cabecalho">
+        <h1>Alertas por e-mail</h1>
+      </div>
+      <p className="fraco">
+        Toda segunda, um e-mail só para {email ?? 'o seu e-mail'}, com as vagas novas de cada busca abaixo. Só sai
+        quando há vaga nova, e cada envio tem o link para parar.
+      </p>
+
+      <div className="painel-cartao mapa-alerta-chave">
+        <p style={{ margin: 0 }}>
+          <strong>{alertas.ativo ? 'Ligado.' : 'Desligado.'}</strong>{' '}
+          {alertas.ativo ? 'O próximo e-mail sai na segunda.' : 'Nenhum e-mail sai até você ligar.'}
+        </p>
+        <form action={alertas.ativo ? desligarAlertasAcao : ligarAlertasAcao}>
+          <input type="hidden" name="aba" value="alertas" />
+          <button type="submit" className={alertas.ativo ? 'discreto' : undefined}>
+            {alertas.ativo ? 'Parar de receber' : 'Receber toda segunda'}
+          </button>
+        </form>
+      </div>
+
+      <h2 className="mapa-subtitulo">Buscas no e-mail</h2>
+      <ul className="mapa-alertas">
+        <li>
+          <div>
+            <strong>{perfil ? perfil.cargo : 'Sem busca principal'}</strong>
+            {perfil ? (
+              <span className="fraco">
+                {' '}
+                · {ondeDaBusca({ cidade: perfil.cidade, so_remoto: perfil.soRemoto })} · busca principal
+              </span>
+            ) : null}
+          </div>
+          <a className="painel-link" href="/vagas" style={{ marginTop: 0 }}>
+            {perfil ? 'Trocar em Minhas vagas' : 'Escolher em Minhas vagas'}
+          </a>
+        </li>
+        {extras.map((b) => (
+          <li key={b.id}>
+            <div>
+              <strong>{b.cargo}</strong>
+              <span className="fraco"> · {ondeDaBusca(b)}</span>
+            </div>
+            <form action={removerBuscaAcao}>
+              <input type="hidden" name="aba" value="alertas" />
+              <input type="hidden" name="id" value={b.id} />
+              <button type="submit" className="discreto">
+                Tirar
+              </button>
+            </form>
+          </li>
+        ))}
+      </ul>
+
+      {alertas.extras === null ? (
+        <p className="fraco">As buscas extras ainda não estão disponíveis.</p>
+      ) : cabe ? (
+        <form action={adicionarBuscaAcao} className="painel-cartao mapa-filtros">
+          <h2 style={{ marginTop: 0 }}>Acrescentar busca</h2>
+          <input type="hidden" name="aba" value="alertas" />
+          <div className="campos duplo">
+            <div>
+              <label htmlFor="a-cargo">Cargo</label>
+              <input id="a-cargo" name="cargo" type="text" required maxLength={80} placeholder="Ex.: Analista de Dados" />
+            </div>
+            <div>
+              <label htmlFor="a-cidade">Cidade</label>
+              <input id="a-cidade" name="cidade" type="text" maxLength={80} placeholder="Ex.: Belo Horizonte" />
+            </div>
+          </div>
+          <label className="mapa-marca">
+            <input type="checkbox" name="so_remoto" /> Só vagas remotas (ignora a cidade)
+          </label>
+          <p className="fraco" style={{ margin: '8px 0 12px' }}>
+            Até {MAX_BUSCAS_EXTRAS} buscas além da principal ({extras.length} usadas). Acrescentar liga o e-mail, se
+            estiver desligado.
+          </p>
+          <button type="submit">Acrescentar ao e-mail</button>
+        </form>
+      ) : (
+        <p className="fraco">Você usou as {MAX_BUSCAS_EXTRAS} buscas extras. Tire uma para pôr outra.</p>
+      )}
+    </section>
+  );
+}
 
 export function Filtros({ filtros }: { filtros: PerfilDoMapa }) {
   return (

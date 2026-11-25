@@ -15,7 +15,8 @@ import { carregarConfigClassificador } from '../src/config/env.ts';
 import { SupabaseRest } from '../src/db/supabase.ts';
 import { consultaDeFeed } from '../src/feed/consulta.ts';
 import { colapsarRepetidas, type VagaColapsavel } from '../src/feed/colapsar.ts';
-import { inicioDaSemana, montarEmail, vagasNovas, type VagaDoEmail } from '../src/email/semanal.ts';
+import { distribuir, inicioDaSemana, montarEmail, vagasNovas, type BlocoDoEmail, type VagaDoEmail } from '../src/email/semanal.ts';
+import { estadoDoAcesso } from '../src/mapa/regras.ts';
 
 const args = process.argv.slice(2);
 const SECO = args.includes('--seco');
@@ -40,6 +41,8 @@ if (!SECO && !resendKey) {
 interface Alerta { user_id: string; descadastro: string }
 interface Perfil { user_id: string; cargo: string; cidade: string; so_remoto: boolean }
 interface Envio { user_id: string; enviado_em: string }
+interface BuscaExtra { user_id: string; cargo: string; cidade: string; so_remoto: boolean }
+interface AcessoDoMapa { user_id: string; trial_inicio: string; pago_ate: string | null }
 type Vaga = VagaDoEmail & VagaColapsavel;
 
 async function emailDe(userId: string): Promise<string | null> {
@@ -83,12 +86,43 @@ const perfilDe = new Map(perfis.map((p) => [p.user_id, p]));
 const ultimoEnvio = new Map<string, string>();
 for (const e of envios) if (!ultimoEnvio.has(e.user_id)) ultimoEnvio.set(e.user_id, e.enviado_em);
 
+// Buscas extras (migration 0026): configuradas no Mapa, valem enquanto o Mapa
+// estiver em dia. Sem a migration, o e-mail segue só com a busca principal.
+const extrasDe = new Map<string, BuscaExtra[]>();
+if (ids.length) {
+  try {
+    const [extras, acessos] = await Promise.all([
+      db.select<BuscaExtra>('alertas_email_buscas', `select=user_id,cargo,cidade,so_remoto&user_id=in.(${ids.join(',')})&order=id`),
+      db.select<AcessoDoMapa>('mapa_acessos', `select=user_id,trial_inicio,pago_ate&user_id=in.(${ids.join(',')})`),
+    ]);
+    const comMapa = new Set(
+      acessos.filter((a) => ['teste', 'pago'].includes(estadoDoAcesso(a, agora).estado)).map((a) => a.user_id),
+    );
+    for (const x of extras) {
+      if (!comMapa.has(x.user_id)) continue;
+      extrasDe.set(x.user_id, [...(extrasDe.get(x.user_id) ?? []), x]);
+    }
+  } catch (erro) {
+    console.error(`buscas extras ilegíveis (a migration 0026 foi aplicada?): ${String(erro).slice(0, 200)}`);
+  }
+}
+
+async function blocoDe(busca: { cargo: string; cidade: string; so_remoto: boolean }, desde: Date): Promise<BlocoDoEmail> {
+  const consulta = consultaDeFeed({ cargo: busca.cargo, cidade: busca.cidade, soRemoto: busca.so_remoto, limite: 300, agora });
+  const linhas = await db.select<Vaga>('jobs', consulta.query);
+  const { mostrar, total } = vagasNovas(colapsarRepetidas(linhas).vagas, desde);
+  return { cargo: busca.cargo, cidade: busca.cidade, soRemoto: busca.so_remoto, vagas: mostrar, total };
+}
+
 const conta = { alertas: alertas.length, enviados: 0, semPerfil: 0, semEmail: 0, semNovas: 0, jaRecebeu: 0, falhas: 0, noLimite: 0 };
 if (SECO) mkdirSync('email-previas', { recursive: true });
 
 for (const alerta of alertas) {
   const perfil = perfilDe.get(alerta.user_id);
-  if (!perfil) { conta.semPerfil++; continue; }
+  const extras = extrasDe.get(alerta.user_id) ?? [];
+  // A busca principal vem primeiro: na repetição entre buscas, é ela que fica com a vaga.
+  const buscas = [...(perfil ? [perfil] : []), ...extras];
+  if (buscas.length === 0) { conta.semPerfil++; continue; }
 
   const ultimo = ultimoEnvio.get(alerta.user_id) ?? null;
   if (ultimo && agora.getTime() - new Date(ultimo).getTime() < INTERVALO_MINIMO_MS && !PARA) {
@@ -96,23 +130,22 @@ for (const alerta of alertas) {
     continue;
   }
 
-  const consulta = consultaDeFeed({ cargo: perfil.cargo, cidade: perfil.cidade, soRemoto: perfil.so_remoto, limite: 300, agora });
-  const linhas = await db.select<Vaga>('jobs', consulta.query);
-  const { mostrar, total } = vagasNovas(colapsarRepetidas(linhas).vagas, inicioDaSemana(ultimo, agora));
+  const desde = inicioDaSemana(ultimo, agora);
+  const blocos = distribuir(await Promise.all(buscas.map((b) => blocoDe(b, desde))));
   // Sem vaga nova, não manda: e-mail vazio ensina a pessoa a não abrir o próximo.
-  if (total === 0) { conta.semNovas++; continue; }
+  if (blocos.length === 0) { conta.semNovas++; continue; }
 
   if (conta.enviados >= LIMITE) { conta.noLimite++; continue; }
 
   const envioId = randomUUID();
-  const email = montarEmail({
-    cargo: perfil.cargo, cidade: perfil.cidade, soRemoto: perfil.so_remoto,
-    vagas: mostrar, total, site: SITE, envioId, descadastro: alerta.descadastro,
-  });
+  const email = montarEmail({ blocos, site: SITE, envioId, descadastro: alerta.descadastro });
+  const total = blocos.reduce((s, b) => s + b.total, 0);
+  const jobIds = blocos.flatMap((b) => b.vagas.map((v) => v.id));
+  const rotulo = blocos.map((b) => `${b.cargo} / ${b.soRemoto ? 'remoto' : b.cidade}: ${b.total}`).join('; ');
 
   if (SECO) {
     writeFileSync(`email-previas/${alerta.user_id}.html`, email.html);
-    console.log(`[seco] ${perfil.cargo} / ${perfil.so_remoto ? 'remoto' : perfil.cidade}: ${total} novas, ${mostrar.length} no corpo`);
+    console.log(`[seco] ${rotulo} (${jobIds.length} no corpo)`);
     conta.enviados++;
     continue;
   }
@@ -124,9 +157,12 @@ for (const alerta of alertas) {
     const resendId = await enviar(para, email.assunto, email.html, email.texto, email.linkDescadastro);
     // Envio de teste (--para) não entra na métrica nem conta como "já recebeu".
     if (!PARA) {
+      const principal = buscas[0]!;
       await db.insert('envios_email', [{
-        id: envioId, user_id: alerta.user_id, enviado_em: agora.toISOString(), cargo: perfil.cargo,
-        cidade: perfil.cidade, so_remoto: perfil.so_remoto, vagas: total, job_ids: mostrar.map((v) => v.id), resend_id: resendId,
+        id: envioId, user_id: alerta.user_id, enviado_em: agora.toISOString(), cargo: principal.cargo,
+        cidade: principal.cidade, so_remoto: principal.so_remoto, vagas: total, job_ids: jobIds, resend_id: resendId,
+        // Só com a 0026; sem ela, a coluna não existe e o insert falharia.
+        ...(blocos.length > 1 ? { buscas: blocos.length } : {}),
       }]);
     }
     conta.enviados++;
