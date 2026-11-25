@@ -11,6 +11,7 @@ import {
 } from '../../lib/mapa.ts';
 import { lerPerfil } from '../../lib/perfil.ts';
 import { usuarioAtual } from '../../lib/supabase.ts';
+import { AlertaPorEmail } from '../email/alerta.tsx';
 import { comecarTeste, type Aviso } from './actions.ts';
 import { Candidaturas, Filtros, Lateral, Resumo, Vagas, VisaoGeral } from './painel.tsx';
 
@@ -159,7 +160,12 @@ export default async function PaginaDoMapa({
         )}
       </div>
 
-      <Resumo perfil={perfil} dados={dados} candidaturas={candidaturas} />
+      <Resumo
+        perfil={perfil}
+        dados={dados}
+        candidaturas={candidaturas}
+        alerta={perfil ? <AlertaPorEmail usuario={usuario} cargo={perfil.cargo} /> : null}
+      />
     </div>
   );
 }

@@ -129,7 +129,18 @@ function Assinatura({ acesso }: { acesso: Acesso }) {
   );
 }
 
-export function Resumo({ perfil, dados, candidaturas }: { perfil: Perfil | null; dados: VagasDoMapa | null; candidaturas: Candidatura[] }) {
+export function Resumo({
+  perfil,
+  dados,
+  candidaturas,
+  alerta,
+}: {
+  perfil: Perfil | null;
+  dados: VagasDoMapa | null;
+  candidaturas: Candidatura[];
+  /** Convite do e-mail semanal; vem pronto da página, que tem o usuário. */
+  alerta?: React.ReactNode;
+}) {
   const feitas = candidaturas.filter((c) => c.status !== 'nao_enviada').length;
   const linhas: [string, number | null][] = dados
     ? [
@@ -167,6 +178,7 @@ export function Resumo({ perfil, dados, candidaturas }: { perfil: Perfil | null;
             Trocar cargo ou cidade
           </a>
         ) : null}
+        {alerta}
       </section>
 
       <section className="painel-cartao">

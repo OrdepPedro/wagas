@@ -2,19 +2,21 @@ import { clienteDoServidor, type Usuario } from '../../lib/supabase.ts';
 import { desligarEmailSemanal, ligarEmailSemanal } from './actions.ts';
 
 /**
- * O convite do e-mail semanal, logo abaixo da busca.
+ * O convite do e-mail semanal: uma linha de texto com um link, no feed
+ * (/vagas, abaixo da busca) e no Mapa (cartão "Busca diária").
  *
- * Visitante anônimo não tem e-mail: o convite leva a entrar. Com conta, é um
- * botão só, e o texto diz o que vai chegar e como parar, antes do clique.
+ * Discreto de propósito: é um recurso a mais, não o caminho principal da tela.
+ * Mesmo numa linha, o texto diz o que chega, para qual e-mail e com que
+ * frequência ANTES do clique, porque o clique é o consentimento (LGPD).
  *
- * Sem a migration 0025, a leitura falha e o bloco some: o feed segue igual.
+ * Visitante anônimo não tem e-mail: o convite leva a entrar.
+ * Sem a migration 0025, a leitura falha e a linha some: a tela segue igual.
  */
 export async function AlertaPorEmail({ usuario, cargo }: { usuario: Usuario; cargo: string }) {
   if (usuario.visitante) {
     return (
       <p className="fraco alerta-email">
-        Quer as vagas novas de {cargo} no seu e-mail, toda segunda?{' '}
-        <a href="/entrar">Entre com seu e-mail</a>.
+        Vagas novas de {cargo} no seu e-mail, toda segunda: <a href="/entrar">entre com seu e-mail</a>.
       </p>
     );
   }
@@ -30,23 +32,20 @@ export async function AlertaPorEmail({ usuario, cargo }: { usuario: Usuario; car
   if (data?.ativo) {
     return (
       <form action={desligarEmailSemanal} className="fraco alerta-email">
-        Toda segunda, as vagas novas de {cargo} chegam em {usuario.email}.{' '}
-        <button type="submit" className="discreto">
-          Parar de receber
+        Vagas novas de {cargo} chegam em {usuario.email} toda segunda.{' '}
+        <button type="submit" className="como-link">
+          Parar
         </button>
       </form>
     );
   }
 
   return (
-    <form action={ligarEmailSemanal} className="caixa alerta-email">
-      <p style={{ margin: '0 0 8px' }}>
-        Receba as vagas novas de {cargo} em {usuario.email}, toda segunda.
-      </p>
-      <p className="fraco" style={{ margin: '0 0 12px' }}>
-        Só quando houver vaga nova. Usamos o e-mail só para isso, e cada envio tem o link para parar.
-      </p>
-      <button type="submit">Quero receber</button>
+    <form action={ligarEmailSemanal} className="fraco alerta-email">
+      <button type="submit" className="como-link">
+        Receber as vagas novas de {cargo} por e-mail
+      </button>{' '}
+      — toda segunda, em {usuario.email}, só quando houver vaga nova.
     </form>
   );
 }

@@ -24,6 +24,7 @@ export async function ligarEmailSemanal(): Promise<void> {
     await supabase.from('alertas_email').insert({ user_id: usuario.id });
   }
   revalidatePath('/vagas');
+  revalidatePath('/mapa');
 }
 
 export async function desligarEmailSemanal(): Promise<void> {
@@ -35,4 +36,5 @@ export async function desligarEmailSemanal(): Promise<void> {
     .update({ ativo: false, desativado_em: new Date().toISOString() })
     .eq('user_id', usuario.id);
   revalidatePath('/vagas');
+  revalidatePath('/mapa');
 }
