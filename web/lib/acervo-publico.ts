@@ -10,7 +10,7 @@
  *   - não dispara coleta, nunca. É o robô que abre estas páginas, e a regra
  *     crítica proíbe request → fonte externa; aqui nem há usuário;
  *   - a resposta fica em cache por uma hora. O robô pode abrir 60 páginas em
- *     sequência, e o acervo só muda uma vez por dia (coleta das 04h).
+ *     sequência, e o acervo só muda uma vez por dia (coleta da madrugada).
  *
  * Falha devolve `null`, não lista vazia: a página trata "não deu para ler" e
  * "não há vaga" de jeitos diferentes (achado 24 — fonte caída não é fonte vazia).

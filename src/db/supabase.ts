@@ -32,15 +32,35 @@ export class SupabaseErro extends Error {
   }
 }
 
+/**
+ * Status que querem dizer "o banco não respondeu a tempo", não "o pedido está
+ * errado". 520–524 são do Cloudflare na frente do Supabase: o 522 derrubou a
+ * coleta diária de 21/11 e de 24/11 no meio do InfoJobs, com o banco de pé
+ * minutos depois.
+ */
+const STATUS_PASSAGEIRO = new Set([500, 502, 503, 504, 520, 521, 522, 523, 524]);
+
+/** Esperas entre tentativas, em ms. Três repetições, ~50 s no pior caso. */
+const ESPERAS_PASSAGEIRO = [5_000, 15_000, 30_000];
+
+const dormir = (ms: number) => new Promise<void>((ok) => setTimeout(ok, ms));
+
 export class SupabaseRest {
   #url: string;
   #key: string;
   #fetch: typeof fetch;
+  #esperar: (ms: number) => Promise<void>;
 
-  constructor(url: string, serviceKey: string, fetchImpl: typeof fetch = fetch) {
+  constructor(
+    url: string,
+    serviceKey: string,
+    fetchImpl: typeof fetch = fetch,
+    esperar: (ms: number) => Promise<void> = dormir,
+  ) {
     this.#url = url.replace(/\/+$/, '');
     this.#key = serviceKey;
     this.#fetch = fetchImpl;
+    this.#esperar = esperar;
   }
 
   #cabecalhos(extras: Record<string, string> = {}): Record<string, string> {
@@ -52,21 +72,56 @@ export class SupabaseRest {
     };
   }
 
-  async #requisicao(caminho: string, init: RequestInit, tentativa = 1): Promise<unknown> {
-    const resposta = await this.#fetch(`${this.#url}${caminho}`, {
-      ...init,
-      signal: AbortSignal.timeout(30_000),
-    });
+  /**
+   * `idempotente`: repetir o pedido não muda o resultado. Só aí 5xx e falha de
+   * rede são repetidos, porque um 522 não diz se o banco gravou ou não: o pedido
+   * pode ter sido aplicado e só a resposta se perdeu. GET, PATCH e DELETE com
+   * filtro e insert com `on_conflict` (ignorar ou mesclar) aguentam a repetição;
+   * insert simples duplicaria linha e `rpc` (`reservar_saldo`) gastaria saldo
+   * duas vezes, então esses falham na hora, como antes.
+   *
+   * Custo aceito: insert com `ignorarDuplicados` + `retornar` repetido depois de
+   * um primeiro envio que gravou devolve zero linhas, e a contagem de "vagas
+   * novas" daquela execução sai menor que a real.
+   */
+  async #requisicao(
+    caminho: string,
+    init: RequestInit,
+    idempotente: boolean,
+    tentativa = 1,
+  ): Promise<unknown> {
+    const passageiras = idempotente ? ESPERAS_PASSAGEIRO.length : 0;
+    const repetirPassageiro = async (motivo: Record<string, unknown>) => {
+      const espera = ESPERAS_PASSAGEIRO[tentativa - 1]!;
+      log.warn('Supabase não respondeu; repetindo', { caminho: caminho.split('?')[0], tentativa, esperaMs: espera, ...motivo });
+      await this.#esperar(espera);
+      return this.#requisicao(caminho, init, idempotente, tentativa + 1);
+    };
+
+    let resposta: Response;
+    try {
+      resposta = await this.#fetch(`${this.#url}${caminho}`, {
+        ...init,
+        signal: AbortSignal.timeout(30_000),
+      });
+    } catch (erro) {
+      // Rede caída ou os 30 s do timeout: mesma dúvida do 522 sobre ter gravado.
+      if (tentativa <= passageiras) return repetirPassageiro({ erro: String(erro).slice(0, 120) });
+      throw erro;
+    }
 
     const texto = await resposta.text();
     // "JWT issued at future": o token que o Supabase gera a partir da chave
     // `sb_secret_` saiu com relógio alguns segundos adiantado. Derrubou a
     // primeira execução da coleta diária no Actions (22/10) e passou sozinho na
     // seguinte. Esperar e repetir resolve; qualquer outro 401 é chave errada e
-    // falha na hora.
+    // falha na hora. O pedido nem chegou ao banco, então vale para qualquer método.
     if (resposta.status === 401 && texto.includes('PGRST303') && tentativa < 3) {
-      await new Promise((ok) => setTimeout(ok, 3000 * tentativa));
-      return this.#requisicao(caminho, init, tentativa + 1);
+      await this.#esperar(3000 * tentativa);
+      return this.#requisicao(caminho, init, idempotente, tentativa + 1);
+    }
+    if (STATUS_PASSAGEIRO.has(resposta.status) && tentativa <= passageiras) {
+      return repetirPassageiro({ status: resposta.status });
     }
     if (!resposta.ok) {
       throw new SupabaseErro(
@@ -87,7 +142,7 @@ export class SupabaseRest {
     const dados = await this.#requisicao(`/rest/v1/${tabela}?${query}`, {
       method: 'GET',
       headers: this.#cabecalhos(),
-    });
+    }, true);
     return Array.isArray(dados) ? (dados as T[]) : [];
   }
 
@@ -125,7 +180,7 @@ export class SupabaseRest {
       method: 'POST',
       headers: this.#cabecalhos({ prefer: prefer.join(',') }),
       body: JSON.stringify(linhas),
-    });
+    }, Boolean(opts.ignorarDuplicados || opts.mesclarDuplicados));
     return Array.isArray(dados) ? (dados as T[]) : [];
   }
 
@@ -140,7 +195,7 @@ export class SupabaseRest {
       method: 'PATCH',
       headers: this.#cabecalhos({ prefer: 'return=minimal' }),
       body: JSON.stringify(campos),
-    });
+    }, true);
   }
 
   /**
@@ -153,7 +208,7 @@ export class SupabaseRest {
     await this.#requisicao(`/rest/v1/${tabela}?${query}`, {
       method: 'DELETE',
       headers: this.#cabecalhos({ prefer: 'return=minimal' }),
-    });
+    }, true);
   }
 
   async rpc<T>(funcao: string, args: Record<string, unknown>): Promise<T> {
@@ -161,7 +216,7 @@ export class SupabaseRest {
       method: 'POST',
       headers: this.#cabecalhos(),
       body: JSON.stringify(args),
-    });
+    }, false);
     return dados as T;
   }
 }

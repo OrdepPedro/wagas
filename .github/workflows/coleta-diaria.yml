@@ -11,10 +11,12 @@ name: coleta-diaria
 # e-mail. É o teste de saúde que faltou quando a Gupy ficou em 404 (achado 38).
 on:
   schedule:
-    # 03h17 de Brasília. Minuto quebrado de propósito: na hora cheia em UTC a fila
-    # do GitHub atrasa ou pula o disparo (23 e 24/10 saíram com 5h de atraso).
-    # O InfoJobs leva horas, e assim termina antes do dia começar.
-    - cron: '17 6 * * *'
+    # 00h01 de Brasília (03h01 UTC), pedido do Pedro em 25/11. O 03h17 de antes
+    # saía entre 11h e 18h de Brasília: o GitHub atrasa o agendamento em 6 a 11
+    # horas (medido de 10 a 24/11). Adiantar o horário nominal compensa parte
+    # disso. Risco conhecido: 03h01 UTC fica colado na hora cheia, onde a fila
+    # do GitHub é pior (23 e 24/10 saíram com 5h de atraso).
+    - cron: '1 3 * * *'
   workflow_dispatch:
     inputs:
       seco:
